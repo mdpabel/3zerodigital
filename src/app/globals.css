@@ -1,0 +1,375 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 220.9 39.3% 11%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 71.4% 4.1%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 12.2% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* overflow-x: hidden;  */
+    width: 100%;
+  }
+}
+
+html {
+  overflow-x: hidden;
+}
+
+.primary-color {
+  background: linear-gradient(to right, #614385, #516395);
+}
+
+/* START  */
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* @keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+} */
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s infinite ease-in-out;
+}
+
+/* .animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+} */
+
+/* Ensure that long words or URLs are wrapped */
+.prose {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.prose * {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Handle <pre> and <code> blocks that may cause layout issues */
+.prose pre,
+.prose code {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Handle tables, ensuring they don't break the layout */
+.prose table {
+  width: 100%;
+  table-layout: auto;
+  overflow-x: auto;
+  display: block;
+}
+
+/* WORDPRESS START */
+
+.has-text-align-left {
+  @apply text-left;
+}
+
+.has-text-align-center {
+  @apply text-center;
+}
+
+.has-text-align-right {
+  @apply text-right;
+}
+
+.has-small-font-size {
+  @apply text-sm;
+}
+
+.has-large-font-size {
+  @apply text-4xl;
+}
+
+.has-x-large-font-size {
+  @apply text-5xl;
+}
+
+.has-xx-large-font-size {
+  @apply text-6xl;
+}
+
+.alignwide {
+  @apply relative px-4 w-screen;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  max-width: 100vw;
+}
+
+.alignfull {
+  @apply relative px-1 w-screen;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  max-width: 100vw;
+}
+
+.aligncenter {
+  @apply text-center;
+}
+
+.alignfull img,
+.alignwide img {
+  @apply w-full;
+}
+
+.alignleft,
+.alignright,
+.aligncenter,
+.is-resized {
+  @apply table mr-0 ml-0;
+}
+
+.alignleft > figcaption,
+.alignright > figcaption,
+.aligncenter > figcaption,
+.is-resized > figcaption {
+  @apply table-caption;
+
+  caption-side: bottom;
+}
+
+.alignleft {
+  @apply float-left mr-4;
+}
+
+.alignright {
+  @apply float-right ml-4;
+}
+
+.aligncenter {
+  @apply m-auto;
+}
+
+.wp-block-button a,
+.wp-block-file a.wp-block-file__button {
+  @apply bg-blue-500 px-4 py-2 text-white no-underline;
+}
+
+.wp-block-button a:hover,
+.wp-block-file a.wp-block-file__button:hover {
+  @apply bg-blue-400 cursor-pointer;
+}
+
+.wp-block-file a:first-of-type {
+  @apply mr-4;
+}
+
+.wp-block-cover {
+  @apply justify-center items-center grid bg-cover bg-center overflow-hidden;
+
+  min-height: 430px;
+}
+
+.wp-block-verse {
+  @apply font-sans;
+}
+
+.wp-block-media-text {
+  @apply gap-4 grid grid-cols-2;
+}
+
+.wp-block-columns {
+  @apply flex gap-4;
+}
+
+.has-base-color {
+  @apply text-zinc-50;
+}
+
+.has-base-background-color {
+  @apply bg-zinc-50;
+}
+
+.has-contrast-color {
+  @apply text-zinc-900;
+}
+
+.has-contrast-background-color {
+  @apply bg-zinc-900;
+}
+/* WORDPRESS END  */
+
+/* COMPANY LOGOS START */
+@keyframes toLeft {
+  to {
+    left: -200px;
+  }
+}
+
+/* COMPANY LOGOS END */
+
+.fd-swap {
+  font-display: swap;
+}
+
+/* type writer start */
+/* Keyframes for the typewriter effect */
+@keyframes typewriter {
+  0% {
+    width: 0;
+  }
+  60% {
+    width: 100%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+/* Keyframes for the blinking cursor */
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+/* Apply the typewriter animation */
+.typewriter {
+  display: inline-block;
+  overflow: hidden; /* Hide extra text */
+  white-space: nowrap; /* Keep text in one line */
+  border-right: 3px solid white; /* Cursor effect */
+  width: 0;
+  animation:
+    typewriter 6s steps(40) 1s infinite,
+    /* Typewriter effect with 1s delay and stops after finishing */ blink 0.75s
+      step-end infinite; /* Cursor blinking */
+}
+
+/* type writer end */
+
+.affordable-web-dev-dark {
+  display: none !important;
+}
+
+.dark .affordable-web-dev-dark {
+  display: block !important;
+}
+
+.banner-top {
+  background-image: linear-gradient(to top right, var(--tw-gradient-stops));
+  /* border-bottom-width: 1px; */
+  display: flex;
+  --tw-gradient-from: #6dc5ff14 var(--tw-gradient-from-position);
+  --tw-gradient-stops:
+    var(--tw-gradient-from), #20a6ff14 var(--tw-gradient-via-position),
+    var(--tw-gradient-to);
+  --tw-gradient-to: #0099ff14 var(--tw-gradient-to-position);
+  /* border-color: rgba(109, 197, 255, 0.3); */
+}
