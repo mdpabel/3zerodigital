@@ -7,6 +7,7 @@ import ComponentWrapper from '@/components/common/component-wrapper';
 import SSLProcessSection from './ssl-process';
 import SSLFAQSection from './ssl-faq-section';
 import SSLSecurityVerification from './security-verification';
+import SslInstallationStepper from './ssl-installation-stapper';
 
 export const dynamic = 'force-static';
 
@@ -58,8 +59,8 @@ const SSLInstallation = async () => {
         }}
       />
 
+      <SslInstallationStepper />
       <ComponentWrapper>
-        <SSLPricingSection />
         <SSLSecurityVerification />
         <SSLBenefitsSection />
         <SSLProcessSection />

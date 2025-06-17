@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
 import { BookingConfirmationEmail } from '@/components/email/booking-confirmation';
 import { BookingNotificationEmail } from '@/components/email/booking-notification';
 import prisma from '@/prisma/db';

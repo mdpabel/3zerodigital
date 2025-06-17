@@ -3,22 +3,25 @@ import FeaturedServicesClient from './featured-services-client';
 import prisma from '@/prisma/db';
 
 const FeaturedServices = async () => {
-  const categories = await prisma.category.findMany({
+  const services = await prisma.service.findMany({
+    where: {
+      categories: {
+        some: {
+          name: 'Featured',
+        },
+      },
+      isActive: true,
+    },
     include: {
-      services: true,
+      categories: true,
+    },
+    take: 4, // Limit to 4 featured services
+    orderBy: {
+      createdAt: 'desc',
     },
   });
 
-  const serialized = categories.map((category) => ({
-    ...category,
-    services: category.services.map((s) => ({
-      ...s,
-      price: s.price?.toNumber() ?? null,
-      originalPrice: s.originalPrice?.toNumber() ?? null,
-    })),
-  }));
-
-  return <FeaturedServicesClient />;
+  return <FeaturedServicesClient services={services} />;
 };
 
 export default FeaturedServices;

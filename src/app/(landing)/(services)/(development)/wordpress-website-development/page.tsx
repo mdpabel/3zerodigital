@@ -2,7 +2,7 @@ import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
 import WhyCHooseUs from '@/components/common/why-choose-us';
 import EstimatePrice from '@/components/services/pricing-table';
-import ContactForm from '@/components/services/contact-form';
+import ContactForm from '@/components/forms/contact-form';
 import FAQ from '@/components/common/faq';
 import PortfolioServer from '@/components/portfolio/portfolio';
 

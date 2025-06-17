@@ -4,7 +4,13 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, useAnimation, useInView, useSpring } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Shield, Zap } from 'lucide-react';
+import {
+  ArrowRight,
+  Sparkles,
+  Shield,
+  Activity,
+  CheckCircle2,
+} from 'lucide-react';
 import { useRef } from 'react';
 import ComponentWrapper from '@/components/common/component-wrapper';
 
@@ -106,27 +112,28 @@ const Hero = () => {
     [],
   );
 
+  // UPDATED: Feature highlights now reflect the 3Zero motto
   const features = useMemo(
     () => [
       {
         icon: Shield,
-        text: 'Secure',
+        text: '0 Vulnerability',
         color: 'from-emerald-500 to-green-600',
-        description: 'Enterprise security',
+        description: 'Ironclad Protection',
         delay: 0.1,
       },
       {
-        icon: Zap,
-        text: 'Fast',
+        icon: Activity,
+        text: '0 Downtime',
         color: 'from-blue-500 to-cyan-600',
-        description: '99.99% uptime',
+        description: 'Uninterrupted Availability',
         delay: 0.2,
       },
       {
-        icon: Sparkles,
-        text: 'Reliable',
+        icon: CheckCircle2,
+        text: '0 Error',
         color: 'from-purple-500 to-pink-600',
-        description: 'Quality assured',
+        description: 'Flawless Execution',
         delay: 0.3,
       },
     ],

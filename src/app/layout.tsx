@@ -1,14 +1,10 @@
 import type { Metadata } from 'next';
-// import { Poppins } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
 import { GoogleTagManager } from '@next/third-parties/google';
 import './globals.css';
 import Providers from './providers';
 import { siteMetadata } from './metadata';
 import { cn } from '@/lib/utils';
-import { auth } from '@/auth';
-import PixelTracker from '@/components/common/pixel-tracker';
-import Head from 'next/head';
 import { SubtleGradientBackground } from '@/components/common/section-backgrounds';
 
 export const metadata: Metadata = {

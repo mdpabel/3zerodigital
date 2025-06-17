@@ -4,58 +4,62 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  console.log('🧹 Clearing previous data...');
+  // Delete services first due to the relation with categories
+  await prisma.service.deleteMany({});
+  await prisma.category.deleteMany({});
+  console.log('✅ Previous data cleared.');
+
   console.log('🌱 Seeding database...');
 
-  // Create categories first
+  // Create categories first, including the new "Featured" category
   const categories = await Promise.all([
-    prisma.category.upsert({
-      where: { slug: 'development' },
-      update: {},
-      create: {
+    prisma.category.create({
+      data: {
+        name: 'Featured',
+        slug: 'featured',
+        description: 'Our most popular and recommended services.',
+        isActive: true,
+      },
+    }),
+    prisma.category.create({
+      data: {
         name: 'Development',
         slug: 'development',
-        description: 'Custom web development services for modern businesses',
+        description: 'Custom web development services for modern businesses.',
         isActive: true,
       },
     }),
-    prisma.category.upsert({
-      where: { slug: 'maintenance' },
-      update: {},
-      create: {
+    prisma.category.create({
+      data: {
         name: 'Maintenance',
         slug: 'maintenance',
-        description: 'Ongoing website care and maintenance services',
+        description: 'Ongoing website care and maintenance services.',
         isActive: true,
       },
     }),
-    prisma.category.upsert({
-      where: { slug: 'troubleshooting' },
-      update: {},
-      create: {
+    prisma.category.create({
+      data: {
         name: 'Troubleshooting',
         slug: 'troubleshooting',
-        description: 'Technical fixes and problem resolution services',
+        description: 'Technical fixes and problem resolution services.',
         isActive: true,
       },
     }),
-    prisma.category.upsert({
-      where: { slug: 'graphics-video' },
-      update: {},
-      create: {
+    prisma.category.create({
+      data: {
         name: 'Graphics & Video',
         slug: 'graphics-video',
-        description: 'Professional design and video creation services',
+        description: 'Professional design and video creation services.',
         isActive: true,
       },
     }),
-    prisma.category.upsert({
-      where: { slug: 'digital-marketing' },
-      update: {},
-      create: {
+    prisma.category.create({
+      data: {
         name: 'Digital Marketing',
         slug: 'digital-marketing',
         description:
-          'Comprehensive digital marketing and advertising solutions',
+          'Comprehensive digital marketing and advertising solutions.',
         isActive: true,
       },
     }),
@@ -63,29 +67,17 @@ async function main() {
 
   console.log('✅ Categories created');
 
-  // Find category IDs
-  const developmentCategory = categories.find((c) => c.slug === 'development')!;
-  const maintenanceCategory = categories.find((c) => c.slug === 'maintenance')!;
-  const troubleshootingCategory = categories.find(
-    (c) => c.slug === 'troubleshooting',
-  )!;
-  const graphicsVideoCategory = categories.find(
-    (c) => c.slug === 'graphics-video',
-  )!;
-  const digitalMarketingCategory = categories.find(
-    (c) => c.slug === 'digital-marketing',
-  )!;
+  // A map to easily find category IDs by their slug
+  const categoryMap = new Map(categories.map((c) => [c.slug, c.id]));
 
-  // Create services
-  const services = [
+  // Define services with their category slugs and mandatory descriptions
+  const servicesToCreate = [
     // DEVELOPMENT SERVICES
     {
       name: 'WordPress Website Development',
       slug: 'wordpress-website-development',
       description:
         'Custom WordPress website development with modern design and functionality. Perfect for businesses looking for a professional online presence with easy content management.',
-      shortDesc:
-        'Custom WordPress websites with modern design and CMS functionality',
       price: 1299,
       originalPrice: 1799,
       features: [
@@ -100,28 +92,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '7-14 days',
       icon: 'Code',
-      color: 'from-blue-600 to-blue-700',
-      bgGradient: 'from-blue-500/10 via-blue-600/5 to-cyan-500/10',
-      guarantees: [
-        '100% custom design',
-        'Mobile responsive guarantee',
-        '30-day bug-free guarantee',
-        'SEO-ready structure',
-      ],
-      bestFor: 'Small to medium businesses needing professional websites',
-      categoryId: developmentCategory.id,
+      categorySlugs: ['development'],
     },
     {
       name: 'Headless WordPress with Next.js Development',
       slug: 'headless-wordpress-nextjs-development',
       description:
         'Modern headless WordPress setup with Next.js frontend for lightning-fast performance and superior user experience.',
-      shortDesc:
-        'High-performance headless WordPress with React/Next.js frontend',
       price: 2499,
       originalPrice: 3299,
       features: [
@@ -136,27 +114,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '14-21 days',
       icon: 'Zap',
-      color: 'from-purple-600 to-purple-700',
-      bgGradient: 'from-purple-500/10 via-purple-600/5 to-pink-500/10',
-      guarantees: [
-        'Lightning-fast performance',
-        'Modern tech stack',
-        'Scalable architecture',
-        '60-day support included',
-      ],
-      bestFor: 'Businesses requiring high-performance modern websites',
-      categoryId: developmentCategory.id,
+      categorySlugs: ['development'],
     },
     {
       name: 'Shopify Store Design & Development',
       slug: 'shopify-store-design-development',
       description:
         'Complete Shopify store setup with custom design, product configuration, and payment integration.',
-      shortDesc: 'Full-service Shopify store development and design',
       price: 1799,
       originalPrice: 2499,
       features: [
@@ -171,28 +136,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '10-14 days',
       icon: 'ShoppingCart',
-      color: 'from-green-600 to-green-700',
-      bgGradient: 'from-green-500/10 via-green-600/5 to-emerald-500/10',
-      guarantees: [
-        'Conversion-optimized design',
-        'Mobile-first approach',
-        'Payment integration guarantee',
-        '45-day post-launch support',
-      ],
-      bestFor: 'E-commerce businesses ready to sell online',
-      categoryId: developmentCategory.id,
+      categorySlugs: ['development'],
     },
     {
       name: 'Fullstack Next.js Application Development',
       slug: 'fullstack-nextjs-application-development',
       description:
         'Complete fullstack web application development using Next.js, React, and modern backend technologies.',
-      shortDesc:
-        'Custom fullstack applications with Next.js and modern tech stack',
       price: 3499,
       originalPrice: 4999,
       features: [
@@ -207,27 +158,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '21-30 days',
       icon: 'Terminal',
-      color: 'from-slate-600 to-slate-700',
-      bgGradient: 'from-slate-500/10 via-slate-600/5 to-gray-500/10',
-      guarantees: [
-        'Modern tech stack',
-        'Scalable architecture',
-        'Performance optimized',
-        '90-day warranty',
-      ],
-      bestFor: 'Startups and businesses needing custom web applications',
-      categoryId: developmentCategory.id,
+      categorySlugs: ['development'],
     },
     {
       name: 'MERN Stack Web App Development',
       slug: 'mern-stack-web-app-development',
       description:
         'Full-featured web application development using MongoDB, Express.js, React, and Node.js stack.',
-      shortDesc: 'Complete MERN stack applications with modern features',
       price: 2999,
       originalPrice: 3999,
       features: [
@@ -242,27 +180,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '21-30 days',
       icon: 'Database',
-      color: 'from-emerald-600 to-emerald-700',
-      bgGradient: 'from-emerald-500/10 via-emerald-600/5 to-teal-500/10',
-      guarantees: [
-        'Full-stack solution',
-        'Scalable database design',
-        'Modern React features',
-        '90-day support',
-      ],
-      bestFor: 'Complex web applications requiring custom backend',
-      categoryId: developmentCategory.id,
+      categorySlugs: ['development'],
     },
     {
       name: 'ReactJS Frontend UI Development',
       slug: 'reactjs-frontend-ui-development',
       description:
         'Professional React.js frontend development with modern UI/UX design and component architecture.',
-      shortDesc: 'Modern React.js frontends with beautiful UI/UX design',
       price: 1999,
       originalPrice: 2699,
       features: [
@@ -277,28 +202,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '14-21 days',
       icon: 'Paintbrush',
-      color: 'from-cyan-600 to-cyan-700',
-      bgGradient: 'from-cyan-500/10 via-cyan-600/5 to-blue-500/10',
-      guarantees: [
-        'Modern React patterns',
-        'Performance optimized',
-        'Cross-browser compatibility',
-        '60-day support',
-      ],
-      bestFor: 'Businesses needing modern frontend interfaces',
-      categoryId: developmentCategory.id,
+      categorySlugs: ['development'],
     },
     {
       name: 'Affordable All-in-One Web Development',
       slug: 'affordable-all-in-one-web-development',
       description:
         'Budget-friendly complete web solution including design, development, and basic setup for small businesses.',
-      shortDesc:
-        'Complete web solution at an affordable price for small businesses',
       price: 79,
       originalPrice: 199,
       features: [
@@ -313,27 +224,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 12 hours',
-      completionTime: '3-5 days',
       icon: 'DollarSign',
-      color: 'from-orange-600 to-orange-700',
-      bgGradient: 'from-orange-500/10 via-orange-600/5 to-red-500/10',
-      guarantees: [
-        'Budget-friendly solution',
-        'Quick turnaround',
-        'Mobile responsive',
-        'Basic SEO included',
-      ],
-      bestFor: 'Small businesses with limited budgets',
-      categoryId: developmentCategory.id,
+      categorySlugs: ['development'],
     },
     {
       name: 'Complete E-Commerce Launch Package',
       slug: 'complete-ecommerce-launch-package',
       description:
         'Everything you need to launch your online store including design, development, payment setup, and marketing basics.',
-      shortDesc: 'Complete e-commerce solution from setup to launch',
       price: 199,
       originalPrice: 399,
       features: [
@@ -348,20 +246,8 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 12 hours',
-      completionTime: '5-7 days',
       icon: 'Package',
-      color: 'from-pink-600 to-pink-700',
-      bgGradient: 'from-pink-500/10 via-pink-600/5 to-rose-500/10',
-      guarantees: [
-        'Complete launch package',
-        'Payment integration',
-        'Mobile-optimized store',
-        '30-day launch support',
-      ],
-      bestFor: 'New businesses launching their first online store',
-      categoryId: developmentCategory.id,
+      categorySlugs: ['development', 'digital-marketing'],
     },
 
     // MAINTENANCE SERVICES
@@ -370,7 +256,6 @@ async function main() {
       slug: 'ongoing-wordpress-maintenance-updates',
       description:
         'Monthly WordPress maintenance service including updates, backups, security monitoring, and performance optimization.',
-      shortDesc: 'Monthly WordPress care and maintenance service',
       price: 69,
       features: [
         'Monthly core updates',
@@ -384,20 +269,8 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: 'Ongoing',
       icon: 'RefreshCw',
-      color: 'from-blue-600 to-blue-700',
-      bgGradient: 'from-blue-500/10 via-blue-600/5 to-indigo-500/10',
-      guarantees: [
-        'Regular maintenance',
-        'Proactive monitoring',
-        'Emergency support included',
-        'Monthly performance reports',
-      ],
-      bestFor: 'WordPress websites requiring ongoing maintenance',
-      categoryId: maintenanceCategory.id,
+      categorySlugs: ['maintenance'],
     },
 
     // TROUBLESHOOTING SERVICES
@@ -406,7 +279,6 @@ async function main() {
       slug: 'wordpress-malware-removal',
       description:
         'Professional malware removal service to clean infected WordPress websites and restore security.',
-      shortDesc: 'Emergency malware removal and security restoration',
       price: 39,
       originalPrice: 99,
       features: [
@@ -420,27 +292,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: true,
-      responseTime: '< 2 hours',
-      completionTime: '4-8 hours',
       icon: 'Shield',
-      color: 'from-red-600 to-red-700',
-      bgGradient: 'from-red-500/10 via-red-600/5 to-orange-500/10',
-      guarantees: [
-        '100% malware removal',
-        'Same-day service',
-        '7-day reinfection protection',
-        'Security audit included',
-      ],
-      bestFor: 'Infected WordPress websites needing immediate help',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'Blacklist Removal & Reputation Repair',
       slug: 'blacklist-removal-reputation-repair',
       description:
         "Professional blacklist removal service to restore your website's reputation and search engine visibility.",
-      shortDesc: 'Remove blacklist warnings and restore website reputation',
       price: 15,
       originalPrice: 49,
       features: [
@@ -454,27 +313,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: true,
-      responseTime: '< 6 hours',
-      completionTime: '12-24 hours',
       icon: 'AlertTriangle',
-      color: 'from-rose-600 to-rose-700',
-      bgGradient: 'from-rose-500/10 via-rose-600/5 to-red-500/10',
-      guarantees: [
-        'Blacklist removal',
-        'Reputation restoration',
-        'Search engine notification',
-        'Prevention measures',
-      ],
-      bestFor: 'Blacklisted websites needing immediate reputation repair',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'WordPress Speed & Performance Optimization',
       slug: 'wordpress-speed-performance-optimization',
       description:
         'Comprehensive WordPress speed optimization to improve loading times and user experience.',
-      shortDesc: 'Make your WordPress site lightning fast',
       price: 79,
       originalPrice: 149,
       features: [
@@ -489,27 +335,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '24-48 hours',
       icon: 'Zap',
-      color: 'from-yellow-600 to-yellow-700',
-      bgGradient: 'from-yellow-500/10 via-yellow-600/5 to-orange-500/10',
-      guarantees: [
-        'Significant speed improvement',
-        'Before/after performance reports',
-        'Mobile optimization',
-        '30-day optimization guarantee',
-      ],
-      bestFor: 'Slow WordPress websites needing speed optimization',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting', 'maintenance'],
     },
     {
       name: 'Advanced WordPress Security Hardening',
       slug: 'advanced-wordpress-security-hardening',
       description:
         'Comprehensive WordPress security hardening to protect against threats and vulnerabilities.',
-      shortDesc: 'Complete WordPress security protection and hardening',
       price: 99,
       originalPrice: 199,
       features: [
@@ -524,27 +357,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '24-48 hours',
       icon: 'Lock',
-      color: 'from-indigo-600 to-indigo-700',
-      bgGradient: 'from-indigo-500/10 via-indigo-600/5 to-purple-500/10',
-      guarantees: [
-        'Comprehensive security setup',
-        'Vulnerability protection',
-        'Ongoing monitoring',
-        '60-day security guarantee',
-      ],
-      bestFor: 'WordPress sites requiring maximum security protection',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting', 'maintenance'],
     },
     {
       name: 'Secure Website Migration & Transfer',
       slug: 'secure-website-migration-transfer',
       description:
         'Safe and secure website migration between hosts with zero downtime and data integrity.',
-      shortDesc: 'Zero-downtime website migration and hosting transfer',
       price: 29,
       originalPrice: 79,
       features: [
@@ -559,27 +379,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '24-72 hours',
       icon: 'ArrowRightLeft',
-      color: 'from-teal-600 to-teal-700',
-      bgGradient: 'from-teal-500/10 via-teal-600/5 to-cyan-500/10',
-      guarantees: [
-        'Zero data loss',
-        'Minimal downtime',
-        'Complete functionality',
-        '14-day migration support',
-      ],
-      bestFor: 'Websites needing to change hosting providers',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'SSL Certificate Installation',
       slug: 'ssl-certificate-installation',
       description:
         'Professional SSL certificate installation and configuration for secure website connections.',
-      shortDesc: 'Secure your website with SSL certificate installation',
       price: 29,
       originalPrice: 59,
       features: [
@@ -593,27 +400,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 12 hours',
-      completionTime: '12-24 hours',
       icon: 'Lock',
-      color: 'from-green-600 to-green-700',
-      bgGradient: 'from-green-500/10 via-green-600/5 to-emerald-500/10',
-      guarantees: [
-        'Proper SSL installation',
-        'Browser security verification',
-        'HTTPS redirect setup',
-        '30-day installation support',
-      ],
-      bestFor: 'Websites needing secure HTTPS connections',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'Fix 404 Not Found Errors',
       slug: 'fix-404-not-found-errors',
       description:
         'Identify and fix 404 not found errors to improve user experience and SEO rankings.',
-      shortDesc: 'Eliminate 404 errors and improve website navigation',
       price: 29,
       originalPrice: 69,
       features: [
@@ -627,27 +421,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '24-48 hours',
       icon: 'Search',
-      color: 'from-orange-600 to-orange-700',
-      bgGradient: 'from-orange-500/10 via-orange-600/5 to-yellow-500/10',
-      guarantees: [
-        'All 404 errors fixed',
-        'Proper redirects setup',
-        'Custom 404 page',
-        '30-day error monitoring',
-      ],
-      bestFor: 'Websites with broken links and navigation issues',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'Resolve Email Deliverability Issues',
       slug: 'resolve-email-deliverability-issues',
       description:
         'Fix email delivery problems and improve inbox delivery rates for your website emails.',
-      shortDesc: 'Fix email delivery problems and improve inbox rates',
       price: 49,
       originalPrice: 99,
       features: [
@@ -661,27 +442,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '24-48 hours',
       icon: 'Mail',
-      color: 'from-blue-600 to-blue-700',
-      bgGradient: 'from-blue-500/10 via-blue-600/5 to-indigo-500/10',
-      guarantees: [
-        'Improved delivery rates',
-        'Proper email authentication',
-        'Spam folder avoidance',
-        '30-day delivery monitoring',
-      ],
-      bestFor: 'Websites with email delivery and spam issues',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'Fix 500 Internal Server Errors',
       slug: 'fix-500-internal-server-errors',
       description:
         'Diagnose and fix 500 internal server errors to restore website functionality.',
-      shortDesc: 'Emergency fix for 500 internal server errors',
       price: 29,
       originalPrice: 79,
       features: [
@@ -695,27 +463,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: true,
-      responseTime: '< 2 hours',
-      completionTime: '2-6 hours',
       icon: 'AlertTriangle',
-      color: 'from-red-600 to-red-700',
-      bgGradient: 'from-red-500/10 via-red-600/5 to-orange-500/10',
-      guarantees: [
-        'Complete error resolution',
-        'Root cause elimination',
-        'Functionality restoration',
-        '14-day error-free guarantee',
-      ],
-      bestFor: 'Websites experiencing critical 500 server errors',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'Fix 403 Forbidden Errors',
       slug: 'fix-403-forbidden-errors',
       description:
         'Resolve 403 forbidden access errors and restore proper website permissions.',
-      shortDesc: 'Fix access denied errors and permission issues',
       price: 29,
       originalPrice: 69,
       features: [
@@ -729,27 +484,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 12 hours',
-      completionTime: '12-24 hours',
       icon: 'ShieldAlert',
-      color: 'from-amber-600 to-amber-700',
-      bgGradient: 'from-amber-500/10 via-amber-600/5 to-orange-500/10',
-      guarantees: [
-        'Complete access restoration',
-        'Proper permissions setup',
-        'Security maintained',
-        '30-day access guarantee',
-      ],
-      bestFor: 'Websites with access permission problems',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'Mixed Content SSL Fix',
       slug: 'mixed-content-ssl-fix',
       description:
         'Fix mixed content warnings on SSL-enabled websites for full HTTPS security.',
-      shortDesc: 'Eliminate mixed content warnings for full SSL security',
       price: 29,
       originalPrice: 59,
       features: [
@@ -763,27 +505,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '12-24 hours',
       icon: 'Shield',
-      color: 'from-emerald-600 to-emerald-700',
-      bgGradient: 'from-emerald-500/10 via-emerald-600/5 to-green-500/10',
-      guarantees: [
-        'All mixed content fixed',
-        'Full HTTPS security',
-        'Browser warning removal',
-        '30-day content monitoring',
-      ],
-      bestFor: 'SSL websites with mixed content security warnings',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'White Screen of Death (WSOD) Recovery',
       slug: 'white-screen-of-death-wsod-recovery',
       description:
         'Emergency recovery service for WordPress white screen of death errors.',
-      shortDesc: 'Emergency fix for WordPress white screen errors',
       price: 29,
       originalPrice: 79,
       features: [
@@ -797,27 +526,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: true,
-      responseTime: '< 2 hours',
-      completionTime: '2-6 hours',
       icon: 'MonitorSpeaker',
-      color: 'from-slate-600 to-slate-700',
-      bgGradient: 'from-slate-500/10 via-slate-600/5 to-gray-500/10',
-      guarantees: [
-        'Complete site recovery',
-        'Error elimination',
-        'Functionality restoration',
-        '14-day stability guarantee',
-      ],
-      bestFor: 'WordPress sites showing white screen errors',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'Fix Error Establishing Database Connection',
       slug: 'fix-error-establishing-database-connection',
       description:
         'Resolve database connection errors and restore website database connectivity.',
-      shortDesc: 'Fix database connection errors and restore site access',
       price: 25,
       originalPrice: 69,
       features: [
@@ -831,27 +547,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: true,
-      responseTime: '< 2 hours',
-      completionTime: '2-4 hours',
       icon: 'Database',
-      color: 'from-cyan-600 to-cyan-700',
-      bgGradient: 'from-cyan-500/10 via-cyan-600/5 to-blue-500/10',
-      guarantees: [
-        'Database connection restored',
-        'Site functionality recovery',
-        'Data integrity verified',
-        '14-day connection stability',
-      ],
-      bestFor: 'Websites with database connection failures',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'DNS Configuration & Issue Resolution',
       slug: 'dns-configuration-issue-resolution',
       description:
         'Professional DNS setup and troubleshooting for proper domain name resolution.',
-      shortDesc: 'Fix DNS issues and configure proper domain resolution',
       price: 49,
       originalPrice: 99,
       features: [
@@ -865,27 +568,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 12 hours',
-      completionTime: '12-24 hours',
       icon: 'Globe',
-      color: 'from-violet-600 to-violet-700',
-      bgGradient: 'from-violet-500/10 via-violet-600/5 to-purple-500/10',
-      guarantees: [
-        'Proper DNS configuration',
-        'Global accessibility',
-        'Email delivery setup',
-        '30-day DNS monitoring',
-      ],
-      bestFor: 'Websites with domain and DNS resolution issues',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting'],
     },
     {
       name: 'WordPress Rescue & Repair Service',
       slug: 'wordpress-rescue-repair-service',
       description:
         'Comprehensive WordPress rescue service for severely damaged or compromised websites.',
-      shortDesc: 'Complete WordPress recovery and repair service',
       price: 49,
       originalPrice: 129,
       features: [
@@ -900,20 +590,8 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: true,
-      responseTime: '< 4 hours',
-      completionTime: '4-12 hours',
       icon: 'Wrench',
-      color: 'from-indigo-600 to-indigo-700',
-      bgGradient: 'from-indigo-500/10 via-indigo-600/5 to-blue-500/10',
-      guarantees: [
-        'Complete site recovery',
-        'Full functionality restoration',
-        'Security improvement',
-        '30-day stability guarantee',
-      ],
-      bestFor: 'Severely damaged WordPress websites needing rescue',
-      categoryId: troubleshootingCategory.id,
+      categorySlugs: ['troubleshooting', 'maintenance'],
     },
 
     // GRAPHICS & VIDEO SERVICES
@@ -922,7 +600,6 @@ async function main() {
       slug: 'custom-logo-design',
       description:
         'Professional custom logo design that perfectly represents your brand identity and values.',
-      shortDesc: 'Professional custom logo design for your brand',
       price: 199,
       originalPrice: 399,
       features: [
@@ -937,27 +614,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '5-7 days',
       icon: 'Palette',
-      color: 'from-pink-600 to-pink-700',
-      bgGradient: 'from-pink-500/10 via-pink-600/5 to-rose-500/10',
-      guarantees: [
-        '100% original design',
-        'Multiple concept options',
-        'Vector file delivery',
-        'Unlimited minor revisions',
-      ],
-      bestFor: 'Businesses needing professional brand identity',
-      categoryId: graphicsVideoCategory.id,
+      categorySlugs: ['graphics-video'],
     },
     {
       name: 'Professional Brochure Design',
       slug: 'professional-brochure-design',
       description:
         'Eye-catching brochure designs that effectively communicate your message and attract customers.',
-      shortDesc: 'Professional marketing brochures that convert',
       price: 149,
       originalPrice: 299,
       features: [
@@ -972,27 +636,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '3-5 days',
       icon: 'FileText',
-      color: 'from-blue-600 to-blue-700',
-      bgGradient: 'from-blue-500/10 via-blue-600/5 to-cyan-500/10',
-      guarantees: [
-        'Professional design quality',
-        'Print-ready output',
-        'Brand consistency',
-        'Revision satisfaction',
-      ],
-      bestFor: 'Businesses needing marketing materials',
-      categoryId: graphicsVideoCategory.id,
+      categorySlugs: ['graphics-video'],
     },
     {
       name: 'Social Video Ads & Reels Creation',
       slug: 'social-video-ads-reels-creation',
       description:
         'Engaging video content creation for social media advertising and organic reach.',
-      shortDesc: 'Engaging video content for social media marketing',
       price: 299,
       originalPrice: 499,
       features: [
@@ -1007,20 +658,8 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '5-7 days',
       icon: 'Video',
-      color: 'from-purple-600 to-purple-700',
-      bgGradient: 'from-purple-500/10 via-purple-600/5 to-pink-500/10',
-      guarantees: [
-        'Engaging video content',
-        'Platform-optimized formats',
-        'Professional quality',
-        '2 rounds of revisions',
-      ],
-      bestFor: 'Businesses focusing on video marketing',
-      categoryId: graphicsVideoCategory.id,
+      categorySlugs: ['graphics-video', 'digital-marketing'],
     },
 
     // DIGITAL MARKETING SERVICES
@@ -1029,7 +668,6 @@ async function main() {
       slug: 'backlink-building-service',
       description:
         "High-quality backlink building to improve your website's domain authority and search rankings.",
-      shortDesc: 'Quality backlinks to boost your search rankings',
       price: 299,
       originalPrice: 499,
       features: [
@@ -1044,27 +682,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '30 days ongoing',
       icon: 'Link',
-      color: 'from-green-600 to-green-700',
-      bgGradient: 'from-green-500/10 via-green-600/5 to-emerald-500/10',
-      guarantees: [
-        'High-quality backlinks only',
-        'White-hat SEO practices',
-        'Monthly progress reports',
-        'Penalty-safe methods',
-      ],
-      bestFor: 'Websites needing improved domain authority',
-      categoryId: digitalMarketingCategory.id,
+      categorySlugs: ['digital-marketing'],
     },
     {
       name: 'Local SEO Optimization',
       slug: 'local-seo-optimization',
       description:
         'Complete local SEO optimization to improve visibility in local search results.',
-      shortDesc: 'Dominate local search results in your area',
       price: 199,
       originalPrice: 399,
       features: [
@@ -1079,27 +704,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '14-21 days',
       icon: 'MapPin',
-      color: 'from-blue-600 to-blue-700',
-      bgGradient: 'from-blue-500/10 via-blue-600/5 to-indigo-500/10',
-      guarantees: [
-        'Improved local visibility',
-        'Google My Business optimization',
-        'Citation consistency',
-        '60-day ranking improvement',
-      ],
-      bestFor: 'Local businesses wanting more local customers',
-      categoryId: digitalMarketingCategory.id,
+      categorySlugs: ['digital-marketing'],
     },
     {
       name: 'E-commerce SEO Services',
       slug: 'ecommerce-seo-services',
       description:
         'Specialized SEO optimization for online stores to increase product visibility and sales.',
-      shortDesc: 'SEO optimization specifically for online stores',
       price: 399,
       originalPrice: 699,
       features: [
@@ -1114,27 +726,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '21-30 days',
       icon: 'ShoppingBag',
-      color: 'from-emerald-600 to-emerald-700',
-      bgGradient: 'from-emerald-500/10 via-emerald-600/5 to-green-500/10',
-      guarantees: [
-        'Improved product visibility',
-        'Technical SEO optimization',
-        'Conversion rate improvement',
-        '90-day ranking guarantee',
-      ],
-      bestFor: 'Online stores needing more organic traffic',
-      categoryId: digitalMarketingCategory.id,
+      categorySlugs: ['digital-marketing'],
     },
     {
       name: 'Technical SEO Audit & Fixes',
       slug: 'technical-seo-audit-fixes',
       description:
         'Comprehensive technical SEO audit and implementation of fixes to improve search performance.',
-      shortDesc: 'Complete technical SEO audit and optimization',
       price: 249,
       originalPrice: 449,
       features: [
@@ -1149,27 +748,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '14-21 days',
       icon: 'Search',
-      color: 'from-orange-600 to-orange-700',
-      bgGradient: 'from-orange-500/10 via-orange-600/5 to-red-500/10',
-      guarantees: [
-        'Comprehensive audit',
-        'All technical issues fixed',
-        'Performance improvement',
-        '60-day optimization support',
-      ],
-      bestFor: 'Websites with technical SEO problems',
-      categoryId: digitalMarketingCategory.id,
+      categorySlugs: ['digital-marketing', 'troubleshooting'],
     },
     {
       name: 'Google Ads Campaign Management',
       slug: 'google-ads-campaign-management',
       description:
         'Professional Google Ads campaign setup and management to maximize ROI and conversions.',
-      shortDesc: 'Professional Google Ads campaign setup and optimization',
       price: 499,
       originalPrice: 799,
       features: [
@@ -1184,27 +770,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '7-10 days setup',
       icon: 'Target',
-      color: 'from-red-600 to-red-700',
-      bgGradient: 'from-red-500/10 via-red-600/5 to-orange-500/10',
-      guarantees: [
-        'Professional campaign setup',
-        'ROI optimization',
-        'Transparent reporting',
-        '30-day performance guarantee',
-      ],
-      bestFor: 'Businesses wanting immediate online visibility',
-      categoryId: digitalMarketingCategory.id,
+      categorySlugs: ['digital-marketing'],
     },
     {
       name: 'Meta (Facebook & Instagram) Ads Management',
       slug: 'meta-facebook-instagram-ads-management',
       description:
         'Expert Facebook and Instagram advertising campaign management for social media success.',
-      shortDesc: 'Expert Facebook and Instagram advertising campaigns',
       price: 399,
       originalPrice: 699,
       features: [
@@ -1219,27 +792,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: true,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '5-7 days setup',
       icon: 'Users',
-      color: 'from-blue-600 to-blue-700',
-      bgGradient: 'from-blue-500/10 via-blue-600/5 to-indigo-500/10',
-      guarantees: [
-        'Expert audience targeting',
-        'Creative optimization',
-        'Performance tracking',
-        '30-day campaign optimization',
-      ],
-      bestFor: 'Businesses targeting social media audiences',
-      categoryId: digitalMarketingCategory.id,
+      categorySlugs: ['digital-marketing'],
     },
     {
       name: 'TikTok Ads Creation & Promotion',
       slug: 'tiktok-ads-creation-promotion',
       description:
         'Creative TikTok advertising campaigns designed to engage younger demographics effectively.',
-      shortDesc: 'Engaging TikTok ads for younger demographics',
       price: 349,
       originalPrice: 599,
       features: [
@@ -1254,27 +814,14 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '7-10 days',
       icon: 'Music',
-      color: 'from-pink-600 to-pink-700',
-      bgGradient: 'from-pink-500/10 via-pink-600/5 to-purple-500/10',
-      guarantees: [
-        'Platform-native content',
-        'Trend-based strategy',
-        'Engagement optimization',
-        '30-day campaign support',
-      ],
-      bestFor: 'Brands targeting Gen Z and millennial audiences',
-      categoryId: digitalMarketingCategory.id,
+      categorySlugs: ['digital-marketing', 'graphics-video'],
     },
     {
       name: 'LinkedIn B2B Ads Strategy & Management',
       slug: 'linkedin-b2b-ads-strategy-management',
       description:
         'Professional LinkedIn advertising for B2B lead generation and business growth.',
-      shortDesc: 'Professional LinkedIn B2B advertising and lead generation',
       price: 599,
       originalPrice: 999,
       features: [
@@ -1289,46 +836,40 @@ async function main() {
       ],
       isActive: true,
       isPopular: false,
-      isUrgent: false,
-      responseTime: '< 24 hours',
-      completionTime: '10-14 days',
       icon: 'Briefcase',
-      color: 'from-indigo-600 to-indigo-700',
-      bgGradient: 'from-indigo-500/10 via-indigo-600/5 to-blue-500/10',
-      guarantees: [
-        'B2B-focused strategy',
-        'Quality lead generation',
-        'Professional targeting',
-        '60-day lead quality guarantee',
-      ],
-      bestFor: 'B2B companies seeking professional leads',
-      categoryId: digitalMarketingCategory.id,
+      categorySlugs: ['digital-marketing'],
     },
   ];
 
   console.log('🌱 Creating services...');
 
-  // Create services in batches to avoid overwhelming the database
-  const batchSize = 5;
-  for (let i = 0; i < services.length; i += batchSize) {
-    const batch = services.slice(i, i + batchSize);
-    await Promise.all(
-      batch.map((service) =>
-        prisma.service.upsert({
-          where: { slug: service.slug },
-          update: service,
-          create: service,
-        }),
-      ),
-    );
-    console.log(
-      `✅ Created services batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(services.length / batchSize)}`,
-    );
+  for (const service of servicesToCreate) {
+    const { categorySlugs, ...serviceData } = service;
+
+    // If the service is popular, add the 'featured' category slug
+    if (service.isPopular) {
+      categorySlugs.push('featured');
+    }
+
+    // Prepare the connect statement for the many-to-many relation
+    const categoryConnections = categorySlugs.map((slug) => ({
+      id: categoryMap.get(slug)!,
+    }));
+
+    await prisma.service.create({
+      data: {
+        ...serviceData,
+        categories: {
+          connect: categoryConnections,
+        },
+      },
+    });
   }
 
+  console.log('✅ Services created');
   console.log('🎉 Seeding completed successfully!');
   console.log(
-    `📊 Created ${categories.length} categories and ${services.length} services`,
+    `📊 Created ${categories.length} categories and ${servicesToCreate.length} services`,
   );
 }
 

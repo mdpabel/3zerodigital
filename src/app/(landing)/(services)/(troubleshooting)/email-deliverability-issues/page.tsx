@@ -1,27 +1,11 @@
 import React from 'react';
-
-import Quiz from '';
-import Video from '@/components/common/video';
-
-import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
-import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
+import EmailDeliverabilityStepper from './email0deliverability-stapper';
 
 export const dynamic = 'force-static';
 
 const slug = 'email-deliverability-issues';
-
-const issues = [
-  'Blacklisted IP addresses',
-  'Spammy content or keywords',
-  'Incorrect DNS settings (SPF, DKIM, DMARC)',
-  'Poor sender reputation',
-  'Lack of email authentication protocols',
-  'High bounce rates',
-  'Low engagement rates (open/click-through rates)',
-  'Email content flagged as suspicious',
-];
 
 const EmailDeliverabilityIssues = async () => {
   return (
@@ -69,11 +53,7 @@ const EmailDeliverabilityIssues = async () => {
         }}
       />
 
-      <TroubleshootingPricing
-        price='$55'
-        name='email-deliverability'
-        productId=''
-      />
+      <EmailDeliverabilityStepper />
 
       <ErrorResolutionDashboard />
     </div>

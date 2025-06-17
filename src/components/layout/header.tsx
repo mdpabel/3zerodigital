@@ -9,8 +9,8 @@ const Header = async () => {
     ...category,
     services: category.services.map((s) => ({
       ...s,
-      price: s.price?.toNumber() ?? null,
-      originalPrice: s.originalPrice?.toNumber() ?? null,
+      price: s.price ?? null,
+      originalPrice: s.originalPrice ?? null,
     })),
   }));
 

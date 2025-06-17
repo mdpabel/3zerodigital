@@ -6,6 +6,7 @@ import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
 import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
+import Http403ErrorStepper from './http-403-stapper';
 
 export const dynamic = 'force-static';
 
@@ -57,7 +58,7 @@ export default async function Fix403ErrorService() {
         }}
       />
 
-      <TroubleshootingPricing price='$55' name='http-403-error' productId='' />
+      <Http403ErrorStepper />
 
       <ErrorResolutionDashboard />
     </div>

@@ -1,4 +1,0 @@
-DATABASE_URL="mongodb+srv://mdpabel7396:VjHAMgeYAsvYwL0J@cluster0.vimjs.mongodb.net/3zero-digital?retryWrites=true&w=majority&appName=Cluster0"
-
-BETTER_AUTH_SECRET=4l2LDduIZznmuEtVSbtG5AuUiFZ8snib
-BETTER_AUTH_URL=http://localhost:3000

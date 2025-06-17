@@ -69,3 +69,29 @@ const IconRenderer: React.FC<IconProps> = ({ iconName }) => {
 };
 
 export default IconRenderer;
+
+import {
+  Code,
+  Megaphone,
+  Wrench,
+  AlertTriangle,
+  Video,
+  HelpCircle,
+} from 'lucide-react';
+
+interface CategoryIconProps {
+  name: string;
+  className?: string;
+}
+
+export const CategoryIcon = ({ name, className }: CategoryIconProps) => {
+  const icons: Record<string, JSX.Element> = {
+    Development: <Code className={className} />,
+    Marketing: <Megaphone className={className} />,
+    Maintenance: <Wrench className={className} />,
+    Troubleshooting: <AlertTriangle className={className} />,
+    'Graphics & Video': <Video className={className} />,
+  };
+
+  return icons[name] || <HelpCircle className={className} />;
+};

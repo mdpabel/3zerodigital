@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import ComponentWrapper from '@/components/common/component-wrapper';
 import Logo from './logo';
+import NewsletterSection from './newsletter-section';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -108,31 +109,7 @@ const Footer = () => {
   return (
     <footer>
       {/* Newsletter Section */}
-      <div className='py-12'>
-        <ComponentWrapper>
-          <div className='mx-auto max-w-4xl text-center'>
-            <h3 className='mb-4 font-bold text-white text-2xl'>
-              Stay Updated with Our Latest News & Offers
-            </h3>
-            <p className='mb-6 text-blue-100'>
-              Get exclusive tips, tutorials, and special discounts delivered to
-              your inbox
-            </p>
-            <div className='flex sm:flex-row flex-col gap-4 mx-auto max-w-md'>
-              <Input
-                type='email'
-                placeholder='Enter your email'
-                className='bg-white/20 border-white/30 text-white placeholder:text-white/70'
-              />
-              <Button
-                variant='secondary'
-                className='bg-white hover:bg-gray-100 text-blue-600'>
-                Subscribe
-              </Button>
-            </div>
-          </div>
-        </ComponentWrapper>
-      </div>
+      <NewsletterSection />
 
       <div className='bg-gray-900'>
         {/* Main Footer Content */}
@@ -263,7 +240,7 @@ const Footer = () => {
           <ComponentWrapper>
             <div className='flex md:flex-row flex-col justify-between items-center gap-4'>
               <p className='text-gray-400 text-sm'>
-                © {currentYear} Your Company Name. All rights reserved.
+                © {currentYear} 3Zero Digital. All rights reserved.
               </p>
               <div className='flex items-center gap-6'>
                 <span className='text-gray-400 text-sm'>🔒 SSL Secured</span>

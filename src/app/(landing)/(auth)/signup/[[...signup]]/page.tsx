@@ -1,5 +1,5 @@
-import SignUpForm from '@/components/auth/sign-up-form';
 import { genMetaData } from '@/app/seo';
+import SignUpForm from '../sign-up-form';
 
 export const dynamic = 'force-static';
 

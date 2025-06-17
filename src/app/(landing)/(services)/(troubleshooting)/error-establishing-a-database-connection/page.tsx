@@ -6,6 +6,7 @@ import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
 import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
+import DatabaseConnectionErrorStepper from './db-connection-error-stapper';
 
 export const dynamic = 'force-static';
 
@@ -57,11 +58,7 @@ export default async function DatabaseConnectionError() {
         }}
       />
 
-      <TroubleshootingPricing
-        price='$55'
-        name='database-connection-error'
-        productId=''
-      />
+      <DatabaseConnectionErrorStepper />
 
       <ErrorResolutionDashboard />
     </div>

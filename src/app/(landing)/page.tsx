@@ -1,21 +1,22 @@
 export const dynamic = 'force-static';
 
-import FeaturedServices from '@/app/featured-services';
 import Portfolio from '@/components/portfolio/portfolio';
-import FinalCTA from '@/components/common/final-cta';
 import Hero from './hero';
 import CategoryWhyChooseUs from '@/components/common/why-choose-us';
 import CompanyStats from '@/components/common/company-stats';
+import { getFeaturedServices } from '@/actions/service-actions';
+import FeaturedServices from '@/components/services/featured-services';
 
 const Home = async () => {
+  const services = await getFeaturedServices();
+
   return (
     <div>
       <Hero />
-      <FeaturedServices />
+      <FeaturedServices featuredServices={services} />
       <CategoryWhyChooseUs />
       <Portfolio limit={6} />
       <CompanyStats />
-      <FinalCTA />
     </div>
   );
 };

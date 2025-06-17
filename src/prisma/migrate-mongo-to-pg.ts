@@ -1,4 +1,3 @@
-// scripts/migrate-templates.ts
 import { MongoClient } from 'mongodb';
 import { PrismaClient } from '@prisma/client';
 

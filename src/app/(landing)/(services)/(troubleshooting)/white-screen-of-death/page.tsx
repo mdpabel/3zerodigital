@@ -1,6 +1,7 @@
 import ServiceHero from '@/components/common/Hero';
 import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
+import WhiteScreenOfDeathStepper from './wsod-stapper';
 
 export const dynamic = 'force-static';
 
@@ -52,11 +53,7 @@ export default async function FixWSODService() {
         }}
       />
 
-      <TroubleshootingPricing
-        price='$55'
-        name='white-screen-death'
-        productId=''
-      />
+      <WhiteScreenOfDeathStepper />
 
       <ErrorResolutionDashboard />
     </div>

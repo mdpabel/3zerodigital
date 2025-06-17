@@ -5,6 +5,7 @@ import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
 import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
+import Http500ErrorStepper from './http-500-stapper';
 
 export const dynamic = 'force-static';
 
@@ -56,7 +57,7 @@ export default async function Fix500ErrorService() {
         }}
       />
 
-      <TroubleshootingPricing price='$55' name='http-500-error' productId='' />
+      <Http500ErrorStepper />
 
       <ErrorResolutionDashboard />
     </div>

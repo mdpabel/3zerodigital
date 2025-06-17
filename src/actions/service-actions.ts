@@ -1,8 +1,8 @@
+// lib/actions/service.ts
 'use server';
 
 import { revalidatePath } from 'next/cache';
 import { Prisma, Category } from '@prisma/client';
-import { redirect } from 'next/navigation';
 import {
   createServiceSchema,
   updateServiceSchema,
@@ -10,8 +10,19 @@ import {
   UpdateServiceInput,
 } from '@/lib/validations/service';
 import prisma from '@/prisma/db';
+import { z } from 'zod';
 
-export async function createService(data: CreateServiceInput) {
+type ActionResult<T = any> = {
+  success: boolean;
+  message: string;
+  data?: T;
+  // FIX: The type for fieldErrors from Zod can include undefined values.
+  errors?: Record<string, string[] | undefined>;
+};
+
+export async function createService(
+  data: CreateServiceInput,
+): Promise<ActionResult> {
   try {
     const validatedData = createServiceSchema.parse(data);
 
@@ -21,16 +32,21 @@ export async function createService(data: CreateServiceInput) {
     });
 
     if (existingService) {
-      return { error: 'Service with this slug already exists' };
+      return {
+        success: false,
+        message: 'Service with this slug already exists',
+      };
     }
 
-    const { relatedServiceIds, ...serviceData } = validatedData;
+    const { categoryIds, relatedServiceIds, ...serviceData } = validatedData;
 
     const service = await prisma.service.create({
       data: {
         ...serviceData,
         features: validatedData.features || [],
-        guarantees: validatedData.guarantees || [],
+        categories: {
+          connect: categoryIds.map((id) => ({ id })),
+        },
       },
     });
 
@@ -47,24 +63,63 @@ export async function createService(data: CreateServiceInput) {
     }
 
     revalidatePath('/admin/services');
-    return { success: true, service };
-  } catch (error) {
+    return {
+      success: true,
+      message: 'Service created successfully',
+      data: service,
+    };
+  } catch (error: any) {
     console.error('Error creating service:', error);
-    return { error: 'Failed to create service' };
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        message: 'Validation failed',
+        errors: error.formErrors.fieldErrors,
+      };
+    }
+
+    return {
+      success: false,
+      message: 'Failed to create service',
+    };
   }
 }
 
-export async function updateService(data: UpdateServiceInput) {
+export async function updateService(
+  data: UpdateServiceInput,
+): Promise<ActionResult> {
   try {
     const validatedData = updateServiceSchema.parse(data);
-    const { id, relatedServiceIds, ...updateData } = validatedData;
+    const { id, categoryIds, relatedServiceIds, ...updateData } = validatedData;
+
+    // Check if slug already exists (excluding current service)
+    if (updateData.slug) {
+      const existingService = await prisma.service.findFirst({
+        where: {
+          slug: updateData.slug,
+          id: { not: id },
+        },
+      });
+
+      if (existingService) {
+        return {
+          success: false,
+          message: 'Service with this slug already exists',
+        };
+      }
+    }
 
     const service = await prisma.service.update({
       where: { id },
       data: {
         ...updateData,
-        features: updateData.features || [],
-        guarantees: updateData.guarantees || [],
+        ...(updateData.features && { features: updateData.features }),
+        ...(categoryIds && {
+          categories: {
+            set: categoryIds.map((id) => ({ id })),
+          },
+        }),
       },
     });
 
@@ -81,14 +136,30 @@ export async function updateService(data: UpdateServiceInput) {
     }
 
     revalidatePath('/admin/services');
-    return { success: true, service };
+    return {
+      success: true,
+      message: 'Service updated successfully',
+      data: service,
+    };
   } catch (error) {
     console.error('Error updating service:', error);
-    return { error: 'Failed to update service' };
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        message: 'Validation failed',
+        errors: error.formErrors.fieldErrors,
+      };
+    }
+
+    return {
+      success: false,
+      message: 'Failed to update service',
+    };
   }
 }
 
-export async function deleteService(id: string) {
+export async function deleteService(id: string): Promise<ActionResult> {
   try {
     await prisma.service.update({
       where: { id },
@@ -96,10 +167,16 @@ export async function deleteService(id: string) {
     });
 
     revalidatePath('/admin/services');
-    return { success: true };
+    return {
+      success: true,
+      message: 'Service deleted successfully',
+    };
   } catch (error) {
     console.error('Error deleting service:', error);
-    return { error: 'Failed to delete service' };
+    return {
+      success: false,
+      message: 'Failed to delete service',
+    };
   }
 }
 
@@ -110,24 +187,36 @@ export async function getServices(includeInactive = false) {
       ...(includeInactive ? {} : { isActive: true }),
     },
     include: {
-      category: true,
+      categories: true,
       relatedTo: {
         where: { deletedAt: null },
-        include: { category: true },
+        include: { categories: true },
       },
     },
     orderBy: { createdAt: 'desc' },
   });
 }
 
+export const getFeaturedServices = async () => {
+  return prisma.service.findMany({
+    where: {
+      categories: {
+        some: {
+          name: 'Featured',
+        },
+      },
+    },
+  });
+};
+
 export async function getServiceById(id: string) {
   return await prisma.service.findUnique({
     where: { id, deletedAt: null },
     include: {
-      category: true,
+      categories: true,
       relatedTo: {
         where: { deletedAt: null },
-        include: { category: true },
+        include: { categories: true },
       },
     },
   });
@@ -145,7 +234,6 @@ type CategoryWithServices = Prisma.CategoryGetPayload<{
   include: { services: true };
 }>;
 
-// Type-safe custom sort function
 const sortCategories = <T extends { name: string }>(categories: T[]): T[] => {
   return categories.sort((a, b) => {
     const indexA = customOrder.indexOf(a.name);
@@ -156,13 +244,11 @@ const sortCategories = <T extends { name: string }>(categories: T[]): T[] => {
   });
 };
 
-// Only categories
 export async function getCategories(): Promise<Category[]> {
   const categories = await prisma.category.findMany();
   return sortCategories(categories);
 }
 
-// Categories with related services
 export async function getCategoriesWithServices(): Promise<
   CategoryWithServices[]
 > {

@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -13,8 +12,21 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import ComponentWrapper from '@/components/common/component-wrapper';
@@ -22,57 +34,64 @@ import { SearchMenu } from '@/components/common/search-commands';
 import { Prisma } from '@prisma/client';
 import IconRenderer from '@/components/common/icon-render';
 import Logo from './logo';
-// static menus data
+import { CleanBackground } from '../common/section-backgrounds';
 
-// 1. Support submenu items
+// --- STATIC DATA (Unchanged) ---
+
 const supportCategories = [
   {
     title: 'Documentation',
     description: 'Guides and resources',
     iconName: 'FaBookOpen',
+    href: '/docs',
   },
   {
     title: 'Book a call',
     description: 'Schedule a one-on-one session',
     iconName: 'FaStethoscope',
+    href: '/contact',
   },
   {
     title: 'Contact Us',
     description: 'Get in touch via email',
     iconName: 'FaEnvelope',
+    href: '/contact',
   },
   {
     title: 'Tutorials',
     description: 'Step-by-step guides and videos',
     iconName: 'FaPlay',
+    href: '/tutorials',
   },
 ];
 
-// 2. Explore submenu items
 const exploreCategories = [
   {
     title: 'Blog',
     description: 'Latest news and articles',
     iconName: 'FaBookOpen',
+    href: '/blog',
   },
   {
     title: 'Recent Projects',
     description: 'See our latest work',
     iconName: 'FaCube',
+    href: '/projects',
   },
   {
     title: 'Offers',
     description: 'Current promotions & discounts',
     iconName: 'FaDollarSign',
+    href: '/offers',
   },
   {
     title: 'Careers',
     description: 'Join our team',
     iconName: 'FaUser',
+    href: '/careers',
   },
 ];
 
-// 3. Single featured blog post (shared for both menus or swap out per-menu if you like)
 const blogPost = {
   id: '1',
   title: 'Integrating Our API',
@@ -81,20 +100,13 @@ const blogPost = {
   imageUrl: '/images/blog/api-guide.png',
 };
 
-// 4. Top-level menus
 const otherMenus = [
-  { title: 'Shop', href: '/shop' },
-  {
-    title: 'Support',
-    items: supportCategories,
-    blogPost,
-  },
-  {
-    title: 'Explore',
-    items: exploreCategories,
-    blogPost,
-  },
+  { title: 'Templates', href: '/templates' },
+  { title: 'Support', items: supportCategories, blogPost },
+  { title: 'Explore', items: exploreCategories, blogPost },
 ];
+
+// --- TYPES (Unchanged) ---
 
 type CategoryWithServices = Prisma.CategoryGetPayload<{
   include: { services: true };
@@ -103,85 +115,93 @@ type CategoryWithServices = Prisma.CategoryGetPayload<{
 type SerializedCategoryWithServices = Omit<CategoryWithServices, 'services'> & {
   services: (Omit<
     CategoryWithServices['services'][0],
-    'price' | 'originalPrice'
+    'price' | 'originalPrice' | 'createdAt' | 'updatedAt' | 'deletedAt'
   > & {
     price: number | null;
     originalPrice: number | null;
   })[];
 };
 
-export function Navbar({
+// --- CHILD COMPONENTS ---
+
+const MobileNavbar = ({
   services,
 }: {
   services: SerializedCategoryWithServices[];
-}) {
+}) => (
+  <div className='md:hidden flex justify-between items-center w-full'>
+    <Logo />
+    <div className='flex items-center gap-2'>
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant='ghost'>Services</Button>
+        </SheetTrigger>
+        <SheetContent side='bottom' className='h-[85vh]'>
+          <SheetHeader>
+            <SheetTitle>Our Services</SheetTitle>
+            <SheetDescription>
+              Explore our range of professional services.
+            </SheetDescription>
+          </SheetHeader>
+          <ScrollArea className='pr-4 h-[calc(85vh-80px)]'>
+            <CleanBackground>
+              <Accordion
+                type='single'
+                collapsible
+                className='w-full'
+                defaultValue={services.length > 0 ? services[0].id : undefined}>
+                {services.map((cat) => (
+                  <AccordionItem value={cat.id} key={cat.id}>
+                    <AccordionTrigger className='text-base'>
+                      <div className='flex items-center gap-2'>
+                        <IconRenderer iconName='FaCode' />
+                        {cat.name}
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className='flex flex-col items-start gap-1 ml-2 pl-4 border-l-2'>
+                        {cat.services.map((p) => (
+                          <SheetClose asChild key={p.id}>
+                            <Link
+                              href={`/${p.slug}`}
+                              className='py-2 w-full text-muted-foreground hover:text-foreground'>
+                              {p.name}
+                            </Link>
+                          </SheetClose>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </CleanBackground>
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+      <Button asChild size='sm'>
+        <Link href='/login'>Login</Link>
+      </Button>
+    </div>
+  </div>
+);
+
+const DesktopNavbar = ({
+  services,
+}: {
+  services: SerializedCategoryWithServices[];
+}) => {
   const [activeCategory, setActiveCategory] = React.useState<string | null>(
     null,
   );
   const activeCategoryData = services.find((s) => s.name === activeCategory);
 
   return (
-    <div className='top-0 z-50 sticky bg-white dark:bg-slate-900/95 backdrop-blur-lg border-slate-200/60 border-b border-b-slate-300/50 dark:border-b-slate-700/50'>
-      <ComponentWrapper className='flex items-center mx-auto px-4 h-16 container'>
-        {/* Mobile menu */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant='outline' size='icon' className='md:hidden mr-2'>
-              <Menu className='w-5 h-5' />
-              <span className='sr-only'>Toggle menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side='left' className='w-[300px] sm:w-[400px]'>
-            <nav className='flex flex-col gap-4'>
-              <Logo />
-              <div className='space-y-2'>
-                <div className='font-medium'>Services</div>
-                <ScrollArea className='h-[300px]'>
-                  {services.map((cat) => (
-                    <div key={cat.id} className='space-y-2 pl-4'>
-                      <div className='flex items-center gap-2'>
-                        <IconRenderer iconName='FaCode' />
-                        <span>{cat.name}</span>
-                      </div>
-                      <div className='space-y-1 pl-4'>
-                        {cat.services.map((p) => (
-                          <Link
-                            key={p.id}
-                            href={`/${p.slug}`}
-                            className='block py-1 text-muted-foreground hover:text-foreground text-base'>
-                            {p.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </ScrollArea>
-              </div>
-              <Link href='/shop' className='font-medium'>
-                Shop
-              </Link>
-              <div className='space-y-2'>
-                <div className='font-medium'>Support</div>
-                {supportCategories.map((c) => (
-                  <Link
-                    key={c.title}
-                    href='#'
-                    className='block py-1 pl-4 text-muted-foreground hover:text-foreground text-base'>
-                    {c.title}
-                  </Link>
-                ))}
-              </div>
-            </nav>
-          </SheetContent>
-        </Sheet>
-
-        {/* Logo */}
+    <div className='hidden md:flex justify-between items-center w-full'>
+      <div className='flex items-center gap-4'>
         <div className='mr-4'>
           <Logo />
         </div>
-
-        {/* Desktop navigation */}
-        <NavigationMenu className='hidden md:flex'>
+        <NavigationMenu>
           <NavigationMenuList>
             {/* Services mega menu */}
             <NavigationMenuItem>
@@ -190,7 +210,6 @@ export function Navbar({
               </NavigationMenuTrigger>
               <NavigationMenuContent className='!w-[950px]'>
                 <div className='flex p-4'>
-                  {/* Left: categories */}
                   <ScrollArea className='flex-1 pr-4 border-r h-[400px]'>
                     {services.map((cat) => (
                       <div
@@ -210,8 +229,6 @@ export function Navbar({
                       </div>
                     ))}
                   </ScrollArea>
-
-                  {/* Right: products */}
                   <ScrollArea className='flex-[2] pl-4 h-[400px]'>
                     {activeCategoryData ? (
                       <>
@@ -237,7 +254,7 @@ export function Navbar({
                       </>
                     ) : (
                       <div className='flex justify-center items-center h-full text-muted-foreground'>
-                        Hover over a category to see products
+                        Hover over a category to see services
                       </div>
                     )}
                   </ScrollArea>
@@ -245,7 +262,7 @@ export function Navbar({
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            {/* Other menus (Shop, Support, …) */}
+            {/* Other menus */}
             {otherMenus.map((menu) => (
               <NavigationMenuItem key={menu.title}>
                 {'items' in menu ? (
@@ -255,12 +272,11 @@ export function Navbar({
                     </NavigationMenuTrigger>
                     <NavigationMenuContent className='!w-[800px]'>
                       <div className='flex p-4'>
-                        {/* First column: support items */}
                         <div className='flex-1 space-y-4 pr-4 border-r'>
                           {menu.items!.map((item) => (
                             <Link
                               key={item.title}
-                              href='#'
+                              href={item.href}
                               className='flex items-center gap-2 hover:bg-accent p-2 rounded-md transition'>
                               <IconRenderer iconName={item.iconName} />
                               <div>
@@ -274,8 +290,6 @@ export function Navbar({
                             </Link>
                           ))}
                         </div>
-
-                        {/* Second column: single blog post */}
                         <div className='flex-1 pl-4'>
                           <Link
                             key={menu.blogPost?.id}
@@ -305,7 +319,7 @@ export function Navbar({
                     )}
                     asChild>
                     <Link href={menu.href!} passHref>
-                      {menu.title}{' '}
+                      {menu.title}
                     </Link>
                   </NavigationMenuLink>
                 )}
@@ -313,26 +327,40 @@ export function Navbar({
             ))}
           </NavigationMenuList>
         </NavigationMenu>
+      </div>
 
-        {/* Search, Login, Signup */}
-        <div className='flex items-center gap-4 ml-auto'>
-          <SearchMenu />
-          <div className='flex items-center gap-x-2'>
-            <Link
-              prefetch={true}
-              href='/login'
-              className='flex flex-shrink-0 justify-center items-center gap-x-2 space-x-1 bg-gray-50 aria-disabled:bg-gray-50 hover:bg-gray-100 disabled:bg-gray-50 dark:aria-disabled:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700/50 dark:disabled:bg-gray-800 aria-disabled:opacity-75 disabled:opacity-75 shadow-sm px-3 py-2 rounded-md focus-visible:outline-0 focus:outline-none ring-1 ring-gray-300 focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 dark:ring-gray-700 ring-inset w-auto font-medium text-gray-700 dark:text-gray-200 text-sm aria-disabled:cursor-not-allowed disabled:cursor-not-allowed'>
-              <span>Login</span>
-            </Link>
-
-            <Link
-              prefetch={true}
-              href='/signup'
-              className='flex flex-shrink-0 justify-center items-center gap-x-2 bg-gray-900 aria-disabled:bg-gray-900 hover:bg-gray-800 disabled:bg-gray-900 dark:aria-disabled:bg-white dark:bg-white dark:hover:bg-gray-100 dark:disabled:bg-white aria-disabled:opacity-75 disabled:opacity-75 shadow-sm px-3 py-2 rounded-md focus-visible:outline-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 focus-visible:ring-inset w-auto font-medium !text-white dark:text-gray-900 text-sm aria-disabled:cursor-not-allowed disabled:cursor-not-allowed primary-color'>
-              <span>Register</span>
-            </Link>
-          </div>
+      <div className='flex items-center gap-4'>
+        <SearchMenu />
+        <div className='flex items-center gap-x-2'>
+          <Button
+            asChild
+            variant='outline'
+            size='sm'
+            className='bg-gradient-to-r from-orange-600 to-orange-700 border-0 text-white'>
+            <Link href='/login'>Login</Link>
+          </Button>
+          <Button asChild size='sm'>
+            <Link href='/signup'>Register</Link>
+          </Button>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// --- MAIN NAVBAR COMPONENT ---
+
+export function Navbar({
+  services,
+}: {
+  services: SerializedCategoryWithServices[];
+}) {
+  return (
+    <div className='top-0 z-50 sticky bg-white dark:bg-slate-900/95 backdrop-blur-lg border-slate-200/60 border-b border-b-slate-300/50 dark:border-b-slate-700/50'>
+      <ComponentWrapper className='flex items-center mx-auto px-4 h-16 container'>
+        {/* Renders the correct navbar based on screen size */}
+        <MobileNavbar services={services} />
+        <DesktopNavbar services={services} />
       </ComponentWrapper>
     </div>
   );

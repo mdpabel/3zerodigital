@@ -2,6 +2,7 @@ import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
 import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
+import SslMixedContentErrorStepper from './ssl-stapper';
 
 export const dynamic = 'force-static';
 
@@ -61,11 +62,7 @@ export default async function FixMixedContentErrorService() {
         }}
       />
 
-      <TroubleshootingPricing
-        price='$55'
-        name='ssl-mixed-content'
-        productId=''
-      />
+      <SslMixedContentErrorStepper />
 
       <ErrorResolutionDashboard />
     </div>

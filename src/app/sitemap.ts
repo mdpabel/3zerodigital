@@ -1,37 +1,11 @@
+import { getServices } from '@/actions/service-actions';
 import { fetchCaseStudies } from '@/lib/wordpress/case-study';
 import { fetchCategories } from '@/lib/wordpress/fetch-category';
 import { getPosts } from '@/lib/wordpress/fetch-posts';
 import { fetchTags } from '@/lib/wordpress/fetch-tags';
 import prisma from '@/prisma/db';
-import { services } from '@/services';
 import type { MetadataRoute } from 'next';
 import { WP_REST_API_Post, WP_REST_API_Posts } from 'wp-types';
-
-const generateServicesSitemap = () => {
-  const urls: MetadataRoute.Sitemap = [];
-
-  services.forEach((service) => {
-    if (service.serviceCategories.length > 0) {
-      service.serviceCategories.forEach((subService) => {
-        urls.push({
-          url: `https://www.3zerodigital.com${subService.href}`,
-          lastModified: new Date(),
-          changeFrequency: 'monthly',
-          priority: 0.7,
-        });
-      });
-    } else {
-      urls.push({
-        url: `https://www.3zerodigital.com${service.href}`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.8,
-      });
-    }
-  });
-
-  return urls;
-};
 
 const generateStaticSitemap = () => {
   const staticPages = [
@@ -155,17 +129,10 @@ const generateTemplateCategorySitemap = async () => {
 
 export default async function sitemap() {
   const staticPages = generateStaticSitemap();
-  const services = generateServicesSitemap();
   const caseStudies = await generateCaseStudiesSitemap();
   const blogs = await generateBlogSitemap();
   const templateCategory = await generateTemplateCategorySitemap();
   // const blacklist = blacklistSitemap();
 
-  return [
-    ...staticPages,
-    ...services,
-    ...caseStudies,
-    ...blogs,
-    ...templateCategory,
-  ];
+  return [...staticPages, ...caseStudies, ...blogs, ...templateCategory];
 }

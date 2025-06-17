@@ -7,25 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  password  String?
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  orders Order[]
-
-  @@map("users")
-}
-
 model Category {
   id          String   @id @default(cuid())
   name        String   @unique
   slug        String   @unique
-  description String?
+  description String
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -36,30 +22,22 @@ model Category {
 }
 
 model Service {
-  id             String    @id @default(cuid())
-  name           String
-  slug           String    @unique
-  description    String?
-  shortDesc      String?
-  price          Decimal   @db.Decimal(10, 2)
-  originalPrice  Decimal?  @db.Decimal(10, 2)
-  features       Json? // Array of features
-  isActive       Boolean   @default(true)
-  isPopular      Boolean   @default(false)
-  isUrgent       Boolean   @default(false)
-  responseTime   String?
-  completionTime String?
-  icon           String? // Icon name or URL
-  color          String? // Color scheme
-  bgGradient     String? // Background gradient
-  guarantees     Json? // Array of guarantees
-  bestFor        String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime? // Soft delete
+  id            String    @id @default(cuid())
+  name          String
+  description   String
+  slug          String    @unique
+  price         Float
+  originalPrice Float?
+  features      Json? // Array of features
+  isActive      Boolean   @default(true)
+  isPopular     Boolean   @default(false)
+  icon          String? // Icon name or URL
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // Soft delete
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  // Many-to-many relationship with categories
+  categories Category[]
 
   // Related services (many-to-many self-relation)
   relatedTo   Service[] @relation("ServiceRelations")
@@ -193,4 +171,329 @@ model TemplateCategoryOnTemplate {
   updatedBy  String? // Additional metadata field
   template   Template         @relation(fields: [templateId], references: [id])
   category   TemplateCategory @relation(fields: [categoryId], references: [id])
+}
+
+// Add these models to your schema.prisma
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("newsletters")
+}
+
+model Lead {
+  id         String     @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  company    String?
+  source     LeadSource @default(CONTACT_FORM)
+  status     LeadStatus @default(NEW)
+  priority   Priority   @default(MEDIUM)
+  notes      String?
+  assignedTo String? // User ID who handles this lead
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  // Related data
+  contactForms ContactForm[]
+  quotes       Quote[]
+  user         User?         @relation(fields: [email], references: [email])
+
+  @@map("leads")
+}
+
+model ContactForm {
+  id        String            @id @default(cuid())
+  leadId    String?
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  service   String? // Add service field
+  subject   String?
+  message   String
+  formType  ContactFormType   @default(GENERAL)
+  status    ContactFormStatus @default(UNREAD)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  lead Lead? @relation(fields: [leadId], references: [id])
+
+  @@map("contact_forms")
+}
+
+model Quote {
+  id          String      @id @default(cuid())
+  leadId      String?
+  name        String
+  email       String
+  phone       String?
+  company     String?
+  service     String // Service they want quote for
+  projectType String
+  budget      String?
+  timeline    String?
+  description String
+  status      QuoteStatus @default(PENDING)
+  amount      Decimal?    @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  lead Lead? @relation(fields: [leadId], references: [id])
+
+  @@map("quotes")
+}
+
+// Update LeadSource enum
+enum LeadSource {
+  CONTACT_FORM
+  QUOTE_REQUEST
+  NEWSLETTER
+  USER_REGISTRATION // Add this
+  SOCIAL_MEDIA
+  REFERRAL
+  DIRECT
+  OTHER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  NEGOTIATING
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ContactFormType {
+  GENERAL
+  SUPPORT
+  SALES
+  PARTNERSHIP
+  FEEDBACK
+}
+
+enum ContactFormStatus {
+  UNREAD
+  READ
+  REPLIED
+  CLOSED
+}
+
+enum QuoteStatus {
+  PENDING
+  REVIEWED
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  Order         Order[]
+  Lead          Lead[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model Client {
+  id          String       @id @default(cuid())
+  name        String
+  email       String
+  company     String?
+  industry    String?
+  phone       String?
+  lastContact DateTime?
+  status      ClientStatus @default(PROSPECT)
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campaignResults CampaignResult[]
+
+  @@map("clients")
+}
+
+model Campaign {
+  id           String         @id @default(cuid())
+  name         String
+  templateName String
+  subject      String
+  content      String         @db.Text
+  scheduledAt  DateTime?
+  sentAt       DateTime?
+  status       CampaignStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  results   CampaignResult[]
+  analytics CampaignAnalytics?
+
+  @@map("campaigns")
+}
+
+model CampaignResult {
+  id String @id @default(cuid())
+
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  recipientEmail String
+  templateName   String
+  subject        String
+  success        Boolean  @default(false)
+  error          String?
+  sentAt         DateTime @default(now())
+
+  // Resend specific fields
+  resendId        String? @unique
+  resendMessageId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events EmailEvent[]
+
+  @@map("campaign_results")
+}
+
+model EmailEvent {
+  id String @id @default(cuid())
+
+  campaignResultId String
+  campaignResult   CampaignResult @relation(fields: [campaignResultId], references: [id], onDelete: Cascade)
+
+  eventType EmailEventType
+  timestamp DateTime
+  data      Json?
+
+  createdAt DateTime @default(now())
+
+  @@map("email_events")
+}
+
+model CampaignAnalytics {
+  id String @id @default(cuid())
+
+  campaignId String   @unique
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  totalSent         Int @default(0)
+  totalDelivered    Int @default(0)
+  totalOpened       Int @default(0)
+  totalClicked      Int @default(0)
+  totalBounced      Int @default(0)
+  totalComplained   Int @default(0)
+  totalUnsubscribed Int @default(0)
+
+  openRate        Float @default(0)
+  clickRate       Float @default(0)
+  bounceRate      Float @default(0)
+  unsubscribeRate Float @default(0)
+
+  lastUpdated DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@map("campaign_analytics")
+}
+
+enum ClientStatus {
+  PROSPECT
+  LEAD
+  CUSTOMER
+  INACTIVE
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  SENT
+  COMPLETED
+  FAILED
+}
+
+enum EmailEventType {
+  SENT
+  DELIVERED
+  DELIVERY_DELAYED
+  BOUNCED
+  COMPLAINED
+  OPENED
+  CLICKED
+  UNSUBSCRIBED
 }
