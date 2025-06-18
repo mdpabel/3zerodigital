@@ -10,6 +10,20 @@ import { SubtleGradientBackground } from '@/components/common/section-background
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.url),
   title: `Custom Web Development & Security Agency | 3Zero Digital`,
+  icons: {
+    icon: [
+      {
+        media: '(prefers-color-scheme: light)',
+        url: '/images/favicon-light.png',
+        href: '/images/favicon-light.png',
+      },
+      {
+        media: '(prefers-color-scheme: dark)',
+        url: '/images/favicon-dark.png',
+        href: '/images/favicon-dark.png',
+      },
+    ],
+  },
   description: siteMetadata.description,
   openGraph: {
     title: `Custom Web Development & Security Agency.`,
