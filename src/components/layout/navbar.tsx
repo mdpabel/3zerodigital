@@ -334,13 +334,12 @@ const DesktopNavbar = ({
         <div className='flex items-center gap-x-2'>
           <Button
             asChild
-            variant='outline'
             size='sm'
-            className='bg-gradient-to-r from-orange-600 to-orange-700 border-0 text-white'>
+            className='bg-gradient-to-r from-orange-600 to-orange-700 border-0 w-24 text-white'>
             <Link href='/login'>Login</Link>
           </Button>
-          <Button asChild size='sm'>
-            <Link href='/signup'>Register</Link>
+          <Button asChild size='sm' className='w-24'>
+            <Link href='/book-a-call'>Book a Call</Link>
           </Button>
         </div>
       </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -17,14 +16,6 @@ import {
   Loader2,
   Lock,
   Mail,
-  Shield,
-  Zap,
-  Code,
-  Palette,
-  Video,
-  Search,
-  Wrench,
-  Star,
 } from 'lucide-react';
 
 import {
@@ -36,7 +27,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Form,
   FormControl,
@@ -48,23 +38,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { loginAction } from '@/actions/auth-actions';
+import { signInAction } from '@/actions/auth-actions';
 import ComponentWrapper from '@/components/common/component-wrapper';
 import { Category } from '@prisma/client';
-import { CategoryIcon } from '@/components/common/icon-render';
 import { FaGoogle } from 'react-icons/fa';
-
-// Schema and types
-const LoginSchema = z.object({
-  email: z.string().email({
-    message: 'Please enter a valid email address.',
-  }),
-  password: z.string().min(1, {
-    message: 'Password is required.',
-  }),
-});
-
-type LoginFormSchema = z.infer<typeof LoginSchema>;
+import { LoginFormSchema, LoginSchema } from '@/lib/validations/auth';
 
 // Components
 const Spinner = ({ className }: { className?: string }) => {
@@ -133,35 +111,7 @@ const Message = ({
   );
 };
 
-const services = [
-  {
-    icon: Code,
-    title: 'Web Development',
-    description: 'Custom websites and applications',
-  },
-  {
-    icon: Shield,
-    title: 'Security',
-    description: 'Protect your digital assets',
-  },
-  {
-    icon: Wrench,
-    title: 'Maintenance',
-    description: 'Keep your systems running smoothly',
-  },
-  {
-    icon: Search,
-    title: 'Marketing',
-    description: 'Grow your online presence',
-  },
-  {
-    icon: Video,
-    title: 'Video Editing',
-    description: 'Professional video content',
-  },
-];
-
-const LoginForm = ({ categories }: { categories: Category[] }) => {
+const LoginForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [{ message, success }, setFormState] = useState({
@@ -189,7 +139,7 @@ const LoginForm = ({ categories }: { categories: Category[] }) => {
   const handleCredentialsSubmit = (formData: FormData) => {
     startTransition(async () => {
       try {
-        const result = await loginAction(formData);
+        const result = await signInAction(formData);
         setFormState({
           success: result.success,
           message: result.message,
@@ -216,269 +166,171 @@ const LoginForm = ({ categories }: { categories: Category[] }) => {
   return (
     <ComponentWrapper>
       <div className='mx-auto px-4 py-8 container'>
-        <div className='items-center gap-12 grid lg:grid-cols-2 min-h-screen'>
-          {/* Left Side - Information */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className='hidden md:block space-y-8'>
-            {/* Brand Header */}
-            <div className='space-y-4'>
-              <div className='flex items-center gap-3'>
-                <div className='flex justify-center items-center bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl w-12 h-12'>
-                  <Zap className='w-6 h-6 text-white' />
-                </div>
-                <div>
-                  <h1 className='font-bold text-gray-900 dark:text-white text-3xl'>
-                    3Zero Digital
-                  </h1>
-                  <p className='text-gray-600 dark:text-gray-400'>
-                    Your Digital Success Partner
-                  </p>
-                </div>
-              </div>
+        {/* Right Side - Login Form */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className='flex justify-center'>
+          <div className='w-full max-w-md'>
+            <Card className='bg-white/80 dark:bg-slate-900/80 shadow-xl backdrop-blur-sm border-0'>
+              <CardHeader className='space-y-1 pb-4'>
+                <CardTitle className='font-bold text-2xl text-center'>
+                  Sign In
+                </CardTitle>
+                <CardDescription className='text-center'>
+                  Choose your preferred sign-in method
+                </CardDescription>
+              </CardHeader>
 
-              <div className='space-y-2'>
-                <h2 className='font-bold text-gray-900 dark:text-white text-4xl leading-tight'>
-                  Welcome Back to Your
-                  <span className='bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent'>
-                    {' '}
-                    Digital Hub
-                  </span>
-                </h2>
-                <p className='text-gray-600 dark:text-gray-400 text-lg'>
-                  Access your dashboard to manage all your digital services and
-                  projects in one place.
-                </p>
-              </div>
-            </div>
+              <CardContent className='space-y-4'>
+                {/* Social Login Buttons */}
+                <div className='space-y-3'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => handleSocialLogin('google')}
+                    disabled={pending}
+                    className='bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-200 dark:border-slate-700 w-full h-11'>
+                    <FaGoogle className='mr-3 w-5 h-5' />
+                    Continue with Google
+                  </Button>
 
-            {/* Services Grid */}
-            <div className='gap-4 grid grid-cols-1 md:grid-cols-2'>
-              {categories.map((category, index) => (
-                <motion.div
-                  key={category.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className='bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm p-4 border border-gray-200/50 dark:border-slate-700/50 rounded-xl'>
-                  <div className='flex items-center gap-3'>
-                    <div className='flex justify-center items-center bg-blue-100 dark:bg-blue-900/50 rounded-lg w-8 h-8'>
-                      <CategoryIcon name={category.name} />
-                    </div>
-                    <div>
-                      <h3 className='font-semibold text-gray-900 dark:text-white text-sm'>
-                        {category.name}
-                      </h3>
-                      <p className='text-gray-600 dark:text-gray-400 text-xs'>
-                        {category.description}
-                      </p>
-                    </div>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => handleSocialLogin('github')}
+                    disabled={pending}
+                    className='bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-200 dark:border-slate-700 w-full h-11'>
+                    <Github className='mr-3 w-5 h-5' />
+                    Continue with GitHub
+                  </Button>
+                </div>
+
+                <div className='relative'>
+                  <div className='absolute inset-0 flex items-center'>
+                    <Separator className='w-full' />
                   </div>
-                </motion.div>
-              ))}
-            </div>
+                  <div className='relative flex justify-center text-xs uppercase'>
+                    <span className='bg-background px-2 text-muted-foreground'>
+                      Or continue with email
+                    </span>
+                  </div>
+                </div>
 
-            {/* Trust Indicators */}
-            <div className='space-y-4'>
-              <div className='flex items-center gap-2'>
-                <div className='flex -space-x-1'>
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className='fill-yellow-400 w-4 h-4 text-yellow-400'
+                {/* Email/Password Form */}
+                <Form {...form}>
+                  <form
+                    action={async (formData) => {
+                      const isValid = await form.trigger();
+                      if (isValid) {
+                        handleCredentialsSubmit(formData);
+                      }
+                    }}
+                    className='space-y-4'>
+                    <input
+                      type='hidden'
+                      name='callbackUrl'
+                      value={callbackUrl}
                     />
-                  ))}
-                </div>
-                <span className='text-gray-600 dark:text-gray-400 text-sm'>
-                  Trusted by 500+ businesses worldwide
-                </span>
-              </div>
 
-              <div className='flex flex-wrap gap-2'>
-                <Badge variant='outline' className='text-xs'>
-                  <Shield className='mr-1 w-3 h-3' />
-                  SOC 2 Compliant
-                </Badge>
-                <Badge variant='outline' className='text-xs'>
-                  <Lock className='mr-1 w-3 h-3' />
-                  SSL Secured
-                </Badge>
-                <Badge variant='outline' className='text-xs'>
-                  <Zap className='mr-1 w-3 h-3' />
-                  99.9% Uptime
-                </Badge>
-              </div>
-            </div>
-          </motion.div>
+                    {message && !success && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}>
+                        <Message type='error' message={message} />
+                      </motion.div>
+                    )}
 
-          {/* Right Side - Login Form */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className='flex justify-center'>
-            <div className='w-full max-w-md'>
-              <Card className='bg-white/80 dark:bg-slate-900/80 shadow-xl backdrop-blur-sm border-0'>
-                <CardHeader className='space-y-1 pb-4'>
-                  <CardTitle className='font-bold text-2xl text-center'>
-                    Sign In
-                  </CardTitle>
-                  <CardDescription className='text-center'>
-                    Choose your preferred sign-in method
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className='space-y-4'>
-                  {/* Social Login Buttons */}
-                  <div className='space-y-3'>
-                    <Button
-                      type='button'
-                      variant='outline'
-                      onClick={() => handleSocialLogin('google')}
-                      disabled={pending}
-                      className='bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-200 dark:border-slate-700 w-full h-11'>
-                      <FaGoogle className='mr-3 w-5 h-5' />
-                      Continue with Google
-                    </Button>
-
-                    <Button
-                      type='button'
-                      variant='outline'
-                      onClick={() => handleSocialLogin('github')}
-                      disabled={pending}
-                      className='bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-200 dark:border-slate-700 w-full h-11'>
-                      <Github className='mr-3 w-5 h-5' />
-                      Continue with GitHub
-                    </Button>
-                  </div>
-
-                  <div className='relative'>
-                    <div className='absolute inset-0 flex items-center'>
-                      <Separator className='w-full' />
-                    </div>
-                    <div className='relative flex justify-center text-xs uppercase'>
-                      <span className='bg-background px-2 text-muted-foreground'>
-                        Or continue with email
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Email/Password Form */}
-                  <Form {...form}>
-                    <form
-                      action={async (formData) => {
-                        const isValid = await form.trigger();
-                        if (isValid) {
-                          handleCredentialsSubmit(formData);
-                        }
-                      }}
-                      className='space-y-4'>
-                      <input
-                        type='hidden'
-                        name='callbackUrl'
-                        value={callbackUrl}
-                      />
-
-                      {message && !success && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3 }}>
-                          <Message type='error' message={message} />
-                        </motion.div>
+                    <FormField
+                      control={form.control}
+                      name='email'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className='font-medium text-sm'>
+                            Email
+                          </FormLabel>
+                          <FormControl>
+                            <div className='relative'>
+                              <Mail className='top-1/2 left-3 absolute w-4 h-4 text-muted-foreground -translate-y-1/2 transform' />
+                              <Input
+                                placeholder='Enter your email'
+                                className='!pl-10 h-11'
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
+                    />
 
-                      <FormField
-                        control={form.control}
-                        name='email'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className='font-medium text-sm'>
-                              Email
-                            </FormLabel>
-                            <FormControl>
-                              <div className='relative'>
-                                <Mail className='top-1/2 left-3 absolute w-4 h-4 text-muted-foreground -translate-y-1/2 transform' />
-                                <Input
-                                  placeholder='Enter your email'
-                                  className='!pl-10 h-11'
-                                  {...field}
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <FormField
+                      control={form.control}
+                      name='password'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className='font-medium text-sm'>
+                            Password
+                          </FormLabel>
+                          <FormControl>
+                            <div className='relative'>
+                              <Lock className='top-1/2 left-3 absolute w-4 h-4 text-muted-foreground -translate-y-1/2 transform' />
+                              <PasswordInputField
+                                field={field}
+                                className='!pl-10 h-11'
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                      <FormField
-                        control={form.control}
-                        name='password'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className='font-medium text-sm'>
-                              Password
-                            </FormLabel>
-                            <FormControl>
-                              <div className='relative'>
-                                <Lock className='top-1/2 left-3 absolute w-4 h-4 text-muted-foreground -translate-y-1/2 transform' />
-                                <PasswordInputField
-                                  field={field}
-                                  className='!pl-10 h-11'
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <Button
+                      type='submit'
+                      disabled={pending}
+                      className='bg-gradient-to-r from-blue-600 hover:from-blue-700 to-indigo-600 hover:to-indigo-700 w-full h-11 font-medium text-white'>
+                      {pending ? (
+                        <div className='flex items-center gap-2'>
+                          <Spinner />
+                          <span>Signing in...</span>
+                        </div>
+                      ) : (
+                        <div className='flex items-center gap-2'>
+                          <span>Sign In</span>
+                          <ArrowRight className='w-4 h-4' />
+                        </div>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
 
-                      <Button
-                        type='submit'
-                        disabled={pending}
-                        className='bg-gradient-to-r from-blue-600 hover:from-blue-700 to-indigo-600 hover:to-indigo-700 w-full h-11 font-medium text-white'>
-                        {pending ? (
-                          <div className='flex items-center gap-2'>
-                            <Spinner />
-                            <span>Signing in...</span>
-                          </div>
-                        ) : (
-                          <div className='flex items-center gap-2'>
-                            <span>Sign In</span>
-                            <ArrowRight className='w-4 h-4' />
-                          </div>
-                        )}
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
+              <CardFooter className='flex flex-col space-y-4 pt-0'>
+                <div className='text-sm text-center'>
+                  <Link
+                    href='/forgot-password'
+                    className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
+                    Forgot your password?
+                  </Link>
+                </div>
 
-                <CardFooter className='flex flex-col space-y-4 pt-0'>
-                  <div className='text-sm text-center'>
-                    <Link
-                      href='/forgot-password'
-                      className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
-                      Forgot your password?
-                    </Link>
-                  </div>
+                <Separator />
 
-                  <Separator />
-
-                  <div className='text-muted-foreground text-sm text-center'>
-                    Don't have an account?{' '}
-                    <Link
-                      href='/signup'
-                      className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
-                      Sign up
-                    </Link>
-                  </div>
-                </CardFooter>
-              </Card>
-            </div>
-          </motion.div>
-        </div>
+                <div className='text-muted-foreground text-sm text-center'>
+                  Don't have an account?{' '}
+                  <Link
+                    href='/signup'
+                    className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
+                    Sign up
+                  </Link>
+                </div>
+              </CardFooter>
+            </Card>
+          </div>
+        </motion.div>
       </div>
     </ComponentWrapper>
   );

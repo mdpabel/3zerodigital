@@ -8,12 +8,17 @@ const Logo = () => {
     <div className='inline-block'>
       <Link href='/'>
         <Image
-          className='hidden dark:block'
+          className='hidden dark:block px-2.5'
           src={logoDark}
           alt='Logo'
           width={110}
         />
-        <Image className='dark:hidden' src={logoLight} alt='Logo' width={110} />
+        <Image
+          className='dark:hidden px-2.5'
+          src={logoLight}
+          alt='Logo'
+          width={110}
+        />
       </Link>
     </div>
   );
