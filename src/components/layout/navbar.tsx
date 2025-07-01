@@ -35,6 +35,7 @@ import { Prisma } from '@prisma/client';
 import IconRenderer from '@/components/common/icon-render';
 import Logo from './logo';
 import { CleanBackground } from '../common/section-backgrounds';
+import { authClient } from '@/lib/auth-client';
 
 // --- STATIC DATA (Unchanged) ---
 
@@ -190,10 +191,13 @@ const DesktopNavbar = ({
 }: {
   services: SerializedCategoryWithServices[];
 }) => {
+  const session = authClient.useSession();
   const [activeCategory, setActiveCategory] = React.useState<string | null>(
     null,
   );
   const activeCategoryData = services.find((s) => s.name === activeCategory);
+
+  console.log(session);
 
   return (
     <div className='hidden md:flex justify-between items-center w-full'>

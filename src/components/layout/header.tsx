@@ -1,4 +1,3 @@
-import prisma from '@/prisma/db';
 import { Navbar } from './navbar';
 import { getCategoriesWithServices } from '@/actions/service-actions';
 

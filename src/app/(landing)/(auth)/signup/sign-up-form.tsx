@@ -44,51 +44,11 @@ import ComponentWrapper from '@/components/common/component-wrapper';
 import { FaGoogle } from 'react-icons/fa';
 import { SignUpFormSchema, SignUpSchema } from '@/lib/validations/auth';
 import { signUpAction } from '@/actions/auth-actions';
-
-// Components (reuse from login)
-const Spinner = ({ className }: { className?: string }) => {
-  return <Loader2 className={cn('h-4 w-4 animate-spin', className)} />;
-};
-
-const PasswordInputField = ({
-  field,
-  className,
-}: {
-  field: any;
-  className?: string;
-}) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
-  return (
-    <div className='relative'>
-      <div className='relative'>
-        <Lock className='top-1/2 left-3 absolute w-4 h-4 text-muted-foreground -translate-y-1/2 transform' />
-        <Input
-          type={showPassword ? 'text' : 'password'}
-          className={cn('pr-10', className)}
-          placeholder='Enter your password'
-          {...field}
-        />
-      </div>
-      <Button
-        type='button'
-        variant='ghost'
-        size='sm'
-        className='right-0 absolute inset-y-0 px-3 h-full text-muted-foreground hover:text-foreground'
-        onClick={togglePasswordVisibility}
-        aria-label={showPassword ? 'Hide password' : 'Show password'}>
-        {showPassword ? (
-          <EyeOff className='w-4 h-4' />
-        ) : (
-          <Eye className='w-4 h-4' />
-        )}
-      </Button>
-    </div>
-  );
-};
+import { AuthMessage, PasswordInputField } from '@/components/common/auth';
+import { Spinner } from '@/components/common/spinner';
 
 const SignUpForm = () => {
+  const router = useRouter();
   const [{ message, success }, setFormState] = useState({
     success: false,
     message: '',
@@ -107,16 +67,35 @@ const SignUpForm = () => {
     },
   });
 
-  console.log(form.getValues());
-
   const handleSubmit = (formData: FormData) => {
+    formData.append(
+      'acceptTerms',
+      form.getValues('acceptTerms') ? 'true' : 'false',
+    );
+
     startTransition(async () => {
       try {
         const result = await signUpAction(formData);
+
+        if (!result.success && result.errors) {
+          result.errors.forEach((error) => {
+            form.setError(error.field as keyof SignUpFormSchema, {
+              message: error.message,
+            });
+          });
+        }
+
         setFormState({
           success: result.success,
           message: result.message,
         });
+
+        if (result.success) {
+          // Redirect to dashboard or another page
+          setTimeout(() => {
+            router.push('/');
+          }, 300);
+        }
       } catch (error) {
         setFormState({
           success: false,
@@ -139,7 +118,6 @@ const SignUpForm = () => {
   return (
     <ComponentWrapper>
       <div className='mx-auto px-4 py-8 container'>
-        {/* Right Side - Signup Form */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -192,25 +170,7 @@ const SignUpForm = () => {
                 </div>
 
                 {/* Success/Error Messages */}
-                {message && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className={cn(
-                      'flex items-center gap-2 rounded-lg p-3 text-sm font-medium',
-                      success
-                        ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-950 dark:text-green-200 dark:border-green-800'
-                        : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-950 dark:text-red-200 dark:border-red-800',
-                    )}>
-                    {success ? (
-                      <CheckCircle2 className='w-4 h-4' />
-                    ) : (
-                      <AlertCircle className='w-4 h-4' />
-                    )}
-                    <p>{message}</p>
-                  </motion.div>
-                )}
+                <AuthMessage message={message} success={success} />
 
                 {/* Email/Password Form */}
                 <Form {...form}>

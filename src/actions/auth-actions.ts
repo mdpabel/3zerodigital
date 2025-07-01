@@ -4,11 +4,10 @@ import { redirect } from 'next/navigation';
 import { APIError } from 'better-auth/api';
 import { authClient } from '@/lib/auth-client';
 import { SignUpSchema, LoginSchema } from '@/lib/validations/auth';
-
 export async function signInAction(formData: FormData) {
   const rawFormData = {
     email: formData.get('email') as string,
-    password: formData.get('pwd') as string,
+    password: formData.get('password') as string,
   };
 
   // Validate formData using LoginSchema
@@ -16,35 +15,58 @@ export async function signInAction(formData: FormData) {
 
   if (!validation.success) {
     // Extract error messages from the validation result
-    const errorMessage = validation.error.errors
-      .map((err) => err.message)
-      .join(', ');
-    return { message: errorMessage, success: false };
+    const errorMessages = validation.error.errors.map((err) => ({
+      field: err.path[0], // The field that caused the error
+      message: err.message, // The error message
+    }));
+
+    return {
+      message: 'Validation failed',
+      errors: errorMessages,
+      success: false,
+    };
   }
 
   const { email, password } = validation.data;
 
   try {
-    await authClient.signIn.email({
+    const { data, error } = await authClient.signIn.email({
       email,
       password,
     });
-    console.log('Signed in');
+
+    if (error) {
+      return {
+        message: error.message || 'Something went wrong during sign-in.',
+        success: false,
+      };
+    }
+
+    return {
+      message: 'Signed in successfully! Redirecting...',
+      success: true,
+    };
   } catch (error) {
     if (error instanceof APIError) {
       switch (error.status) {
         case 'UNAUTHORIZED':
-          return { message: 'User Not Found.', success: false };
+          return { message: 'Invalid email or password.', success: false };
         case 'BAD_REQUEST':
-          return { message: 'Invalid email.', success: false };
+          return { message: 'Invalid email format.', success: false };
         default:
-          return { message: 'Something went wrong.', success: false };
+          return {
+            message: 'Something went wrong. Please try again.',
+            success: false,
+          };
       }
     }
-    console.error('sign in with email has not worked', error);
-    throw error;
+
+    console.error('Sign in with email failed:', error);
+    return {
+      message: 'An unexpected error occurred. Please try again later.',
+      success: false,
+    };
   }
-  redirect('/dashboard');
 }
 
 export async function signUpAction(formData: FormData) {
@@ -54,24 +76,23 @@ export async function signUpAction(formData: FormData) {
     confirmPassword: formData.get('confirmPassword') as string,
     firstName: formData.get('firstName') as string,
     lastName: formData.get('lastName') as string,
+    acceptTerms: formData.get('acceptTerms') === 'true',
   };
 
   // Validate formData using SignUpSchema
   const validation = SignUpSchema.safeParse(rawFormData);
 
-  console.log(
-    'sign up action',
-    validation,
-    formData,
-    formData.get('acceptTerms'),
-  );
-
   if (!validation.success) {
     // Extract error messages from the validation result
-    const errorMessage = validation.error.errors
-      .map((err) => err.message)
-      .join(', ');
-    return { message: errorMessage, success: false };
+    const errorMessages = validation.error.errors.map((err) => ({
+      field: err.path[0], // The field that caused the error
+      message: err.message, // The error message
+    }));
+    return {
+      message: 'Validation failed',
+      errors: errorMessages,
+      success: false,
+    };
   }
 
   const { email, password, confirmPassword, firstName, lastName } =
@@ -85,11 +106,23 @@ export async function signUpAction(formData: FormData) {
   }
 
   try {
-    await authClient.signUp.email({
+    const { data, error } = await authClient.signUp.email({
       name: `${firstName} ${lastName}`,
       email,
       password,
     });
+
+    if (error) {
+      return {
+        message: error.message || 'Something went wrong.',
+        success: false,
+      };
+    }
+
+    return {
+      message: 'Account created successfully! Redirecting...',
+      success: true,
+    };
   } catch (error) {
     if (error instanceof APIError) {
       switch (error.status) {
@@ -101,7 +134,9 @@ export async function signUpAction(formData: FormData) {
           return { message: 'Something went wrong.', success: false };
       }
     }
-    console.error('sign up with email and password has not worked', error);
+    return {
+      message: 'Something went wrong.',
+      success: false,
+    };
   }
-  redirect('/dashboard');
 }
