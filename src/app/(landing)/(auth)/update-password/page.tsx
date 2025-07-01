@@ -1,12 +1,7 @@
-import UpdatePasswordForm from '@/components/auth/update-password-form';
-import React, { Suspense } from 'react';
+import React from 'react';
 
-const UpdatePassword = () => {
-  return (
-    <Suspense>
-      <UpdatePasswordForm />
-    </Suspense>
-  );
+const page = () => {
+  return <div></div>;
 };
 
-export default UpdatePassword;
+export default page;

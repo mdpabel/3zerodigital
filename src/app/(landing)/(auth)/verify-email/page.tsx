@@ -1,7 +1,7 @@
 import React from 'react';
 
-const VerifyEmail = () => {
-  return <div>VerifyEmail</div>;
+const page = () => {
+  return <div></div>;
 };
 
-export default VerifyEmail;
+export default page;
