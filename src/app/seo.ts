@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { siteMetadata } from './metadata';
-import prisma from '@/prisma/db';
+import prisma from '../../prisma/db';
 
 interface PageSEOProps {
   title: string;

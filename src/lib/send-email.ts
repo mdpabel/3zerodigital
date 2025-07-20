@@ -22,7 +22,6 @@ export async function sendEmail({
       react,
     });
 
-    console.log('Email sent successfully:', response);
     return response;
   } catch (error) {
     console.error('Failed to send email:', error);

@@ -127,8 +127,10 @@ type SerializedCategoryWithServices = Omit<CategoryWithServices, 'services'> & {
 
 const MobileNavbar = ({
   services,
+  session,
 }: {
   services: SerializedCategoryWithServices[];
+  session: any;
 }) => (
   <div className='md:hidden flex justify-between items-center w-full'>
     <Logo />
@@ -180,7 +182,12 @@ const MobileNavbar = ({
         </SheetContent>
       </Sheet>
       <Button asChild size='sm'>
-        <Link href='/login'>Login</Link>
+        <Link href='/book-a-call'>Book a Call</Link>
+      </Button>
+      <Button asChild size='sm'>
+        <Link href={session ? '/dashboard' : '/login'}>
+          {session ? 'Dashboard' : 'Login'}
+        </Link>
       </Button>
     </div>
   </div>
@@ -188,16 +195,15 @@ const MobileNavbar = ({
 
 const DesktopNavbar = ({
   services,
+  session,
 }: {
   services: SerializedCategoryWithServices[];
+  session: any;
 }) => {
-  const session = authClient.useSession();
   const [activeCategory, setActiveCategory] = React.useState<string | null>(
     null,
   );
   const activeCategoryData = services.find((s) => s.name === activeCategory);
-
-  console.log(session);
 
   return (
     <div className='hidden md:flex justify-between items-center w-full'>
@@ -336,14 +342,16 @@ const DesktopNavbar = ({
       <div className='flex items-center gap-4'>
         <SearchMenu />
         <div className='flex items-center gap-x-2'>
+          <Button asChild size='sm' className='w-24'>
+            <Link href='/book-a-call'>Book a Call</Link>
+          </Button>
           <Button
             asChild
             size='sm'
             className='bg-gradient-to-r from-orange-600 to-orange-700 border-0 w-24 text-white'>
-            <Link href='/login'>Login</Link>
-          </Button>
-          <Button asChild size='sm' className='w-24'>
-            <Link href='/book-a-call'>Book a Call</Link>
+            <Link href={session ? '/dashboard' : '/login'}>
+              {session ? 'Dashboard' : 'Login'}
+            </Link>
           </Button>
         </div>
       </div>
@@ -358,12 +366,14 @@ export function Navbar({
 }: {
   services: SerializedCategoryWithServices[];
 }) {
+  const { data: session } = authClient.useSession();
+
   return (
     <div className='top-0 z-50 sticky bg-white dark:bg-slate-900/95 backdrop-blur-lg border-slate-200/60 border-b border-b-slate-300/50 dark:border-b-slate-700/50'>
       <ComponentWrapper className='flex items-center mx-auto px-4 h-16 container'>
         {/* Renders the correct navbar based on screen size */}
-        <MobileNavbar services={services} />
-        <DesktopNavbar services={services} />
+        <MobileNavbar services={services} session={session} />
+        <DesktopNavbar services={services} session={session} />
       </ComponentWrapper>
     </div>
   );

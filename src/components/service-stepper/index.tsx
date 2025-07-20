@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ComponentWrapper from '@/components/common/component-wrapper';
 import StepperHeader from './stepper-header';
@@ -11,9 +11,11 @@ import StepTwoCoreService from './steps/step-two-core-service';
 import StepThreeAddons from './steps/step-three-addons';
 import StepFourAccount from './steps/step-four-account';
 import StepFiveReview from './steps/step-five-review';
-import { ServiceStepperProps, FormData, StepperState } from './types';
+import { ServiceStepperProps, ServiceFormData } from './types'; // Updated import
 import { STEPS, STEP_VARIANTS } from './constants';
-import { CardBackground } from '../common/section-backgrounds';
+import { authClient } from '@/lib/auth-client';
+import { getCustomFieldsData } from './utils';
+import { createOrder } from '@/actions/order-actions';
 
 const ServiceStepper = ({
   coreService,
@@ -25,25 +27,68 @@ const ServiceStepper = ({
   requiresSiteUrl = true,
   requiresDescription = true,
   customFields = [],
+  guarantees = [],
 }: ServiceStepperProps) => {
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = !!session?.user;
+
+  // Processing state for order creation
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Generate steps based on authentication status
+  const availableSteps = useMemo(() => {
+    if (isAuthenticated) {
+      // Skip step 4 (Account) when user is logged in
+      return STEPS.filter((step) => step.id !== 4).map((step, index) => ({
+        ...step,
+        id: index + 1, // Renumber steps
+      }));
+    }
+    return STEPS;
+  }, [isAuthenticated]);
+
+  // Map original step numbers to current step numbers
+  const getActualStepNumber = useCallback(
+    (displayStep: number) => {
+      if (!isAuthenticated) return displayStep;
+
+      // When authenticated, map display steps to actual step IDs
+      const stepMapping = {
+        1: 1, // Details
+        2: 2, // Core Service
+        3: 3, // Add-ons
+        4: 5, // Review (skip account step)
+      };
+      return (
+        stepMapping[displayStep as keyof typeof stepMapping] || displayStep
+      );
+    },
+    [isAuthenticated],
+  );
+
   const [[currentStep, direction], setStep] = useState([1, 0]);
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [siteCount, setSiteCount] = useState(1);
-  const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup');
-  const [userExists, setUserExists] = useState<boolean | null>(null);
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ServiceFormData>({
+    // Updated type
     siteUrl: '',
     siteDescription: '',
     urgencyLevel: 'normal',
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: session?.user?.name?.split(' ')[0] || '',
+    lastName: session?.user?.name?.split(' ')[1] || '',
+    email: session?.user?.email || '',
     phone: '',
     password: '',
     confirmPassword: '',
     // Dynamic custom fields
-    ...customFields.reduce((acc, field) => ({ ...acc, [field.id]: '' }), {}),
+    ...customFields.reduce(
+      (acc, field) => ({
+        ...acc,
+        [field.id]: field.type === 'checkbox' ? [] : '',
+      }),
+      {},
+    ),
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -58,29 +103,17 @@ const ServiceStepper = ({
 
   const changeStep = useCallback(
     (newStep: number) => {
-      const newDirection = newStep > currentStep ? 1 : -1;
-      setStep([newStep, newDirection]);
+      const maxStep = availableSteps.length;
+      const clampedStep = Math.max(1, Math.min(newStep, maxStep));
+      const newDirection = clampedStep > currentStep ? 1 : -1;
+      setStep([clampedStep, newDirection]);
     },
-    [currentStep],
+    [currentStep, availableSteps.length],
   );
 
-  const checkUserExists = useCallback(async (email: string) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    // For demo: assume user exists if email contains 'existing'
-    return email.includes('existing');
-  }, []);
-
-  const handleEmailBlur = useCallback(async () => {
-    if (formData.email && formData.email.includes('@')) {
-      const exists = await checkUserExists(formData.email);
-      setUserExists(exists);
-      setAuthMode(exists ? 'login' : 'signup');
-    }
-  }, [formData.email, checkUserExists]);
-
+  // Updated to handle both string and string[] values
   const updateFormData = useCallback(
-    (field: string, value: string) => {
+    (field: string, value: string | string[]) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
       if (errors[field]) {
         setErrors((prev) => ({ ...prev, [field]: '' }));
@@ -92,8 +125,9 @@ const ServiceStepper = ({
   const validateStep = useCallback(
     (step: number): boolean => {
       const newErrors: Record<string, string> = {};
+      const actualStep = getActualStepNumber(step);
 
-      switch (step) {
+      switch (actualStep) {
         case 1:
           if (requiresSiteUrl && !formData.siteUrl) {
             newErrors.siteUrl = 'Website URL is required';
@@ -103,24 +137,28 @@ const ServiceStepper = ({
           }
           // Validate custom fields
           customFields.forEach((field) => {
-            if (field.required && !formData[field.id]) {
-              newErrors[field.id] = `${field.label} is required`;
+            if (field.required) {
+              const fieldValue = formData[field.id];
+              if (field.type === 'checkbox') {
+                if (!Array.isArray(fieldValue) || fieldValue.length === 0) {
+                  newErrors[field.id] = `${field.label} is required`;
+                }
+              } else if (
+                !fieldValue ||
+                (typeof fieldValue === 'string' && !fieldValue.trim())
+              ) {
+                newErrors[field.id] = `${field.label} is required`;
+              }
             }
           });
           break;
-        case 4:
-          if (!formData.firstName)
-            newErrors.firstName = 'First name is required';
-          if (!formData.lastName) newErrors.lastName = 'Last name is required';
-          if (!formData.email) newErrors.email = 'Email is required';
-          if (authMode === 'signup') {
-            if (!formData.password) newErrors.password = 'Password is required';
-            if (formData.password.length < 6)
-              newErrors.password = 'Password must be at least 6 characters';
-            if (formData.password !== formData.confirmPassword) {
-              newErrors.confirmPassword = 'Passwords do not match';
-            }
-          } else {
+        case 4: // Account step (only when not authenticated)
+          if (!isAuthenticated) {
+            if (!formData.firstName)
+              newErrors.firstName = 'First name is required';
+            if (!formData.lastName)
+              newErrors.lastName = 'Last name is required';
+            if (!formData.email) newErrors.email = 'Email is required';
             if (!formData.password) newErrors.password = 'Password is required';
           }
           break;
@@ -129,7 +167,14 @@ const ServiceStepper = ({
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
     },
-    [formData, authMode, requiresSiteUrl, requiresDescription, customFields],
+    [
+      formData,
+      requiresSiteUrl,
+      requiresDescription,
+      customFields,
+      isAuthenticated,
+      getActualStepNumber,
+    ],
   );
 
   const handleNext = useCallback(() => {
@@ -149,16 +194,43 @@ const ServiceStepper = ({
       selectedAddOns,
       formData,
       siteCount,
+      user: session?.user,
     });
-  }, [coreService, selectedAddOns, formData, siteCount]);
+  }, [coreService, selectedAddOns, formData, siteCount, session]);
 
-  const handleProceedToPayment = useCallback(() => {
-    // Handle payment process
-    console.log('Proceeding to payment...');
-  }, []);
+  const handleProceedToPayment = useCallback(async () => {
+    try {
+      setIsProcessing(true);
+
+      console.log('Creating order with data:');
+
+      const result = await createOrder({
+        coreServiceId: coreService.id,
+        addOnServiceIds: selectedAddOns,
+        siteCount,
+        urgencyLevel: formData.urgencyLevel === 'urgent' ? 'URGENT' : 'NORMAL',
+        siteUrl: formData.siteUrl || undefined,
+        description: formData.siteDescription || undefined,
+        customFields: getCustomFieldsData(formData, customFields),
+      });
+
+      if (result.success) {
+        // Redirect to payment page
+        window.location.href = `/checkout/payment/${result.orderId}`;
+      }
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      // Show error message to user
+      alert(error instanceof Error ? error.message : 'Failed to create order');
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [coreService.id, selectedAddOns, siteCount, formData, customFields]);
 
   const renderCurrentStep = () => {
-    switch (currentStep) {
+    const actualStep = getActualStepNumber(currentStep);
+
+    switch (actualStep) {
       case 1:
         return (
           <StepOneDetails
@@ -179,6 +251,7 @@ const ServiceStepper = ({
             coreService={coreService}
             siteCount={siteCount}
             allowMultipleSites={allowMultipleSites}
+            guarantees={guarantees}
           />
         );
       case 3:
@@ -190,19 +263,7 @@ const ServiceStepper = ({
           />
         );
       case 4:
-        return (
-          <StepFourAccount
-            formData={formData}
-            errors={errors}
-            authMode={authMode}
-            userExists={userExists}
-            onUpdateFormData={updateFormData}
-            onEmailBlur={handleEmailBlur}
-            onToggleAuthMode={() =>
-              setAuthMode(authMode === 'signup' ? 'login' : 'signup')
-            }
-          />
-        );
+        return <StepFourAccount />;
       case 5:
         return (
           <StepFiveReview
@@ -214,12 +275,16 @@ const ServiceStepper = ({
             allowMultipleSites={allowMultipleSites}
             requiresSiteUrl={requiresSiteUrl}
             onProceedToPayment={handleProceedToPayment}
+            isProcessing={isProcessing}
           />
         );
       default:
         return null;
     }
   };
+
+  const isLastStep = currentStep === availableSteps.length;
+  const isReviewStep = getActualStepNumber(currentStep) === 5;
 
   return (
     <section className='relative py-8 md:py-16 overflow-hidden'>
@@ -236,11 +301,11 @@ const ServiceStepper = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className='shadow-xl md:shadow-2xl backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl md:rounded-3xl overflow-hidden 0'>
-            <StepperProgress currentStep={currentStep} />
+            className='shadow-xl md:shadow-2xl backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl md:rounded-3xl overflow-hidden'>
+            <StepperProgress currentStep={currentStep} steps={availableSteps} />
 
             {/* Step Content Container */}
-            <CardBackground>
+            <div className='bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 rounded-b-2xl md:rounded-b-3xl overflow-hidden text-transparent'>
               <div className='relative'>
                 <div className='min-h-[400px] md:min-h-[500px]'>
                   <AnimatePresence
@@ -260,15 +325,19 @@ const ServiceStepper = ({
                   </AnimatePresence>
                 </div>
 
-                <StepperNavigation
-                  currentStep={currentStep}
-                  onBack={handleBack}
-                  onNext={handleNext}
-                  onComplete={handleComplete}
-                  isNextDisabled={false}
-                />
+                {/* Conditionally render navigation based on step */}
+                {!isReviewStep && (
+                  <StepperNavigation
+                    currentStep={currentStep}
+                    totalSteps={availableSteps.length}
+                    onBack={handleBack}
+                    onNext={handleNext}
+                    onComplete={handleComplete}
+                    isNextDisabled={isProcessing}
+                  />
+                )}
               </div>
-            </CardBackground>
+            </div>
           </motion.div>
         </div>
       </ComponentWrapper>

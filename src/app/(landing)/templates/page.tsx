@@ -1,7 +1,7 @@
 export const dynamic = 'force-static';
 
 import { genMetaData } from '@/app/seo';
-import prisma from '@/prisma/db';
+import prisma from '../../../../prisma/db';
 import Portfolio from '@/components/portfolio/portfolio';
 import { Suspense } from 'react';
 import PortfolioSkeleton from '@/components/portfolio/portfolio-skeleton';

@@ -9,7 +9,7 @@ import {
   CreateServiceInput,
   UpdateServiceInput,
 } from '@/lib/validations/service';
-import prisma from '@/prisma/db';
+import prisma from '../../prisma/db';
 import { z } from 'zod';
 
 type ActionResult<T = any> = {
@@ -260,3 +260,20 @@ export async function getCategoriesWithServices(): Promise<
 
   return sortCategories(categories);
 }
+
+export const getServiceBySlug = async (slug: string) => {
+  const service = await prisma.service.findFirst({
+    where: {
+      slug,
+    },
+    include: {
+      relatedTo: true,
+    },
+  });
+
+  if (!service) {
+    throw new Error('No service found with slug ' + slug);
+  }
+
+  return service;
+};

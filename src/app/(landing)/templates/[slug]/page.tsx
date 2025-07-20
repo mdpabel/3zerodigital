@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import prisma from '@/prisma/db';
+import prisma from '../../../../../prisma/db';
 import ImageCarousel from './image-carousel';
 import { FaRegClock, FaRegFileAlt } from 'react-icons/fa'; // For "Recently Updated" and "Well Documented" icons
 import { Button } from '@/components/ui/button';

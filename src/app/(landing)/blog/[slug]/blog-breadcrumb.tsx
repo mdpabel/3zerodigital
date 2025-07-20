@@ -1,4 +1,7 @@
+'use client';
 import { ChevronRight, Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Share2, Twitter, Facebook, Linkedin, Link } from 'lucide-react';
 
 interface BlogBreadcrumbProps {
   category: {
@@ -35,12 +38,6 @@ const BlogBreadcrumb = ({ category, title }: BlogBreadcrumbProps) => {
   );
 };
 
-// components/blog/blog-share.tsx
-('use client');
-
-import { Button } from '@/components/ui/button';
-import { Share2, Twitter, Facebook, Linkedin, Link } from 'lucide-react';
-
 interface BlogShareProps {
   post: {
     title: string;
@@ -49,7 +46,11 @@ interface BlogShareProps {
 }
 
 const BlogShare = ({ post }: BlogShareProps) => {
-  const shareUrl = `${window.location.origin}/blog/${post.slug}`;
+  let shareUrl = '';
+
+  if (typeof window !== 'undefined') {
+    shareUrl = `${window.location.origin}/blog/${post.slug}`;
+  }
 
   const shareLinks = {
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(shareUrl)}`,

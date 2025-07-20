@@ -30,7 +30,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import ComponentWrapper from '../common/component-wrapper';
-import { submitContactForm } from '@/actions/lead-actions';
+// import { submitContactForm } from '@/actions/lead-actions';
 import { toast } from 'sonner';
 
 // Service options for the dropdown
@@ -50,17 +50,16 @@ const ContactForm = () => {
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
-      const result = await submitContactForm(formData);
-
-      if (result.success) {
-        toast.success(result.message);
-        setSubmitted(true);
-        // Reset form
-        const form = document.getElementById('contact-form') as HTMLFormElement;
-        form?.reset();
-      } else {
-        toast.error(result.message);
-      }
+      // const result = await submitContactForm(formData);
+      // if (result.success) {
+      //   toast.success(result.message);
+      //   setSubmitted(true);
+      //   // Reset form
+      //   const form = document.getElementById('contact-form') as HTMLFormElement;
+      //   form?.reset();
+      // } else {
+      //   toast.error(result.message);
+      // }
     });
   };
 

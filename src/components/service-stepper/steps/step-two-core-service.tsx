@@ -8,17 +8,21 @@ interface StepTwoCoreServiceProps {
   coreService: CoreService;
   siteCount: number;
   allowMultipleSites?: boolean;
+  guarantees: string[];
 }
 
 const StepTwoCoreService = ({
   coreService,
   siteCount,
   allowMultipleSites = true,
+  guarantees = [],
 }: StepTwoCoreServiceProps) => {
   const calculateSavings = () => {
     if (!coreService.originalPrice) return 0;
     return (coreService.originalPrice - coreService.price) * siteCount;
   };
+
+  console.log(coreService.features);
 
   return (
     <div className='space-y-6 md:space-y-8'>
@@ -72,10 +76,10 @@ const StepTwoCoreService = ({
                 What's Included
               </h4>
               <div className='gap-2 md:gap-3 grid grid-cols-1 sm:grid-cols-2'>
-                {coreService.features.map((feature, idx) => (
+                {coreService.features?.map((feature, idx) => (
                   <div key={idx} className='flex items-start gap-2 md:gap-3'>
                     <CheckCircle className='flex-shrink-0 mt-0.5 w-4 md:w-5 h-4 md:h-5 text-green-600' />
-                    <span className='text-slate-600 dark:text-slate-300 text-xs md:text-sm'>
+                    <span className='text-slate-600 dark:text-gray-200 text-xs md:text-sm'>
                       {feature}
                     </span>
                   </div>
@@ -83,7 +87,7 @@ const StepTwoCoreService = ({
               </div>
 
               {/* Service Times */}
-              <div className='flex flex-wrap gap-4 md:gap-6 mt-4 md:mt-6'>
+              {/* <div className='flex flex-wrap gap-4 md:gap-6 mt-4 md:mt-6'>
                 <div className='text-center'>
                   <div className='text-slate-500 text-xs'>Response</div>
                   <div className='font-bold text-slate-900 dark:text-white text-sm'>
@@ -96,7 +100,7 @@ const StepTwoCoreService = ({
                     {coreService.completionTime}
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -106,7 +110,7 @@ const StepTwoCoreService = ({
               Our Guarantee
             </h4>
             <div className='flex flex-wrap gap-3 md:gap-4'>
-              {coreService.guarantees.map((guarantee, idx) => (
+              {guarantees.map((guarantee, idx) => (
                 <div key={idx} className='flex items-center gap-2'>
                   <Shield className='w-3 h-3 text-green-600' />
                   <span className='text-green-700 dark:text-green-300 text-xs'>

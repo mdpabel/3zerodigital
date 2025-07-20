@@ -7,26 +7,12 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import ComponentWrapper from '../common/component-wrapper';
-import { subscribeToNewsletter } from '@/actions/lead-actions';
 
 const NewsletterSection = () => {
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = async (formData: FormData) => {
-    startTransition(async () => {
-      const result = await subscribeToNewsletter(formData);
-
-      if (result.success) {
-        toast.success(result.message);
-        // Reset form
-        const form = document.getElementById(
-          'newsletter-form',
-        ) as HTMLFormElement;
-        form?.reset();
-      } else {
-        toast.error(result.message);
-      }
-    });
+    startTransition(async () => {});
   };
 
   return (

@@ -2,6 +2,7 @@ import nextAnalyzer from '@next/bundle-analyzer';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  staticPageGenerationTimeout: 300,
   experimental: {
     viewTransition: true,
     staleTimes: {

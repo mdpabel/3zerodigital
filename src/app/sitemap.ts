@@ -1,9 +1,4 @@
-import { getServices } from '@/actions/service-actions';
-import { fetchCaseStudies } from '@/lib/wordpress/case-study';
-import { fetchCategories } from '@/lib/wordpress/fetch-category';
-import { getPosts } from '@/lib/wordpress/fetch-posts';
-import { fetchTags } from '@/lib/wordpress/fetch-tags';
-import prisma from '@/prisma/db';
+import prisma from '../../prisma/db';
 import type { MetadataRoute } from 'next';
 import { WP_REST_API_Post, WP_REST_API_Posts } from 'wp-types';
 
@@ -42,59 +37,59 @@ const generateStaticSitemap = () => {
   return urls;
 };
 
-export const generateCaseStudiesSitemap = async () => {
-  const caseStudies = await fetchCaseStudies();
+// export const generateCaseStudiesSitemap = async () => {
+//   const caseStudies = await fetchCaseStudies();
 
-  const caseStudySitemap = caseStudies.map((caseStudy) => ({
-    url: `https://www.3zerodigital.com/case-studies/${caseStudy.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
+//   const caseStudySitemap = caseStudies.map((caseStudy) => ({
+//     url: `https://www.3zerodigital.com/case-studies/${caseStudy.slug}`,
+//     lastModified: new Date(),
+//     changeFrequency: 'monthly',
+//     priority: 0.7,
+//   }));
 
-  return caseStudySitemap;
-};
+//   return caseStudySitemap;
+// };
 
-export const generateBlogSitemap = async () => {
-  const baseUrl = 'https://www.3zerodigital.com';
+// export const generateBlogSitemap = async () => {
+//   const baseUrl = 'https://www.3zerodigital.com';
 
-  // Fetch dynamic content
-  const blogs = await getPosts();
-  const tags = await fetchTags();
-  const categories = await fetchCategories();
+//   // Fetch dynamic content
+//   const blogs = await getPosts();
+//   const tags = await fetchTags();
+//   const categories = await fetchCategories();
 
-  const posts = blogs.posts as WP_REST_API_Posts;
+//   const posts = blogs.posts as WP_REST_API_Posts;
 
-  // Generate blog post URLs
-  const blogUrls: MetadataRoute.Sitemap = posts.map(
-    (post: WP_REST_API_Post) => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: post.modified ? new Date(post.modified) : new Date(), // Use `modified` if available
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    }),
-  );
+//   // Generate blog post URLs
+//   const blogUrls: MetadataRoute.Sitemap = posts.map(
+//     (post: WP_REST_API_Post) => ({
+//       url: `${baseUrl}/blog/${post.slug}`,
+//       lastModified: post.modified ? new Date(post.modified) : new Date(), // Use `modified` if available
+//       changeFrequency: 'weekly',
+//       priority: 0.7,
+//     }),
+//   );
 
-  // Generate category URLs
-  const categoryUrls: MetadataRoute.Sitemap = categories.map(
-    (category: { slug: string }) => ({
-      url: `${baseUrl}/category/${category.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    }),
-  );
+//   // Generate category URLs
+//   const categoryUrls: MetadataRoute.Sitemap = categories.map(
+//     (category: { slug: string }) => ({
+//       url: `${baseUrl}/category/${category.slug}`,
+//       lastModified: new Date(),
+//       changeFrequency: 'monthly',
+//       priority: 0.6,
+//     }),
+//   );
 
-  // Generate tag URLs
-  const tagUrls: MetadataRoute.Sitemap = tags.map((tag: { slug: string }) => ({
-    url: `${baseUrl}/tag/${tag.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.4,
-  }));
+//   // Generate tag URLs
+//   const tagUrls: MetadataRoute.Sitemap = tags.map((tag: { slug: string }) => ({
+//     url: `${baseUrl}/tag/${tag.slug}`,
+//     lastModified: new Date(),
+//     changeFrequency: 'monthly',
+//     priority: 0.4,
+//   }));
 
-  return [...blogUrls, ...categoryUrls];
-};
+//   return [...blogUrls, ...categoryUrls];
+// };
 
 const generateTemplateCategorySitemap = async () => {
   const categories = await prisma.templateCategory.findMany();
@@ -129,10 +124,10 @@ const generateTemplateCategorySitemap = async () => {
 
 export default async function sitemap() {
   const staticPages = generateStaticSitemap();
-  const caseStudies = await generateCaseStudiesSitemap();
-  const blogs = await generateBlogSitemap();
+  // const caseStudies = await generateCaseStudiesSitemap();
+  // const blogs = await generateBlogSitemap();
   const templateCategory = await generateTemplateCategorySitemap();
   // const blacklist = blacklistSitemap();
 
-  return [...staticPages, ...caseStudies, ...blogs, ...templateCategory];
+  return [...staticPages, ...templateCategory];
 }

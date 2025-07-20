@@ -7,7 +7,7 @@ import {
   createTemplateSchema,
   updateTemplateSchema,
 } from '@/lib/validations/template';
-import prisma from '@/prisma/db';
+import prisma from '../../prisma/db';
 
 type ActionResponse = {
   success: boolean;

@@ -1,4 +1,4 @@
-import prisma from '@/prisma/db';
+import prisma from '../../../../../prisma/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Available time slots (9 AM to 5 PM, 30-min slots)

@@ -1,0 +1,292 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  services Service[]
+
+  @@map("categories")
+}
+
+model Service {
+  id            String    @id @default(cuid())
+  name          String
+  description   String
+  slug          String    @unique
+  price         Float
+  originalPrice Float?
+  features      Json? // Array of features
+  isActive      Boolean   @default(true)
+  isPopular     Boolean   @default(false)
+  icon          String? // Icon name or URL
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // Soft delete
+
+  // Many-to-many relationship with categories
+  categories Category[]
+
+  // Related services (many-to-many self-relation)
+  relatedTo   Service[] @relation("ServiceRelations")
+  relatedFrom Service[] @relation("ServiceRelations")
+
+  orderItems OrderItem[]
+
+  @@map("services")
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  orderNumber    String      @unique
+  status         OrderStatus @default(PENDING)
+  totalAmount    Float
+  subtotalAmount Float
+  taxAmount      Float?
+  discountAmount Float?
+
+  paymentStatus PaymentStatus  @default(PENDING)
+  paymentMethod PaymentMethod?
+
+  // Customer information
+  customerEmail String
+  customerName  String?
+  customerPhone String?
+
+  // Service specific details
+  siteUrl      String?
+  siteCount    Int          @default(1)
+  urgencyLevel UrgencyLevel @default(NORMAL)
+  description  String?
+
+  // Additional details
+  notes         String?
+  deliveryEmail String?
+  deliveryPhone String?
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+  cancelledAt DateTime?
+
+  // Relations
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  orderItems OrderItem[]
+  payments   Payment[]
+
+  // Custom fields data (JSON for flexibility)
+  customFields Json?
+
+  @@index([userId])
+  @@index([customerEmail])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id             String @id @default(cuid())
+  quantity       Int    @default(1)
+  unitPrice      Float
+  totalPrice     Float
+  specifications Json? // Custom requirements, notes, etc.
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  @@index([orderId])
+  @@index([serviceId])
+  @@map("order_items")
+}
+
+//  Payment model for tracking all payment transactions
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Float
+  currency      String        @default("USD")
+  status        PaymentStatus @default(PENDING)
+  paymentMethod PaymentMethod
+
+  // Stripe fields
+  stripePaymentId  String? @unique
+  stripeSessionId  String? @unique
+  stripeCustomerId String?
+
+  // PayPal fields
+  paypalOrderId String? @unique
+  paypalPayerId String?
+
+  // Metadata
+  metadata      Json?
+  failureReason String?
+  refundReason  String?
+
+  // Timestamps
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  paidAt     DateTime?
+  refundedAt DateTime?
+
+  // Relations
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@index([stripePaymentId])
+  @@index([paypalOrderId])
+  @@map("payments")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentMethod {
+  STRIPE_CARD
+  STRIPE_BANK
+  PAYPAL
+  MANUAL
+}
+
+enum UrgencyLevel {
+  NORMAL
+  URGENT
+}
+
+model Template {
+  id          String                       @id @default(cuid())
+  name        String                       @unique
+  slug        String
+  fileUrl     String
+  liveUrl     String
+  description String?
+  price       Float
+  salePrice   Float
+  images      String[]
+  deleted     Boolean                      @default(false)
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+  categories  TemplateCategoryOnTemplate[]
+}
+
+model TemplateCategory {
+  id        String                       @id @default(cuid())
+  name      String                       @unique
+  slug      String?
+  createdAt DateTime                     @default(now())
+  updatedAt DateTime                     @updatedAt
+  templates TemplateCategoryOnTemplate[]
+}
+
+model TemplateCategoryOnTemplate {
+  id         String           @id @default(cuid())
+  templateId String
+  categoryId String
+  createdAt  DateTime         @default(now())
+  updatedBy  String?
+  template   Template         @relation(fields: [templateId], references: [id])
+  category   TemplateCategory @relation(fields: [categoryId], references: [id])
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  Order         Order[]
+
+  role       String?   @default("customer")
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}

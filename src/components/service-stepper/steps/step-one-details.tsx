@@ -1,4 +1,3 @@
-// app/components/service-stepper/step-one-details.tsx
 'use client';
 
 import {
@@ -27,10 +26,7 @@ interface StepOneDetailsProps {
   requiresSiteUrl?: boolean;
   requiresDescription?: boolean;
   customFields?: CustomField[];
-  onUpdateFormData: (
-    field: string,
-    value: string | string[], // Allow string array for checkboxes
-  ) => void;
+  onUpdateFormData: (field: string, value: string | string[]) => void;
   onUpdateSiteCount: (count: number) => void;
 }
 
@@ -46,7 +42,9 @@ const StepOneDetails = ({
   onUpdateSiteCount,
 }: StepOneDetailsProps) => {
   const handleCheckboxChange = (fieldId: string, option: string) => {
-    const currentValues = (formData[fieldId] as string[]) || [];
+    const currentValues = Array.isArray(formData[fieldId])
+      ? (formData[fieldId] as string[])
+      : [];
     const newValues = currentValues.includes(option)
       ? currentValues.filter((item) => item !== option)
       : [...currentValues, option];
@@ -78,12 +76,14 @@ const StepOneDetails = ({
             value={(fieldValue as string) || ''}
             onChange={(e) => onUpdateFormData(field.id, e.target.value)}
             className={cn(
-              'mt-2 h-12 w-full rounded-lg border-2 border-slate-200 bg-white px-3 dark:border-slate-700 dark:bg-slate-800 text-sm md:text-base focus-visible:ring-2 focus-visible:ring-blue-500/50',
+              'mt-2 h-12 w-full rounded-lg text-white border-2 border-slate-200 bg-white px-3 dark:border-slate-700 dark:bg-slate-800 text-sm md:text-base focus-visible:ring-2 focus-visible:ring-blue-500/50',
               hasError && 'border-red-500',
             )}>
-            <option value=''>Select...</option>
+            <option value='' className='dark:text-white'>
+              Select...
+            </option>
             {field.options?.map((option) => (
-              <option key={option} value={option}>
+              <option className='dark:text-white' key={option} value={option}>
                 {option}
               </option>
             ))}
@@ -97,9 +97,10 @@ const StepOneDetails = ({
               hasError && '!border-red-500',
             )}>
             {field.options?.map((option) => {
-              const isChecked = ((fieldValue as string[]) || []).includes(
-                option,
-              );
+              const currentValues = Array.isArray(fieldValue)
+                ? (fieldValue as string[])
+                : [];
+              const isChecked = currentValues.includes(option);
               return (
                 <Label
                   key={option}

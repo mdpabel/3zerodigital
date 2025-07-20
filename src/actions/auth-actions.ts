@@ -1,9 +1,9 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { APIError } from 'better-auth/api';
-import { authClient } from '@/lib/auth-client';
 import { SignUpSchema, LoginSchema } from '@/lib/validations/auth';
+import { auth } from '@/lib/auth';
+
 export async function signInAction(formData: FormData) {
   const rawFormData = {
     email: formData.get('email') as string,
@@ -30,17 +30,12 @@ export async function signInAction(formData: FormData) {
   const { email, password } = validation.data;
 
   try {
-    const { data, error } = await authClient.signIn.email({
-      email,
-      password,
+    const res = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
     });
-
-    if (error) {
-      return {
-        message: error.message || 'Something went wrong during sign-in.',
-        success: false,
-      };
-    }
 
     return {
       message: 'Signed in successfully! Redirecting...',
@@ -101,29 +96,25 @@ export async function signUpAction(formData: FormData) {
   // Ensure password and confirmPassword match
   if (password !== confirmPassword) {
     const errorMessage = 'Password and confirm password do not match.';
-    console.log({ errorMessage });
     return { message: errorMessage, success: false };
   }
 
   try {
-    const { data, error } = await authClient.signUp.email({
-      name: `${firstName} ${lastName}`,
-      email,
-      password,
+    const res = await auth.api.signUpEmail({
+      body: {
+        name: `${firstName} ${lastName}`,
+        email,
+        password,
+      },
     });
-
-    if (error) {
-      return {
-        message: error.message || 'Something went wrong.',
-        success: false,
-      };
-    }
 
     return {
       message: 'Account created successfully! Redirecting...',
       success: true,
     };
   } catch (error) {
+    console.log('Sign up with email failed:', error);
+
     if (error instanceof APIError) {
       switch (error.status) {
         case 'UNPROCESSABLE_ENTITY':

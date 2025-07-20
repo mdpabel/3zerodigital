@@ -1,32 +1,28 @@
+import { Service } from '@prisma/client';
 import { LucideIcon } from 'lucide-react';
+
+export interface ServiceFormData {
+  // Renamed from FormData
+  siteUrl: string;
+  siteDescription: string;
+  urgencyLevel: 'normal' | 'urgent';
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  [key: string]: string | string[]; // For dynamic custom fields
+}
 
 export interface ServiceFeature {
   name: string;
   description?: string;
 }
 
-export interface AddOnService {
-  id: string;
-  name: string;
-  price: number;
-  icon: LucideIcon;
-  popular?: boolean;
-  urgent?: boolean;
-  description: string;
-  features: string[];
-}
+export interface AddOnService extends Service {}
 
-export interface CoreService {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  responseTime: string;
-  completionTime: string;
-  features: string[];
-  guarantees: string[];
-  unit?: string;
-}
+export interface CoreService extends Service {}
 
 export interface CustomField {
   id: string;
@@ -47,6 +43,7 @@ export interface ServiceStepperProps {
   requiresSiteUrl?: boolean;
   requiresDescription?: boolean;
   customFields?: CustomField[];
+  guarantees: string[];
 }
 
 export interface FormData {
@@ -59,7 +56,8 @@ export interface FormData {
   phone: string;
   password: string;
   confirmPassword: string;
-  [key: string]: string;
+  // Allow for dynamic custom fields with mixed types
+  [key: string]: string | string[];
 }
 
 export interface StepperState {
@@ -79,3 +77,9 @@ export interface Step {
   name: string;
   description: string;
 }
+
+export type ServiceProps = {
+  id: string;
+  price: number;
+  relatedTo: Service[];
+};

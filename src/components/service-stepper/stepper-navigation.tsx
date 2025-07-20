@@ -3,10 +3,10 @@
 import { ArrowLeft, ArrowRight, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { STEPS } from './constants';
 
 interface StepperNavigationProps {
   currentStep: number;
+  totalSteps: number;
   onBack: () => void;
   onNext: () => void;
   onComplete: () => void;
@@ -15,12 +15,13 @@ interface StepperNavigationProps {
 
 const StepperNavigation = ({
   currentStep,
+  totalSteps,
   onBack,
   onNext,
   onComplete,
   isNextDisabled = false,
 }: StepperNavigationProps) => {
-  const isLastStep = currentStep === STEPS.length;
+  const isLastStep = currentStep === totalSteps;
 
   return (
     <div className='flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-4 md:p-6 border-slate-200 dark:border-slate-700 border-t'>
@@ -29,7 +30,7 @@ const StepperNavigation = ({
         onClick={onBack}
         disabled={currentStep === 1}
         className={cn(
-          'h-10 md:h-12 px-4 md:px-6 text-sm md:text-base',
+          'h-10 md:h-12 px-4 md:px-6 text-white text-sm md:text-base',
           currentStep === 1 && 'invisible',
         )}>
         <ArrowLeft className='mr-2 w-3 md:w-4 h-3 md:h-4' />
@@ -38,7 +39,7 @@ const StepperNavigation = ({
 
       <div className='flex items-center gap-3 md:gap-4'>
         <span className='text-slate-500 text-xs md:text-sm'>
-          Step {currentStep} of {STEPS.length}
+          Step {currentStep} of {totalSteps}
         </span>
 
         {!isLastStep ? (

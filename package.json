@@ -7,13 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "tsx ./src/prisma/seed.ts",
-    "db:migrate": "tsx ./src/prisma/migrate-mongo-to-pg.ts"
+    "db:seed": "tsx ./prisma/seed.ts",
+    "db:migrate": "tsx ./prisma/migrate-mongo-to-pg.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
     "@hookform/resolvers": "^3.9.1",
     "@next/third-parties": "^15.0.3",
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "@paypal/paypal-server-sdk": "^0.6.1",
     "@paypal/react-paypal-js": "^8.7.0",
     "@prisma/client": "^5.19.1",
@@ -75,7 +76,7 @@
     "slick-carousel": "^1.8.1",
     "slugify": "^1.6.6",
     "sonner": "^2.0.3",
-    "stripe": "^17.4.0",
+    "stripe": "^17.7.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-aspect-ratio": "^3.0.0",
@@ -88,6 +89,7 @@
     "@next/bundle-analyzer": "^15.1.8",
     "@types/dompurify": "^3.0.5",
     "@types/node": "^20",
+    "@types/paypal__checkout-server-sdk": "^1.0.8",
     "@types/prismjs": "^1.26.4",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -104,8 +106,5 @@
     "tsx": "^4.19.4",
     "typescript": "^5",
     "wp-types": "^4.67.0"
-  },
-  "prisma": {
-    "schema": "./src/prisma/schema.prisma"
   }
 }

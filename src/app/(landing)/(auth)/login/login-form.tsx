@@ -46,7 +46,11 @@ import { LoginFormSchema, LoginSchema } from '@/lib/validations/auth';
 import { AuthMessage, PasswordInputField } from '@/components/common/auth';
 import { Spinner } from '@/components/common/spinner';
 
-const LoginForm = () => {
+const LoginForm = ({
+  mode = 'normal',
+}: {
+  mode?: 'place-order' | 'normal';
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [{ message, success }, setFormState] = useState({
@@ -123,7 +127,7 @@ const LoginForm = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className='flex justify-center'>
-          <div className='w-full max-w-md'>
+          <div className='w-full max-w-[500px]'>
             <Card className='bg-white/80 dark:bg-slate-900/80 shadow-xl backdrop-blur-sm border-0'>
               <CardHeader className='space-y-1 pb-4'>
                 <CardTitle className='font-bold text-2xl text-center'>
@@ -264,14 +268,16 @@ const LoginForm = () => {
 
                 <Separator />
 
-                <div className='text-muted-foreground text-sm text-center'>
-                  Don't have an account?{' '}
-                  <Link
-                    href='/signup'
-                    className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
-                    Sign up
-                  </Link>
-                </div>
+                {mode === 'normal' ? (
+                  <div className='text-muted-foreground text-sm text-center'>
+                    Don't have an account?{' '}
+                    <Link
+                      href='/signup'
+                      className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
+                      Sign up
+                    </Link>
+                  </div>
+                ) : null}
               </CardFooter>
             </Card>
           </div>

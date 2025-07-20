@@ -4,28 +4,10 @@ import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Eye, Heart, User } from 'lucide-react';
 import Image from 'next/image';
-
-interface BlogPost {
-  title: string;
-  excerpt: string;
-  author: {
-    name: string;
-    avatar: string;
-    bio: string;
-  };
-  publishedAt: string;
-  readingTime: number;
-  category: {
-    name: string;
-    color: string;
-  };
-  featuredImage: string;
-  views: number;
-  likes: number;
-}
+import { WordPressPost } from '@/lib/wordpress';
 
 interface BlogHeaderProps {
-  post: BlogPost;
+  post: WordPressPost;
 }
 
 const BlogHeader = ({ post }: BlogHeaderProps) => {
@@ -44,53 +26,50 @@ const BlogHeader = ({ post }: BlogHeaderProps) => {
       transition={{ duration: 0.6 }}
       className='mb-12'>
       {/* Category Badge */}
-      <div className='mb-6'>
-        <Badge
-          className={`bg-${post.category.color}-100 dark:bg-${post.category.color}-900/20 text-${post.category.color}-800 dark:text-${post.category.color}-300 px-3 py-1`}>
-          {post.category.name}
-        </Badge>
+      <div className='flex flex-wrap gap-2 mb-6'>
+        {post.categories.map((category) => (
+          <Badge
+            key={category.id}
+            className={`bg-${category.name}-100 dark:bg-${category.name}-900/20 text-${category.name}-800 dark:text-${category.name}-300 px-3 py-1`}>
+            {category.name}
+          </Badge>
+        ))}
       </div>
 
       {/* Title */}
-      <h1 className='mb-6 font-bold text-slate-900 dark:text-white text-4xl md:text-5xl lg:text-6xl leading-tight'>
+      <h1 className='mb-6 font-bold text-slate-900 dark:text-white text-3xl md:text-4xl lg:text-5xl leading-tight'>
         {post.title}
       </h1>
-
-      {/* Excerpt */}
-      <p className='mb-8 max-w-4xl text-slate-600 dark:text-slate-300 text-xl leading-relaxed'>
-        {post.excerpt}
-      </p>
 
       {/* Meta Information */}
       <div className='flex flex-wrap items-center gap-6 mb-8 text-slate-600 dark:text-slate-300'>
         <div className='flex items-center gap-2'>
           <Calendar className='w-4 h-4' />
-          <span className='text-sm'>{formatDate(post.publishedAt)}</span>
+          <span className='text-sm'>{formatDate(post.date)}</span>
         </div>
 
         <div className='flex items-center gap-2'>
           <Clock className='w-4 h-4' />
-          <span className='text-sm'>{post.readingTime} min read</span>
+          <span className='text-sm'>7 min read</span>
         </div>
 
-        <div className='flex items-center gap-2'>
+        {/* <div className='flex items-center gap-2'>
           <Eye className='w-4 h-4' />
           <span className='text-sm'>{post.views.toLocaleString()} views</span>
-        </div>
+        </div> */}
 
-        <div className='flex items-center gap-2'>
+        {/* <div className='flex items-center gap-2'>
           <Heart className='w-4 h-4' />
           <span className='text-sm'>{post.likes} likes</span>
-        </div>
+        </div> */}
       </div>
 
       {/* Author Info */}
-      <div className='flex items-center gap-4 mb-8'>
+      {/* <div className='flex items-center gap-4 mb-8'>
         <div className='relative rounded-full w-12 h-12 overflow-hidden'>
-          <Image
+          <img
             src={post.author.avatar}
             alt={post.author.name}
-            fill
             className='object-cover'
           />
         </div>
@@ -104,24 +83,24 @@ const BlogHeader = ({ post }: BlogHeaderProps) => {
           <p className='text-slate-600 dark:text-slate-300 text-sm'>
             {post.author.bio}
           </p>
-        </div>
-      </div>
+        </div> 
+      </div> */}
 
       {/* Featured Image */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className='relative mb-8 rounded-2xl w-full h-96 md:h-[500px] overflow-hidden'>
-        <Image
-          src={post.featuredImage}
-          alt={post.title}
-          fill
-          className='object-cover'
-          priority
-        />
-        <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent' />
-      </motion.div>
+      {post.featuredImage?.url && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className='relative mb-8 rounded-2xl w-full h-96 md:h-[500px] overflow-hidden'>
+          <img
+            src={post.featuredImage?.url || '/images/not-found-image.jpg'}
+            alt={post.title}
+            className='object-cover'
+          />
+          <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent' />
+        </motion.div>
+      )}
     </motion.div>
   );
 };

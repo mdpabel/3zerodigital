@@ -3,17 +3,18 @@
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { STEPS } from './constants';
+import { Step } from './types';
 
 interface StepperProgressProps {
   currentStep: number;
+  steps: Step[];
 }
 
-const StepperProgress = ({ currentStep }: StepperProgressProps) => {
+const StepperProgress = ({ currentStep, steps }: StepperProgressProps) => {
   return (
     <div className='bg-gradient-to-r from-slate-50 dark:from-slate-900/50 to-slate-100 dark:to-slate-800/50 p-4 md:p-6 border-slate-200 dark:border-slate-700 border-b'>
       <div className='flex justify-between items-center'>
-        {STEPS.map((step, index) => (
+        {steps.map((step, index) => (
           <div key={step.id} className='flex flex-1 items-center'>
             <div className='flex flex-col items-center'>
               <motion.div
@@ -47,7 +48,7 @@ const StepperProgress = ({ currentStep }: StepperProgressProps) => {
                 </p>
               </div>
             </div>
-            {index < STEPS.length - 1 && (
+            {index < steps.length - 1 && (
               <motion.div
                 animate={{
                   backgroundColor:

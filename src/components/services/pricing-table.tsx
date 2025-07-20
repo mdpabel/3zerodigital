@@ -303,8 +303,6 @@ const EstimatePrice = ({ serviceId }: { serviceId: string }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission
-    console.log('Form Data:', formData);
-    console.log('Estimated Price:', estimatedPrice);
   };
 
   const selectedService = services.find(

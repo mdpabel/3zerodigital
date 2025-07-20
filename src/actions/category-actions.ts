@@ -7,7 +7,7 @@ import {
   createCategorySchema,
   updateCategorySchema,
 } from '@/lib/validations/category';
-import prisma from '@/prisma/db';
+import prisma from '../../prisma/db';
 
 // Reusable response type
 type ActionResponse<T> = {

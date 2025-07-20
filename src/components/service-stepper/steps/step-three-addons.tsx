@@ -70,18 +70,10 @@ const StepThreeAddons = ({
                 : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:shadow-md',
             )}>
             {/* Badges */}
-            {service.popular && (
+            {service.features && (
               <div className='top-0 right-3 md:right-4 absolute -translate-y-1/2'>
                 <Badge className='bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs'>
                   Popular
-                </Badge>
-              </div>
-            )}
-            {service.urgent && (
-              <div className='top-0 right-3 md:right-4 absolute -translate-y-1/2'>
-                <Badge className='bg-red-500 text-white text-xs animate-pulse'>
-                  <Zap className='mr-1 w-2 h-2' />
-                  Urgent
                 </Badge>
               </div>
             )}
@@ -96,14 +88,14 @@ const StepThreeAddons = ({
                       ? 'bg-blue-100 dark:bg-blue-900/30'
                       : 'bg-slate-100 dark:bg-slate-800',
                   )}>
-                  <service.icon
+                  {/* <service.icon
                     className={cn(
                       'w-5 md:w-6 h-5 md:h-6 transition-colors',
                       selectedAddOns.includes(service.id)
                         ? 'text-blue-600'
                         : 'text-slate-600',
                     )}
-                  />
+                  /> */}
                 </div>
                 <div>
                   <h4 className='font-bold text-slate-900 dark:text-white text-sm md:text-base'>
@@ -128,14 +120,16 @@ const StepThreeAddons = ({
 
             {/* Features */}
             <div className='space-y-1 md:space-y-2'>
-              {service.features.map((feature, idx) => (
-                <div key={idx} className='flex items-center gap-2'>
-                  <CheckCircle className='flex-shrink-0 w-3 h-3 text-green-500' />
-                  <span className='text-slate-600 dark:text-slate-300 text-xs'>
-                    {feature}
-                  </span>
-                </div>
-              ))}
+              {Array.isArray(service.features)
+                ? (service.features as string[])
+                : [].map((feature, idx) => (
+                    <div key={idx} className='flex items-center gap-2'>
+                      <CheckCircle className='flex-shrink-0 w-3 h-3 text-green-500' />
+                      <span className='text-slate-600 dark:text-slate-300 text-xs'>
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
             </div>
           </div>
         ))}

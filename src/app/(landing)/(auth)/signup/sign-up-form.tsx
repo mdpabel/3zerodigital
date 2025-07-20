@@ -47,7 +47,11 @@ import { signUpAction } from '@/actions/auth-actions';
 import { AuthMessage, PasswordInputField } from '@/components/common/auth';
 import { Spinner } from '@/components/common/spinner';
 
-const SignUpForm = () => {
+const SignUpForm = ({
+  mode = 'normal',
+}: {
+  mode?: 'place-order' | 'normal';
+}) => {
   const router = useRouter();
   const [{ message, success }, setFormState] = useState({
     success: false,
@@ -123,7 +127,7 @@ const SignUpForm = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className='flex justify-center'>
-          <div className='w-full max-w-md'>
+          <div className='w-full max-w-[500px]'>
             <Card className='bg-white/80 dark:bg-slate-900/80 shadow-xl backdrop-blur-sm border-0'>
               <CardHeader className='space-y-1 pb-4'>
                 <CardTitle className='font-bold text-2xl text-center'>
@@ -350,16 +354,18 @@ const SignUpForm = () => {
                 </Form>
               </CardContent>
 
-              <CardFooter className='pt-0'>
-                <div className='w-full text-muted-foreground text-sm text-center'>
-                  Already have an account?{' '}
-                  <Link
-                    href='/login'
-                    className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
-                    Sign in
-                  </Link>
-                </div>
-              </CardFooter>
+              {mode === 'normal' ? (
+                <CardFooter className='pt-0'>
+                  <div className='w-full text-muted-foreground text-sm text-center'>
+                    Already have an account?{' '}
+                    <Link
+                      href='/login'
+                      className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
+                      Sign in
+                    </Link>
+                  </div>
+                </CardFooter>
+              ) : null}
             </Card>
           </div>
         </motion.div>

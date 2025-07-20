@@ -15,13 +15,22 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  if (!session) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  const url = request.nextUrl;
+
+  // If the user is logged in, prevent access to login and registration pages
+  if (session && ['/login', '/signup'].includes(url.pathname)) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
+  // If the user is not logged in, prevent access to protected routes
+  if (!session && ['/dashboard'].includes(url.pathname)) {
+    return NextResponse.redirect(new URL('/sign-in', request.url));
+  }
+
+  // Allow the request to proceed for all other cases
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard'], // Apply middleware to specific routes
+  matcher: ['/dashboard', '/login', '/signup'], // Apply middleware to specific routes
 };

@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/command';
 
 import { searchDb } from '@/lib/config/search-db';
-import { getPostsWithTagNames } from '@/lib/wordpress/fetch-posts';
 
 import { WP_REST_API_Posts } from 'wp-types';
 import { Button } from '../ui/button';
@@ -65,14 +64,14 @@ export function SearchMenu({ ...props }: DialogProps) {
     setIsServiceLoading(true);
     setIsPostLoading(true);
 
-    getPostsWithTagNames({ search: value })
-      .then(({ posts }) => {
-        if (Array.isArray(posts)) {
-          setPosts(posts);
-        }
-      })
-      .catch(console.error)
-      .finally(() => setIsPostLoading(false));
+    // getPostsWithTagNames({ search: value })
+    //   .then(({ posts }) => {
+    //     if (Array.isArray(posts)) {
+    //       setPosts(posts);
+    //     }
+    //   })
+    //   .catch(console.error)
+    //   .finally(() => setIsPostLoading(false));
   }, [value]);
 
   React.useEffect(() => {
@@ -134,7 +133,7 @@ export function SearchMenu({ ...props }: DialogProps) {
       <Button
         variant='secondary'
         className={cn(
-          'bg-white dark:bg-[#030712] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 relative h-8 justify-start pl-2.5 font-normal shadow-none sm:pr-12 md:!w-40 lg:!w-56 xl:!w-64',
+          'relative justify-start bg-white dark:bg-[#030712] shadow-none sm:pr-12 pl-2.5 border border-slate-200 dark:border-slate-700 md:!w-40 lg:!w-56 xl:!w-64 h-8 font-normal text-slate-900 dark:text-slate-100',
         )}
         onClick={() => setOpen(true)}
         {...props}>

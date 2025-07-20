@@ -4,6 +4,7 @@ import { CreditCard, Lock, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CoreService, AddOnService, FormData } from '../types';
+import { Spinner } from '@/components/common/spinner';
 
 interface StepFiveReviewProps {
   coreService: CoreService;
@@ -14,6 +15,7 @@ interface StepFiveReviewProps {
   allowMultipleSites?: boolean;
   requiresSiteUrl?: boolean;
   onProceedToPayment: () => void;
+  isProcessing?: boolean;
 }
 
 const StepFiveReview = ({
@@ -24,6 +26,7 @@ const StepFiveReview = ({
   siteCount,
   allowMultipleSites = true,
   requiresSiteUrl = true,
+  isProcessing,
   onProceedToPayment,
 }: StepFiveReviewProps) => {
   const calculateSubtotal = () => {
@@ -66,7 +69,7 @@ const StepFiveReview = ({
             <div className='space-y-2 md:space-y-3 text-sm md:text-base'>
               {requiresSiteUrl && (
                 <div className='flex justify-between items-center'>
-                  <span className='text-slate-600 dark:text-slate-300'>
+                  <span className='text-slate-600 dark:text-gray-200'>
                     Website
                   </span>
                   <span className='font-medium break-all'>
@@ -76,14 +79,14 @@ const StepFiveReview = ({
               )}
               {allowMultipleSites && (
                 <div className='flex justify-between items-center'>
-                  <span className='text-slate-600 dark:text-slate-300'>
+                  <span className='text-slate-600 dark:text-gray-200'>
                     Sites
                   </span>
                   <span className='font-medium'>{siteCount}</span>
                 </div>
               )}
               <div className='flex justify-between items-center'>
-                <span className='text-slate-600 dark:text-slate-300'>
+                <span className='text-slate-600 dark:text-gray-200'>
                   Urgency
                 </span>
                 <Badge
@@ -171,8 +174,13 @@ const StepFiveReview = ({
           <Button
             onClick={onProceedToPayment}
             size='lg'
+            disabled={isProcessing}
             className='bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg w-full h-12 md:h-14 text-white text-sm md:text-base'>
-            <CreditCard className='mr-2 w-4 md:w-5 h-4 md:h-5' />
+            {isProcessing ? (
+              <Spinner className='mr-2 w-4 md:w-5 h-4 md:h-5' />
+            ) : (
+              <CreditCard className='mr-2 w-4 md:w-5 h-4 md:h-5' />
+            )}{' '}
             Proceed to Payment
           </Button>
 

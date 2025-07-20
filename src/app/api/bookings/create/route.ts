@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BookingConfirmationEmail } from '@/components/email/booking-confirmation';
 import { BookingNotificationEmail } from '@/components/email/booking-notification';
-import prisma from '@/prisma/db';
+import prisma from '../../../../../prisma/db';
 import { resend } from '@/lib/send-email';
 
 export async function POST(request: NextRequest) {

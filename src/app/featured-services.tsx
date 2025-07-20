@@ -1,6 +1,6 @@
 import React from 'react';
 import FeaturedServicesClient from './featured-services-client';
-import prisma from '@/prisma/db';
+import prisma from '../../prisma/db';
 
 const FeaturedServices = async () => {
   const services = await prisma.service.findMany({
