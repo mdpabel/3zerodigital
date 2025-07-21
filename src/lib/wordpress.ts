@@ -1,4 +1,3 @@
-// lib/wordpress-api.ts
 // Enhanced types for enriched data
 interface WordPressImage {
   id: number;

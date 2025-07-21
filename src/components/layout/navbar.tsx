@@ -37,8 +37,6 @@ import Logo from './logo';
 import { CleanBackground } from '../common/section-backgrounds';
 import { authClient } from '@/lib/auth-client';
 
-// --- STATIC DATA (Unchanged) ---
-
 const supportCategories = [
   {
     title: 'Documentation',
@@ -74,10 +72,10 @@ const exploreCategories = [
     href: '/blog',
   },
   {
-    title: 'Recent Projects',
-    description: 'See our latest work',
-    iconName: 'FaCube',
-    href: '/projects',
+    title: 'Case Studies',
+    description: 'Real results from our clients',
+    iconName: 'FaChartLine',
+    href: '/case-studies',
   },
   {
     title: 'Offers',
@@ -95,10 +93,11 @@ const exploreCategories = [
 
 const blogPost = {
   id: '1',
-  title: 'Integrating Our API',
+  title: 'How to Scan If My Site Is Hacked or Blacklisted in 2025',
   url: '/blog/integrating-our-api',
-  description: 'A step-by-step guide to our public API.',
-  imageUrl: '/images/blog/api-guide.png',
+  description:
+    'Learn how to quickly scan your website for malware, blacklists, and suspicious behavior in 2025 using free and advanced tools.',
+  imageUrl: '/blog/how-to-scan-if-my-site-is-hacked-or-blacklisted-in-2025',
 };
 
 const otherMenus = [
@@ -226,7 +225,7 @@ const DesktopNavbar = ({
                         key={cat.id}
                         onMouseEnter={() => setActiveCategory(cat.name)}
                         className={cn(
-                          'rounded-md p-3 transition-colors hover:bg-accent',
+                          'hover:bg-accent p-3 rounded-md transition-colors',
                           activeCategory === cat.name && 'bg-accent',
                         )}>
                         <div className='flex items-center gap-2 font-medium text-base'>
