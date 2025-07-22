@@ -40,6 +40,55 @@ interface WordPressTag {
   count: number;
 }
 
+export type CaseStudyACF = {
+  screenshot: {
+    id: number;
+    title: string;
+    caption: string;
+    full_image_url: string;
+    thumbnail_image_url: string;
+    large_srcset: string;
+    medium_srcset: string;
+    media_details: {
+      width: number;
+      height: number;
+      sizes: {
+        medium: {
+          file: string;
+          width: number;
+          height: number;
+          mime_type: string;
+          filesize: number;
+          source_url: string;
+        };
+        thumbnail: {
+          file: string;
+          width: number;
+          height: number;
+          mime_type: string;
+          filesize: number;
+          source_url: string;
+        };
+      };
+    };
+    alt_text: string;
+    url: string;
+    target: string;
+  }[];
+
+  client_name__industry: string;
+  location: string;
+  services_provided: string;
+  problem__goal: string;
+  solution__what_we_did: string;
+  'tools_&_tech_stack': string;
+  timeline: string;
+  results__outcome: string;
+  client_testimonial: string;
+  call_to_action: string;
+  call_to_action_url: string;
+};
+
 interface WordPressPost {
   id: number;
   title: string;
@@ -57,7 +106,7 @@ interface WordPressPost {
   commentStatus: string;
   format: string;
   sticky: boolean;
-  acf: any; // ACF fields, typed as any for flexibility; can be refined based on specific fields
+  acf: CaseStudyACF; // ACF fields, typed as any for flexibility; can be refined based on specific fields
 }
 
 interface PostsQueryOptions {

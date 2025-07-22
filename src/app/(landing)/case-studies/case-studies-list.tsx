@@ -14,117 +14,32 @@ import { Badge } from '@/components/ui/badge';
 import ComponentWrapper from '@/components/common/component-wrapper';
 import Image from 'next/image';
 import Link from 'next/link';
+import { WordPressPost } from '@/lib/wordpress';
 
-interface CaseStudy {
-  id: number;
-  clientName: string;
-  location: string;
-  services: string[];
-  problem: string;
-  solution: string;
-  tools: string[];
-  timeline: string;
-  results: string;
-  testimonial?: string;
-  ctaText: string;
-  ctaUrl: string;
-  screenshots: string[];
-}
+const CaseStudiesList = ({ caseStudies }: { caseStudies: WordPressPost[] }) => {
+  const mappedCaseStudies = caseStudies.map((post) => ({
+    id: post.id,
+    clientName: post.acf.client_name__industry,
+    location: post.acf.location,
+    services:
+      typeof post.acf.services_provided === 'string'
+        ? [post.acf.services_provided]
+        : post.acf.services_provided,
+    problem: post.acf.problem__goal,
+    solution: post.acf.solution__what_we_did,
+    tools: [], // Parsing omitted as not used in listing
+    timeline: post.acf.timeline,
+    results: post.acf.results__outcome,
+    testimonial: post.acf.client_testimonial,
+    ctaText: post.acf.call_to_action,
+    ctaUrl: post.acf.call_to_action_url,
+    screenshots: post.acf.screenshot?.map((s: any) => s.full_image_url),
+    slug: post.slug,
+    date: post.date,
+  }));
 
-const dummyCaseStudies: CaseStudy[] = [
-  {
-    id: 1,
-    clientName: 'E-commerce Brand in UK',
-    location: 'London, UK',
-    services: [
-      'Custom WordPress Development',
-      'On-Page SEO',
-      'Malware Cleanup',
-    ],
-    problem:
-      'The client was experiencing frequent site crashes, malware infections, poor SEO performance, and slow loading times, leading to lost revenue and poor user experience.',
-    solution:
-      'We performed a comprehensive malware scan and cleanup, migrated to a optimized WordPress setup, implemented custom caching mechanisms, and executed a full on-page SEO strategy including content optimization and technical fixes.',
-    tools: ['WordPress', 'Cloudflare', 'RankMath', 'Next.js'],
-    timeline: '3 weeks',
-    results:
-      'Site uptime reached 100%, page load speed improved by 300%, organic traffic surged by 150%, and sales increased by 80%. No security incidents since implementation.',
-    testimonial:
-      '3Zero Digital delivered beyond expectations. Our site is now secure and performing better than ever!',
-    ctaText: 'View Full Details',
-    ctaUrl: '/case-studies/ecommerce-uk',
-    screenshots: [
-      '/images/placeholder-screenshot-1.jpg',
-      '/images/placeholder-screenshot-1-2.jpg',
-    ],
-  },
-  {
-    id: 2,
-    clientName: 'FinTech Startup',
-    location: 'New York, USA',
-    services: ['Web Application Development', 'Performance Optimization'],
-    problem:
-      'The startup needed a secure, scalable web application but faced issues with slow API responses and vulnerability to cyber threats.',
-    solution:
-      'Developed a modern web app using Next.js, integrated secure authentication, optimized database queries, and deployed on scalable cloud infrastructure.',
-    tools: ['Next.js', 'Firebase', 'Stripe', 'Vercel'],
-    timeline: '2 months',
-    results:
-      'Application handles 10k+ concurrent users, zero downtime, 40% reduction in operational costs, and passed all compliance audits.',
-    testimonial:
-      'Their zero-compromise approach ensured our platform is robust and user-friendly.',
-    ctaText: 'Explore More',
-    ctaUrl: '/case-studies/fintech-us',
-    screenshots: ['/images/placeholder-screenshot-2-1.jpg'],
-  },
-  {
-    id: 3,
-    clientName: 'Healthcare Provider',
-    location: 'Global',
-    services: ['Website Security Hardening', 'Custom CMS Development'],
-    problem:
-      'Sensitive patient data was at risk due to outdated security protocols and an inefficient content management system.',
-    solution:
-      'Implemented multi-layer security including firewalls, encryption, and regular audits. Built a custom CMS with role-based access and automated backups.',
-    tools: ['WordPress', 'AWS', 'Sucuri', 'Custom Scripts'],
-    timeline: '1 month',
-    results:
-      'Achieved HIPAA compliance, reduced data breach risks to zero, improved content update speed by 200%, and enhanced overall site performance.',
-    testimonial:
-      'Professional and thorough - they made our platform secure and efficient.',
-    ctaText: 'See Results',
-    ctaUrl: '/case-studies/healthcare-global',
-    screenshots: [
-      '/images/placeholder-screenshot-3-1.jpg',
-      '/images/placeholder-screenshot-3-2.jpg',
-    ],
-  },
-  {
-    id: 4,
-    clientName: 'SaaS Platform in EU',
-    location: 'Berlin, Germany',
-    services: ['SEO Audit & Implementation', 'UI/UX Redesign'],
-    problem:
-      'Low search engine visibility and poor user retention due to outdated design and unoptimized content.',
-    solution:
-      'Conducted in-depth SEO audit, redesigned UI/UX for better navigation, and implemented on-page and technical SEO best practices.',
-    tools: ['RankMath', 'Figma', 'Google Analytics', 'Next.js'],
-    timeline: '6 weeks',
-    results:
-      'Organic search traffic grew by 250%, bounce rate decreased by 45%, and user session duration increased by 60%.',
-    testimonial:
-      'Transformative results with minimal disruption to our operations.',
-    ctaText: 'Discover How',
-    ctaUrl: '/case-studies/saas-eu',
-    screenshots: ['/images/placeholder-screenshot-4-1.jpg'],
-  },
-];
-
-const CaseStudiesList = () => {
-  const caseStudies = dummyCaseStudies;
-
-  const featuredCase = caseStudies[0];
-  const otherCases = caseStudies.slice(1);
+  const featuredCase = mappedCaseStudies[0];
+  const otherCases = mappedCaseStudies.slice(1);
 
   return (
     <section className='relative py-16 md:py-24 min-h-screen overflow-hidden'>
@@ -169,7 +84,7 @@ const CaseStudiesList = () => {
               <div className='bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-2xl overflow-hidden'>
                 <div className='gap-8 grid grid-cols-1 lg:grid-cols-2'>
                   <div className='relative lg:order-2'>
-                    <Image
+                    <img
                       src={
                         featuredCase.screenshots[0] ||
                         '/images/not_found_image.jpg'
@@ -196,9 +111,12 @@ const CaseStudiesList = () => {
                           {featuredCase.clientName}
                         </Link>
                       </h3>
-                      <p className='mb-6 text-slate-600 dark:text-slate-300 text-lg line-clamp-3'>
-                        {featuredCase.problem}
-                      </p>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: featuredCase.problem,
+                        }}
+                        className='mb-6 text-slate-600 dark:text-slate-300 text-lg line-clamp-3'
+                      />
                     </div>
 
                     <div className='flex flex-wrap items-center gap-4 mb-6 text-slate-500 dark:text-slate-400 text-sm'>
@@ -228,22 +146,28 @@ const CaseStudiesList = () => {
                         <TrendingUp className='w-4 h-4 text-blue-500' />
                         Key Results
                       </div>
-                      <p className='text-slate-600 dark:text-slate-300 text-sm line-clamp-3'>
-                        {featuredCase.results}
-                      </p>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: featuredCase.results,
+                        }}
+                        className='text-slate-600 dark:text-slate-300 text-sm line-clamp-3'
+                      />
                     </div>
 
                     {featuredCase.testimonial && (
-                      <blockquote className='mb-6 pl-4 border-blue-500 border-l-4 text-slate-600 dark:text-slate-300 text-sm italic line-clamp-2'>
-                        {featuredCase.testimonial}
-                      </blockquote>
+                      <blockquote
+                        dangerouslySetInnerHTML={{
+                          __html: featuredCase.testimonial,
+                        }}
+                        className='mb-6 pl-4 border-blue-500 border-l-4 text-slate-600 dark:text-slate-300 text-sm italic line-clamp-2'
+                      />
                     )}
 
                     <Button
                       asChild
                       className='bg-blue-600 hover:bg-blue-700 text-white'>
-                      <Link href={featuredCase.ctaUrl}>
-                        {featuredCase.ctaText}
+                      <Link href={`/case-studies/${featuredCase.slug}`}>
+                        View Full Details
                         <ArrowRight className='ml-2 w-4 h-4' />
                       </Link>
                     </Button>
@@ -305,9 +229,10 @@ const CaseStudiesList = () => {
                         </Link>
                       </h3>
 
-                      <p className='mb-4 text-slate-600 dark:text-slate-300 text-sm line-clamp-3'>
-                        {caseStudy.problem}
-                      </p>
+                      <div
+                        dangerouslySetInnerHTML={{ __html: caseStudy.problem }}
+                        className='mb-4 text-slate-600 dark:text-slate-300 text-sm line-clamp-3'
+                      />
 
                       <div className='flex flex-wrap items-center gap-3 mb-4 text-slate-500 dark:text-slate-400 text-xs'>
                         <div className='flex items-center gap-1'>
@@ -338,8 +263,8 @@ const CaseStudiesList = () => {
 
                       <div className='flex justify-between items-center'>
                         <Button variant='outline' size='sm' asChild>
-                          <Link href={caseStudy.ctaUrl}>
-                            {caseStudy.ctaText}
+                          <Link href={`/case-studies/${caseStudy.slug}`}>
+                            View Full Details
                             <ArrowRight className='ml-1 w-3 h-3' />
                           </Link>
                         </Button>

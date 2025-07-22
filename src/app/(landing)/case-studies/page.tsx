@@ -52,15 +52,24 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+export async function generateStaticParams() {
+  const { posts } = await wordpress.getPosts({
+    postType: 'case-study',
+    status: 'publish',
+  });
+
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
 const CaseStudiesPage = async () => {
   const { hasMore, posts, total, totalPages } = await wordpress.getPosts({
     postType: 'case-study',
     status: 'publish',
   });
 
-  console.log(total);
-
-  return <CaseStudiesList />;
+  return <CaseStudiesList caseStudies={[posts[0]]} />;
 };
 
 export default CaseStudiesPage;

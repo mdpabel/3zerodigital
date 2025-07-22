@@ -17,115 +17,30 @@ import {
   PenTool,
   TrendingUp,
 } from 'lucide-react';
+import { wordpress } from '@/lib/wordpress';
+import { cn } from '@/lib/utils';
 
-interface CaseStudy {
-  slug: string;
-  clientName: string;
-  location: string;
-  services: string[];
-  problem: string;
-  solution: string;
-  tools: string[];
-  timeline: string;
-  results: string;
-  testimonial?: string;
-  ctaText: string;
-  ctaUrl: string;
-  screenshots: string[];
+function parseHtmlList(html: string): string[] {
+  const items: string[] = [];
+  let start = 0;
+  while (true) {
+    const liStart = html.indexOf('<li>', start);
+    if (liStart === -1) break;
+    const liEnd = html.indexOf('</li>', liStart);
+    if (liEnd === -1) break;
+    const contentStart = html.indexOf('>', liStart + 3) + 1;
+    let text = html.substring(contentStart, liEnd).trim();
+    text = text.replace(/<[^>]*>/g, '');
+    items.push(text);
+    start = liEnd + 5;
+  }
+  return items;
 }
 
-const dummyCaseStudies: CaseStudy[] = [
-  {
-    slug: 'ecommerce-uk',
-    clientName: 'E-commerce Brand in UK',
-    location: 'London, UK',
-    services: [
-      'Custom WordPress Development',
-      'On-Page SEO',
-      'Malware Cleanup',
-    ],
-    problem:
-      'The client was experiencing frequent site crashes, malware infections, poor SEO performance, and slow loading times, leading to lost revenue and poor user experience.',
-    solution:
-      'We performed a comprehensive malware scan and cleanup, migrated to an optimized WordPress setup, implemented custom caching mechanisms, and executed a full on-page SEO strategy including content optimization and technical fixes.',
-    tools: ['WordPress', 'Cloudflare', 'RankMath', 'Next.js'],
-    timeline: '3 weeks',
-    results:
-      'Site uptime reached 100%, page load speed improved by 300%, organic traffic surged by 150%, and sales increased by 80%. No security incidents since implementation.',
-    testimonial:
-      '3Zero Digital delivered beyond expectations. Our site is now secure and performing better than ever!',
-    ctaText: 'Contact Us',
-    ctaUrl: '/contact',
-    screenshots: [
-      '/images/placeholder-screenshot-1.jpg',
-      '/images/placeholder-screenshot-1-2.jpg',
-    ],
-  },
-  {
-    slug: 'fintech-us',
-    clientName: 'FinTech Startup',
-    location: 'New York, USA',
-    services: ['Web Application Development', 'Performance Optimization'],
-    problem:
-      'The startup needed a secure, scalable web application but faced issues with slow API responses and vulnerability to cyber threats.',
-    solution:
-      'Developed a modern web app using Next.js, integrated secure authentication, optimized database queries, and deployed on scalable cloud infrastructure.',
-    tools: ['Next.js', 'Firebase', 'Stripe', 'Vercel'],
-    timeline: '2 months',
-    results:
-      'Application handles 10k+ concurrent users, zero downtime, 40% reduction in operational costs, and passed all compliance audits.',
-    testimonial:
-      'Their zero-compromise approach ensured our platform is robust and user-friendly.',
-    ctaText: 'Contact Us',
-    ctaUrl: '/contact',
-    screenshots: ['/images/placeholder-screenshot-2-1.jpg'],
-  },
-  {
-    slug: 'healthcare-global',
-    clientName: 'Healthcare Provider',
-    location: 'Global',
-    services: ['Website Security Hardening', 'Custom CMS Development'],
-    problem:
-      'Sensitive patient data was at risk due to outdated security protocols and an inefficient content management system.',
-    solution:
-      'Implemented multi-layer security including firewalls, encryption, and regular audits. Built a custom CMS with role-based access and automated backups.',
-    tools: ['WordPress', 'AWS', 'Sucuri', 'Custom Scripts'],
-    timeline: '1 month',
-    results:
-      'Achieved HIPAA compliance, reduced data breach risks to zero, improved content update speed by 200%, and enhanced overall site performance.',
-    testimonial:
-      'Professional and thorough - they made our platform secure and efficient.',
-    ctaText: 'Contact Us',
-    ctaUrl: '/contact',
-    screenshots: [
-      '/images/placeholder-screenshot-3-1.jpg',
-      '/images/placeholder-screenshot-3-2.jpg',
-    ],
-  },
-  {
-    slug: 'saas-eu',
-    clientName: 'SaaS Platform in EU',
-    location: 'Berlin, Germany',
-    services: ['SEO Audit & Implementation', 'UI/UX Redesign'],
-    problem:
-      'Low search engine visibility and poor user retention due to outdated design and unoptimized content.',
-    solution:
-      'Conducted in-depth SEO audit, redesigned UI/UX for better navigation, and implemented on-page and technical SEO best practices.',
-    tools: ['RankMath', 'Figma', 'Google Analytics', 'Next.js'],
-    timeline: '6 weeks',
-    results:
-      'Organic search traffic grew by 250%, bounce rate decreased by 45%, and user session duration increased by 60%.',
-    testimonial:
-      'Transformative results with minimal disruption to our operations.',
-    ctaText: 'Contact Us',
-    ctaUrl: '/contact',
-    screenshots: ['/images/placeholder-screenshot-4-1.jpg'],
-  },
-];
-
 export async function generateStaticParams() {
-  return dummyCaseStudies.map((caseStudy) => ({
-    slug: caseStudy.slug,
+  const { posts } = await wordpress.getPosts({ postType: 'case-study' });
+  return posts.map((post) => ({
+    slug: post.slug,
   }));
 }
 
@@ -134,39 +49,40 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const caseStudy = dummyCaseStudies.find(
-    async (cs) => cs.slug === (await params).slug,
-  );
+  const { slug } = await params;
+  const post = await wordpress.getPostBySlug(slug, 'case-study');
 
-  if (!caseStudy) {
+  if (!post) {
     return {
       title: 'Case Study Not Found | 3Zero Digital',
     };
   }
 
   const keywords = [
-    ...caseStudy.services,
-    ...caseStudy.tools,
-    caseStudy.clientName,
+    post.acf.services_provided,
+    ...parseHtmlList(post.acf['tools_&_tech_stack']),
+    post.acf.client_name__industry,
     'case study',
     'success story',
   ].join(', ');
 
   return {
-    title: `${caseStudy.clientName} Case Study | 3Zero Digital`,
-    description: `Discover how 3Zero Digital helped ${caseStudy.clientName} achieve ${caseStudy.results.split('.')[0].toLowerCase()}.`,
+    title: `${post.acf.client_name__industry} Case Study | 3Zero Digital`,
+    description: `Discover how 3Zero Digital helped ${post.acf.client_name__industry} achieve outstanding results.`,
     keywords,
     openGraph: {
-      title: `${caseStudy.clientName} Case Study | 3Zero Digital`,
-      description: `Discover how 3Zero Digital helped ${caseStudy.clientName} achieve ${caseStudy.results.split('.')[0].toLowerCase()}.`,
-      url: `https://www.3zerodigital.com/case-studies/${caseStudy.slug}`,
+      title: `${post.acf.client_name__industry} Case Study | 3Zero Digital`,
+      description: `Discover how 3Zero Digital helped ${post.acf.client_name__industry} achieve outstanding results.`,
+      url: `https://www.3zerodigital.com/case-studies/${post.slug}`,
       siteName: '3Zero Digital',
       images: [
         {
-          url: caseStudy.screenshots[0] || '/images/case-studies-og-image.jpg',
+          url:
+            post.acf.screenshot[0]?.full_image_url ||
+            '/images/case-studies-og-image.jpg',
           width: 1200,
           height: 630,
-          alt: `${caseStudy.clientName} Case Study`,
+          alt: `${post.acf.client_name__industry} Case Study`,
         },
       ],
       locale: 'en_US',
@@ -174,10 +90,11 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${caseStudy.clientName} Case Study | 3Zero Digital`,
-      description: `Discover how 3Zero Digital helped ${caseStudy.clientName} achieve ${caseStudy.results.split('.')[0].toLowerCase()}.`,
+      title: `${post.acf.client_name__industry} Case Study | 3Zero Digital`,
+      description: `Discover how 3Zero Digital helped ${post.acf.client_name__industry} achieve outstanding results.`,
       images: [
-        caseStudy.screenshots[0] || '/images/case-studies-twitter-image.jpg',
+        post.acf.screenshot[0]?.full_image_url ||
+          '/images/case-studies-twitter-image.jpg',
       ],
     },
     robots: {
@@ -189,7 +106,7 @@ export async function generateMetadata({
       },
     },
     alternates: {
-      canonical: `https://www.3zerodigital.com/case-studies/${caseStudy.slug}`,
+      canonical: `https://www.3zerodigital.com/case-studies/${post.slug}`,
     },
   };
 }
@@ -199,13 +116,19 @@ const CaseStudyDetailsPage = async ({
 }: {
   params: Promise<{ slug: string }>;
 }) => {
-  const caseStudy = dummyCaseStudies.find(
-    async (cs) => cs.slug === (await params).slug,
-  );
+  const { slug } = await params;
+  const post = await wordpress.getPostBySlug(slug, 'case-study');
 
-  if (!caseStudy) {
+  if (!post) {
     notFound();
   }
+
+  const services =
+    typeof post.acf.services_provided === 'string'
+      ? [post.acf.services_provided]
+      : post.acf.services_provided;
+  const tools = post.acf['tools_&_tech_stack'];
+  const screenshots = post.acf.screenshot.map((s: any) => s.full_image_url);
 
   return (
     <section className='relative py-16 md:py-24 min-h-screen overflow-hidden'>
@@ -220,21 +143,21 @@ const CaseStudyDetailsPage = async ({
 
             <h1 className='mb-4 font-bold text-3xl md:text-4xl lg:text-5xl'>
               <span className='bg-clip-text bg-gradient-to-r from-slate-900 dark:from-white via-blue-900 dark:via-blue-100 to-slate-900 dark:to-white text-transparent'>
-                {caseStudy.clientName}
+                {post.acf.client_name__industry}
               </span>
             </h1>
 
             <p className='mx-auto mb-8 max-w-3xl text-slate-600 dark:text-slate-300 text-lg md:text-xl'>
               How we delivered zero-compromise solutions for{' '}
-              {caseStudy.clientName}
+              {post.acf.client_name__industry}
             </p>
           </div>
 
           {/* Hero Image */}
           <div className='mb-12'>
-            <Image
-              src={caseStudy.screenshots[0] || '/images/not_found_image.jpg'}
-              alt={`${caseStudy.clientName} featured screenshot`}
+            <img
+              src={screenshots[0] || '/images/not_found_image.jpg'}
+              alt={`${post.acf.client_name__industry} featured screenshot`}
               width={1200}
               height={600}
               className='shadow-xl rounded-2xl w-full h-auto object-cover'
@@ -250,7 +173,7 @@ const CaseStudyDetailsPage = async ({
                 </h2>
                 <div className='flex items-center gap-2 text-slate-600 dark:text-slate-300'>
                   <Globe className='w-5 h-5' />
-                  {caseStudy.location}
+                  {post.acf.location}
                 </div>
               </div>
               <div>
@@ -259,7 +182,7 @@ const CaseStudyDetailsPage = async ({
                 </h2>
                 <div className='flex items-center gap-2 text-slate-600 dark:text-slate-300'>
                   <Clock className='w-5 h-5' />
-                  {caseStudy.timeline}
+                  {post.acf.timeline}
                 </div>
               </div>
               <div>
@@ -267,7 +190,7 @@ const CaseStudyDetailsPage = async ({
                   Services Provided
                 </h2>
                 <div className='flex flex-wrap gap-2'>
-                  {caseStudy.services.map((service, idx) => (
+                  {services.map((service, idx) => (
                     <Badge key={idx} variant='secondary'>
                       {service}
                     </Badge>
@@ -283,9 +206,10 @@ const CaseStudyDetailsPage = async ({
               <Goal className='w-6 h-6 text-blue-600' />
               Problem / Goal
             </h2>
-            <p className='text-slate-600 dark:text-slate-300 text-lg leading-relaxed'>
-              {caseStudy.problem}
-            </p>
+            <div
+              dangerouslySetInnerHTML={{ __html: post.acf.problem__goal }}
+              className='text-slate-600 dark:text-slate-300 text-lg leading-relaxed'
+            />
           </div>
 
           {/* Solution */}
@@ -294,9 +218,12 @@ const CaseStudyDetailsPage = async ({
               <Settings className='w-6 h-6 text-blue-600' />
               Solution / What We Did
             </h2>
-            <p className='text-slate-600 dark:text-slate-300 text-lg leading-relaxed'>
-              {caseStudy.solution}
-            </p>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: post.acf.solution__what_we_did,
+              }}
+              className='text-slate-600 dark:text-slate-300 text-lg leading-relaxed'
+            />
           </div>
 
           {/* Tools */}
@@ -305,16 +232,12 @@ const CaseStudyDetailsPage = async ({
               <PenTool className='w-6 h-6 text-blue-600' />
               Tools & Tech Stack
             </h2>
-            <div className='flex flex-wrap gap-2'>
-              {caseStudy.tools.map((tool, idx) => (
-                <Badge
-                  key={idx}
-                  variant='outline'
-                  className='px-4 py-2 text-base'>
-                  {tool}
-                </Badge>
-              ))}
-            </div>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: tools,
+              }}
+              className='text-slate-600 dark:text-slate-300 text-lg leading-relaxed'
+            />
           </div>
 
           {/* Results */}
@@ -323,39 +246,48 @@ const CaseStudyDetailsPage = async ({
               <TrendingUp className='w-6 h-6 text-blue-600' />
               Results / Outcome
             </h2>
-            <p className='text-slate-600 dark:text-slate-300 text-lg leading-relaxed'>
-              {caseStudy.results}
-            </p>
+            <div
+              dangerouslySetInnerHTML={{ __html: post.acf.results__outcome }}
+              className='text-slate-600 dark:text-slate-300 text-lg leading-relaxed'
+            />
           </div>
 
           {/* Testimonial */}
-          {caseStudy.testimonial && (
+          {post.acf.client_testimonial && (
             <div className='bg-blue-50 dark:bg-blue-900/10 mb-12 p-8 rounded-2xl'>
               <h2 className='flex items-center gap-2 mb-4 font-bold text-slate-900 dark:text-white text-2xl'>
                 <Quote className='w-6 h-6 text-blue-600' />
                 Client Testimonial
               </h2>
-              <blockquote className='text-slate-600 dark:text-slate-300 text-lg italic leading-relaxed'>
-                {caseStudy.testimonial}
-              </blockquote>
+              <blockquote
+                dangerouslySetInnerHTML={{
+                  __html: post.acf.client_testimonial,
+                }}
+                className='text-slate-600 dark:text-slate-300 text-lg italic leading-relaxed'
+              />
             </div>
           )}
 
           {/* Screenshots */}
-          {caseStudy.screenshots.length > 0 && (
+          {screenshots.length > 0 && (
             <div className='mb-12'>
               <h2 className='mb-4 font-bold text-slate-900 dark:text-white text-2xl'>
                 Screenshots
               </h2>
-              <div className='gap-6 grid grid-cols-1 md:grid-cols-2'>
-                {caseStudy.screenshots.map((url, idx) => (
-                  <Image
-                    key={idx}
+              <div
+                className={cn(
+                  'gap-4 grid grid-cols-1',
+                  post.acf.screenshot?.length === 1 && 'hidden',
+                  post.acf.screenshot?.length > 1
+                    ? 'md:grid-cols-2 lg:grid-cols-3'
+                    : 'md:grid-cols-1',
+                )}>
+                {screenshots.map((url: any, index: number) => (
+                  <img
+                    key={index}
                     src={url}
-                    alt={`Screenshot ${idx + 1} for ${caseStudy.clientName}`}
-                    width={600}
-                    height={400}
-                    className='shadow-md rounded-2xl w-full h-auto object-cover'
+                    alt={`Screenshot ${index + 1}`}
+                    className='shadow-md rounded-lg w-full h-auto'
                   />
                 ))}
               </div>
@@ -367,18 +299,17 @@ const CaseStudyDetailsPage = async ({
             <h3 className='mb-4 font-bold text-slate-900 dark:text-white text-2xl md:text-3xl'>
               Ready to Achieve Similar Results?
             </h3>
-            <p className='mb-6 text-slate-600 dark:text-slate-300 text-lg'>
-              Discover how our zero-compromise solutions can transform your
-              business. Get in touch to discuss your project or explore our
-              services.
-            </p>
+            <div
+              dangerouslySetInnerHTML={{ __html: post.acf.call_to_action }}
+              className='mb-6 text-slate-600 dark:text-slate-300 text-lg'
+            />
             <div className='flex sm:flex-row flex-col justify-center gap-4'>
               <Button
                 asChild
                 size='lg'
                 className='bg-blue-600 hover:bg-blue-700 px-8 py-6 text-white'>
-                <Link href={caseStudy.ctaUrl}>
-                  {caseStudy.ctaText}
+                <Link href='/contact'>
+                  Contact Us
                   <ArrowRight className='ml-2 w-5 h-5' />
                 </Link>
               </Button>
