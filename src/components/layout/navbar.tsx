@@ -94,10 +94,10 @@ const exploreCategories = [
 const blogPost = {
   id: '1',
   title: 'How to Scan If My Site Is Hacked or Blacklisted in 2025',
-  url: '/blog/integrating-our-api',
+  url: '/blog/how-to-scan-if-my-site-is-hacked-or-blacklisted-in-2025',
   description:
     'Learn how to quickly scan your website for malware, blacklists, and suspicious behavior in 2025 using free and advanced tools.',
-  imageUrl: '/blog/how-to-scan-if-my-site-is-hacked-or-blacklisted-in-2025',
+  imageUrl: '/scan.png',
 };
 
 const otherMenus = [
@@ -246,18 +246,19 @@ const DesktopNavbar = ({
                         </h3>
                         <div className='gap-4 grid grid-cols-2'>
                           {activeCategoryData.services.map((p) => (
-                            <Link
-                              key={p.id}
-                              href={`/${p.slug}`}
-                              className='block hover:bg-accent p-2 rounded-md transition'>
-                              <div className='flex items-center gap-2 font-medium text-base'>
-                                <IconRenderer iconName={p.icon || ''} />
-                                {p.name}
-                              </div>
-                              <p className='mt-1 text-muted-foreground text-xs line-clamp-2'>
-                                {p.description || 'No description.'}
-                              </p>
-                            </Link>
+                            <NavigationMenuLink key={p.id} asChild>
+                              <Link
+                                href={`/${p.slug}`}
+                                className='block hover:bg-accent p-2 rounded-md transition'>
+                                <div className='flex items-center gap-2 font-medium text-base'>
+                                  <IconRenderer iconName={p.icon || ''} />
+                                  {p.name}
+                                </div>
+                                <p className='mt-1 text-muted-foreground text-xs line-clamp-2'>
+                                  {p.description || 'No description.'}
+                                </p>
+                              </Link>
+                            </NavigationMenuLink>
                           ))}
                         </div>
                       </>
@@ -283,39 +284,41 @@ const DesktopNavbar = ({
                       <div className='flex p-4'>
                         <div className='flex-1 space-y-4 pr-4 border-r'>
                           {menu.items!.map((item) => (
-                            <Link
-                              key={item.title}
-                              href={item.href}
-                              className='flex items-center gap-2 hover:bg-accent p-2 rounded-md transition'>
-                              <IconRenderer iconName={item.iconName} />
-                              <div>
-                                <h4 className='font-medium text-base'>
-                                  {item.title}
-                                </h4>
-                                <p className='text-muted-foreground text-xs line-clamp-2'>
-                                  {item.description}
-                                </p>
-                              </div>
-                            </Link>
+                            <NavigationMenuLink key={item.title} asChild>
+                              <Link
+                                href={item.href}
+                                className='flex items-center gap-2 hover:bg-accent p-2 rounded-md transition'>
+                                <IconRenderer iconName={item.iconName} />
+                                <div>
+                                  <h4 className='font-medium text-base'>
+                                    {item.title}
+                                  </h4>
+                                  <p className='text-muted-foreground text-xs line-clamp-2'>
+                                    {item.description}
+                                  </p>
+                                </div>
+                              </Link>
+                            </NavigationMenuLink>
                           ))}
                         </div>
                         <div className='flex-1 pl-4'>
-                          <Link
-                            key={menu.blogPost?.id}
-                            href={menu.blogPost?.url!}
-                            className='block hover:bg-accent p-2 rounded-md transition'>
-                            <img
-                              src={menu.blogPost?.imageUrl}
-                              alt={menu.blogPost?.title}
-                              className='mb-2 rounded w-full h-40 object-cover'
-                            />
-                            <h4 className='font-medium text-base'>
-                              {menu.blogPost?.title}
-                            </h4>
-                            <p className='text-muted-foreground text-xs line-clamp-3'>
-                              {menu.blogPost?.description}
-                            </p>
-                          </Link>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href={menu.blogPost?.url!}
+                              className='block hover:bg-accent p-2 rounded-md transition'>
+                              <img
+                                src={menu.blogPost?.imageUrl}
+                                alt={menu.blogPost?.title}
+                                className='mb-2 rounded w-full h-40 object-cover'
+                              />
+                              <h4 className='font-medium text-base'>
+                                {menu.blogPost?.title}
+                              </h4>
+                              <p className='text-muted-foreground text-xs line-clamp-3'>
+                                {menu.blogPost?.description}
+                              </p>
+                            </Link>
+                          </NavigationMenuLink>
                         </div>
                       </div>
                     </NavigationMenuContent>

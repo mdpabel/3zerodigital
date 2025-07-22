@@ -69,7 +69,7 @@ const CaseStudiesPage = async () => {
     status: 'publish',
   });
 
-  return <CaseStudiesList caseStudies={[posts[0]]} />;
+  return <CaseStudiesList caseStudies={posts} />;
 };
 
 export default CaseStudiesPage;
