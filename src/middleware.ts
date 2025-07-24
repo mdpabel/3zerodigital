@@ -16,15 +16,19 @@ export async function middleware(request: NextRequest) {
   );
 
   const url = request.nextUrl;
+  const pathname = url.pathname;
 
   // If the user is logged in, prevent access to login and registration pages
-  if (session && ['/login', '/signup'].includes(url.pathname)) {
+  if (session && (pathname === '/login' || pathname === '/signup')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // If the user is not logged in, prevent access to protected routes
-  if (!session && ['/dashboard'].includes(url.pathname)) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+  // If the user is not logged in, prevent access to protected routes (including sub-pages)
+  if (
+    !session &&
+    (pathname.startsWith('/dashboard') || pathname.startsWith('/admin'))
+  ) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // Allow the request to proceed for all other cases
@@ -32,5 +36,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard', '/login', '/signup'], // Apply middleware to specific routes
+  matcher: ['/dashboard/:path*', '/login', '/signup', '/admin/:path*'], // Apply middleware to specific routes and their sub-pages
 };

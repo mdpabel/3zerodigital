@@ -143,7 +143,7 @@ const CaseStudyDetailsPage = async ({
 
             <h1 className='mb-4 font-bold text-3xl md:text-4xl lg:text-5xl'>
               <span className='bg-clip-text bg-gradient-to-r from-slate-900 dark:from-white via-blue-900 dark:via-blue-100 to-slate-900 dark:to-white text-transparent'>
-                {post.acf.client_name__industry}
+                {post.title}
               </span>
             </h1>
 

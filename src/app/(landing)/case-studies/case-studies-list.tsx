@@ -36,6 +36,7 @@ const CaseStudiesList = ({ caseStudies }: { caseStudies: WordPressPost[] }) => {
     screenshots: post.acf.screenshot?.map((s: any) => s.full_image_url),
     slug: post.slug,
     date: post.date,
+    title: post.title,
   }));
 
   const featuredCase = mappedCaseStudies[0];
@@ -106,9 +107,9 @@ const CaseStudiesList = ({ caseStudies }: { caseStudies: WordPressPost[] }) => {
                     <div className='mb-4'>
                       <h3 className='mb-4 font-bold text-slate-900 dark:text-white text-2xl md:text-3xl'>
                         <Link
-                          href={featuredCase.ctaUrl}
+                          href={featuredCase.slug}
                           className='hover:text-blue-600 dark:hover:text-blue-400 transition-colors'>
-                          {featuredCase.clientName}
+                          {featuredCase.title}
                         </Link>
                       </h3>
                       <div
@@ -224,9 +225,7 @@ const CaseStudiesList = ({ caseStudies }: { caseStudies: WordPressPost[] }) => {
 
                     <div className='p-6'>
                       <h3 className='mb-3 font-bold text-slate-900 dark:group-hover:text-blue-400 dark:text-white group-hover:text-blue-600 text-lg transition-colors'>
-                        <Link href={caseStudy.ctaUrl}>
-                          {caseStudy.clientName}
-                        </Link>
+                        <Link href={caseStudy.slug}>{caseStudy.title}</Link>
                       </h3>
 
                       <div
