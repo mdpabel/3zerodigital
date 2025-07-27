@@ -1,51 +1,10 @@
-// app/services/dns-issue/page.tsx
 'use client';
 
 import ServiceStepper from '@/components/service-stepper';
 import {
-  CoreService,
-  AddOnService,
   CustomField,
+  ServiceStepperProps,
 } from '@/components/service-stepper/types';
-import { Globe, Server, Mail, Shield } from 'lucide-react';
-
-const dnsCoreService: CoreService = {
-  id: 'dns-issue-fix',
-  name: 'DNS Issue Resolution',
-  price: 149,
-  originalPrice: 199,
-  responseTime: 'Within 2 hours',
-  completionTime: 'Within 24 hours (plus propagation time)',
-  features: [
-    'Full DNS Record Audit (A, CNAME, MX, TXT)',
-    'Diagnose Misconfigurations',
-    'Correct DNS Records at Your Registrar',
-    'Verify Propagation of Changes',
-    'Ensure Site & Email are Pointed Correctly',
-    'Detailed Report of Changes Made',
-  ],
-  guarantees: [
-    'Correct DNS Configuration Guarantee',
-    '48-Hour Propagation Monitoring',
-  ],
-};
-
-const dnsAddOns: AddOnService[] = [
-  {
-    id: 'cloudflare-setup',
-    name: 'Cloudflare CDN & Security Setup',
-    price: 99,
-    icon: Shield,
-    popular: true,
-    description:
-      'Move your DNS management to Cloudflare for improved speed, security, and reliability.',
-    features: [
-      'Cloudflare Account Setup',
-      'DNS Migration to Cloudflare',
-      'Basic CDN & WAF Configuration',
-    ],
-  },
-];
 
 const dnsCustomFields: CustomField[] = [
   {
@@ -77,18 +36,27 @@ const dnsCustomFields: CustomField[] = [
   },
 ];
 
-const DnsIssueStepper = () => {
+const guarantees = [
+  '100% DNS Issue Resolution Guarantee',
+  'Post-Fix Monitoring & Support Included',
+];
+
+const DnsIssueStepper = ({
+  addOnServices,
+  coreService,
+}: Pick<ServiceStepperProps, 'addOnServices' | 'coreService'>) => {
   return (
     <ServiceStepper
       title='DNS Issue Resolution Service'
       subtitle='DNS problems can take your site and email offline. Our experts will troubleshoot and fix your DNS records correctly.'
-      coreService={dnsCoreService}
-      addOnServices={dnsAddOns}
+      coreService={coreService}
+      addOnServices={addOnServices}
       customFields={dnsCustomFields}
       emergencyService={true}
       allowMultipleSites={false}
       requiresSiteUrl={false} // URL might not be resolving
       requiresDescription={true}
+      guarantees={guarantees}
     />
   );
 };

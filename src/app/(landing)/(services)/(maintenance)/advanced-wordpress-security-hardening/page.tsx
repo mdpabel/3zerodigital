@@ -1,12 +1,15 @@
 import React from 'react';
 import ServiceHero from '@/components/common/Hero';
 import WordPressSecurityStepper from './wordpress-security-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'wordpress-security';
+const slug = 'advanced-wordpress-security-hardening';
 
 const WordPressSecurity = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -52,7 +55,10 @@ const WordPressSecurity = async () => {
         }}
       />
 
-      <WordPressSecurityStepper />
+      <WordPressSecurityStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
     </div>
   );
 };

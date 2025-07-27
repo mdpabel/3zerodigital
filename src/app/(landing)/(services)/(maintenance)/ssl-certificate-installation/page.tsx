@@ -8,12 +8,15 @@ import SSLProcessSection from './ssl-process';
 import SSLFAQSection from './ssl-faq-section';
 import SSLSecurityVerification from './security-verification';
 import SslInstallationStepper from './ssl-installation-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'ssl-installation';
+const slug = 'ssl-certificate-installation';
 
 const SSLInstallation = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -59,7 +62,10 @@ const SSLInstallation = async () => {
         }}
       />
 
-      <SslInstallationStepper />
+      <SslInstallationStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
       <ComponentWrapper>
         <SSLSecurityVerification />
         <SSLBenefitsSection />

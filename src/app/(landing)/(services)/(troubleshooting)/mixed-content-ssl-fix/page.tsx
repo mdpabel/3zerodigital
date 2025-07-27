@@ -1,14 +1,15 @@
-import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
-import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
 import SslMixedContentErrorStepper from './ssl-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'ssl-mixed-content-error';
+const slug = 'mixed-content-ssl-fix';
 
 export default async function FixMixedContentErrorService() {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -62,7 +63,10 @@ export default async function FixMixedContentErrorService() {
         }}
       />
 
-      <SslMixedContentErrorStepper />
+      <SslMixedContentErrorStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
 
       <ErrorResolutionDashboard />
     </div>

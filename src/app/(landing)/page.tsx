@@ -8,7 +8,9 @@ import { getFeaturedServices } from '@/actions/service-actions';
 import FeaturedServices from '@/components/services/featured-services';
 
 const Home = async () => {
-  const services = await getFeaturedServices();
+  const services = await getFeaturedServices({
+    limit: 10,
+  });
 
   return (
     <div>

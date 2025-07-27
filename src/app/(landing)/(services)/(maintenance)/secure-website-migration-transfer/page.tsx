@@ -3,12 +3,15 @@ import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
 import WebsiteMigrationPricing from './pricing-table';
 import WebsiteMigrationStepper from './wordpress-migration-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'website-migration';
+const slug = 'secure-website-migration-transfer';
 
 const WebsiteMigration = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -54,7 +57,10 @@ const WebsiteMigration = async () => {
         }}
       />
 
-      <WebsiteMigrationStepper />
+      <WebsiteMigrationStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
     </div>
   );
 };

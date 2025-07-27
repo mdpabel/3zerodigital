@@ -197,7 +197,7 @@ export async function getServices(includeInactive = false) {
   });
 }
 
-export const getFeaturedServices = async () => {
+export const getFeaturedServices = async ({ limit }: { limit: number }) => {
   return prisma.service.findMany({
     where: {
       categories: {
@@ -206,6 +206,7 @@ export const getFeaturedServices = async () => {
         },
       },
     },
+    take: limit,
   });
 };
 
@@ -262,6 +263,23 @@ export async function getCategoriesWithServices(): Promise<
 }
 
 export const getServiceBySlug = async (slug: string) => {
+  const service = await prisma.service.findFirst({
+    where: {
+      slug,
+    },
+    include: {
+      relatedTo: true,
+    },
+  });
+
+  if (!service) {
+    throw new Error('No service found with slug ' + slug);
+  }
+
+  return service;
+};
+
+export const getServiceWithRelated = async (slug: string) => {
   const service = await prisma.service.findFirst({
     where: {
       slug,

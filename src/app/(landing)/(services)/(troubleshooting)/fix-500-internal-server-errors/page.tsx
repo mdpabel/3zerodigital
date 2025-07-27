@@ -1,17 +1,15 @@
-import Hero from '@/components/common/Hero';
-import PricingTable from '../pricing-table';
-
-import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
-import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
 import Http500ErrorStepper from './http-500-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'http-500-internal-server-error';
+const slug = 'fix-500-internal-server-errors';
 
 export default async function Fix500ErrorService() {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -57,7 +55,10 @@ export default async function Fix500ErrorService() {
         }}
       />
 
-      <Http500ErrorStepper />
+      <Http500ErrorStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
 
       <ErrorResolutionDashboard />
     </div>

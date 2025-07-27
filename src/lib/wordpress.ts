@@ -106,7 +106,7 @@ interface WordPressPost {
   commentStatus: string;
   format: string;
   sticky: boolean;
-  acf: CaseStudyACF; // ACF fields, typed as any for flexibility; can be refined based on specific fields
+  acf: any; // ACF fields, typed as any for flexibility; can be refined based on specific fields
 }
 
 interface PostsQueryOptions {

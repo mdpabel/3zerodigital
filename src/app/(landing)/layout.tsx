@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic';
 import Header from '@/components/layout/header';
 import Script from 'next/script';
 import { ratingSchema } from './schema-markup';

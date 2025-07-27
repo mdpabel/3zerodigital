@@ -1,12 +1,15 @@
 import ServiceHero from '@/components/common/Hero';
 import BlacklistRemovalPricing from './blacklist-removal-pricing-table';
 import BlacklistRemovalStepper from './pricing-stepper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'blacklist-removal';
+const slug = 'blacklist-removal-reputation-repair';
 
 const page = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -52,7 +55,10 @@ const page = async () => {
         }}
       />
 
-      <BlacklistRemovalStepper />
+      <BlacklistRemovalStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
     </div>
   );
 };

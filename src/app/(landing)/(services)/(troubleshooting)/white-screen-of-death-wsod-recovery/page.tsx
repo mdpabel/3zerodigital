@@ -1,13 +1,15 @@
 import ServiceHero from '@/components/common/Hero';
-import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
 import WhiteScreenOfDeathStepper from './wsod-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'white-screen-of-death';
+const slug = 'white-screen-of-death-wsod-recovery';
 
 export default async function FixWSODService() {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -53,7 +55,10 @@ export default async function FixWSODService() {
         }}
       />
 
-      <WhiteScreenOfDeathStepper />
+      <WhiteScreenOfDeathStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
 
       <ErrorResolutionDashboard />
     </div>

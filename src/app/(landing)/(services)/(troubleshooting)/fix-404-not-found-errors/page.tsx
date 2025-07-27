@@ -1,12 +1,15 @@
 import ServiceHero from '@/components/common/Hero';
 import ErrorResolutionDashboard from '../error-dashboard';
 import Http404ErrorStepper from './http-404-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'http-404-not-found-error';
+const slug = 'fix-404-not-found-errors';
 
 export default async function Fix404ErrorService() {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -52,7 +55,10 @@ export default async function Fix404ErrorService() {
         }}
       />
 
-      <Http404ErrorStepper />
+      <Http404ErrorStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
 
       <ErrorResolutionDashboard />
     </div>

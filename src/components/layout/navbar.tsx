@@ -48,19 +48,13 @@ const supportCategories = [
     title: 'Book a call',
     description: 'Schedule a one-on-one session',
     iconName: 'FaStethoscope',
-    href: '/contact',
+    href: '/book-a-call',
   },
   {
     title: 'Contact Us',
     description: 'Get in touch via email',
     iconName: 'FaEnvelope',
     href: '/contact',
-  },
-  {
-    title: 'Tutorials',
-    description: 'Step-by-step guides and videos',
-    iconName: 'FaPlay',
-    href: '/tutorials',
   },
 ];
 

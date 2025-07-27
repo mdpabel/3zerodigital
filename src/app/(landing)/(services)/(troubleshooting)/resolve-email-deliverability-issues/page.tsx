@@ -2,12 +2,15 @@ import React from 'react';
 import ServiceHero from '@/components/common/Hero';
 import ErrorResolutionDashboard from '../error-dashboard';
 import EmailDeliverabilityStepper from './email0deliverability-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'email-deliverability-issues';
+const slug = 'resolve-email-deliverability-issues';
 
 const EmailDeliverabilityIssues = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -53,7 +56,10 @@ const EmailDeliverabilityIssues = async () => {
         }}
       />
 
-      <EmailDeliverabilityStepper />
+      <EmailDeliverabilityStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
 
       <ErrorResolutionDashboard />
     </div>

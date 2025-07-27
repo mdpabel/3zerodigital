@@ -1,18 +1,15 @@
-import { AiOutlineCheck } from 'react-icons/ai';
-import PricingTable from '../pricing-table';
-import Hero from '@/components/common/Hero';
-
-import Script from 'next/script';
 import ServiceHero from '@/components/common/Hero';
-import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
 import Http403ErrorStepper from './http-403-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'http-403-forbidden-error';
+const slug = 'fix-403-forbidden-errors';
 
 export default async function Fix403ErrorService() {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -58,7 +55,10 @@ export default async function Fix403ErrorService() {
         }}
       />
 
-      <Http403ErrorStepper />
+      <Http403ErrorStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
 
       <ErrorResolutionDashboard />
     </div>

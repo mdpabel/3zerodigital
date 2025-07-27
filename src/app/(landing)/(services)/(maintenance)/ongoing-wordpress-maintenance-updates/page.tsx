@@ -1,11 +1,14 @@
 import ServiceHero from '@/components/common/Hero';
 import WordPressMaintenanceStepper from './pricing-stepper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'ongoing-wordpress-maintenance';
+const slug = 'ongoing-wordpress-maintenance-updates';
 
 const WordPressMaintenance = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -51,7 +54,10 @@ const WordPressMaintenance = async () => {
         }}
       />
 
-      <WordPressMaintenanceStepper />
+      <WordPressMaintenanceStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
     </div>
   );
 };

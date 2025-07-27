@@ -1,80 +1,10 @@
-// app/services/wordpress-security/page.tsx
 'use client';
 
 import ServiceStepper from '@/components/service-stepper';
 import {
-  CoreService,
-  AddOnService,
   CustomField,
+  ServiceStepperProps,
 } from '@/components/service-stepper/types';
-import { Shield, Lock, Eye, AlertTriangle, FileText } from 'lucide-react';
-
-const securityCoreService: CoreService = {
-  id: 'wordpress-security-pro',
-  name: 'WordPress Security Hardening Pro',
-  price: 249,
-  originalPrice: 329,
-  responseTime: 'Within 24 hours',
-  completionTime: '2-3 business days',
-  features: [
-    'Complete Security Audit',
-    'Vulnerability Assessment',
-    'Security Hardening Implementation',
-    'Malware Scanning & Removal',
-    'Firewall Configuration',
-    'Login Security Enhancement',
-    'File Permission Optimization',
-    'Security Plugin Setup',
-    'Detailed Security Report',
-  ],
-  guarantees: ['99.9% Security Improvement', '60-Day Security Monitoring'],
-};
-
-const securityAddOns: AddOnService[] = [
-  {
-    id: 'advanced-monitoring',
-    name: 'Advanced Security Monitoring',
-    price: 99,
-    icon: Eye,
-    popular: true,
-    description:
-      '24/7 security monitoring with real-time threat detection and response.',
-    features: [
-      'Real-time Threat Detection',
-      'Automated Incident Response',
-      'Weekly Security Scans',
-      'Intrusion Detection System',
-    ],
-  },
-  {
-    id: 'penetration-testing',
-    name: 'Penetration Testing',
-    price: 399,
-    icon: AlertTriangle,
-    description:
-      'Professional penetration testing to identify security vulnerabilities.',
-    features: [
-      'Comprehensive Penetration Test',
-      'Vulnerability Exploitation Testing',
-      'Detailed Risk Assessment',
-      'Remediation Recommendations',
-    ],
-  },
-  {
-    id: 'compliance-audit',
-    name: 'Compliance Audit',
-    price: 199,
-    icon: FileText,
-    description:
-      'Security compliance audit for GDPR, PCI DSS, and other standards.',
-    features: [
-      'GDPR Compliance Check',
-      'PCI DSS Assessment',
-      'Security Standards Audit',
-      'Compliance Report & Recommendations',
-    ],
-  },
-];
 
 const securityCustomFields: CustomField[] = [
   {
@@ -122,13 +52,16 @@ const securityCustomFields: CustomField[] = [
   },
 ];
 
-const WordPressSecurityStepper = () => {
+const WordPressSecurityStepper = ({
+  addOnServices,
+  coreService,
+}: Pick<ServiceStepperProps, 'addOnServices' | 'coreService'>) => {
   return (
     <ServiceStepper
       title='WordPress Security Hardening'
       subtitle='Protect your WordPress site from hackers, malware, and security threats with our comprehensive security hardening service.'
-      coreService={securityCoreService}
-      addOnServices={securityAddOns}
+      coreService={coreService}
+      addOnServices={addOnServices}
       customFields={securityCustomFields}
       emergencyService={false}
       allowMultipleSites={false}

@@ -2,12 +2,15 @@ import ServiceHero from '@/components/common/Hero';
 import SpeedOptimizationPricing from './pricing-table';
 import SpeedOptimizationAudit from './speed-audit';
 import SpeedOptimizationStepper from './speed-optimization-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
 export const dynamic = 'force-static';
 
-const slug = 'wordpress-speed-optimization';
+const slug = 'wordpress-speed-performance-optimization';
 
 const WordPressSpeedOptimization = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -53,7 +56,10 @@ const WordPressSpeedOptimization = async () => {
         }}
       />
 
-      <SpeedOptimizationStepper />
+      <SpeedOptimizationStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
       <SpeedOptimizationAudit />
     </div>
   );

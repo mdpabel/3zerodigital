@@ -1,80 +1,10 @@
-// app/services/website-migration/page.tsx
 'use client';
 
 import ServiceStepper from '@/components/service-stepper';
 import {
-  CoreService,
-  AddOnService,
   CustomField,
+  ServiceStepperProps,
 } from '@/components/service-stepper/types';
-import { Move, Shield, Zap, Settings, Globe } from 'lucide-react';
-
-const migrationCoreService: CoreService = {
-  id: 'website-migration-pro',
-  name: 'Professional Website Migration',
-  price: 399,
-  originalPrice: 499,
-  responseTime: 'Within 24 hours',
-  completionTime: '3-7 business days',
-  features: [
-    'Complete Site Migration',
-    'Domain & DNS Configuration',
-    'Database Migration',
-    'File Transfer & Optimization',
-    'SSL Certificate Setup',
-    'Email Migration (if applicable)',
-    'SEO Preservation',
-    'Post-Migration Testing',
-    'Migration Documentation',
-  ],
-  guarantees: ['Zero Downtime Migration', '30-Day Post-Migration Support'],
-};
-
-const migrationAddOns: AddOnService[] = [
-  {
-    id: 'premium-support',
-    name: 'Premium Migration Support',
-    price: 149,
-    icon: Shield,
-    popular: true,
-    description:
-      'Enhanced support with backup plans and rollback options during migration.',
-    features: [
-      'Full Site Backup Before Migration',
-      'Instant Rollback Option',
-      'Priority Support During Migration',
-      'Extended Post-Migration Support',
-    ],
-  },
-  {
-    id: 'performance-optimization',
-    name: 'Migration + Performance Boost',
-    price: 199,
-    icon: Zap,
-    description:
-      'Combine migration with performance optimization for better loading speeds.',
-    features: [
-      'Speed Optimization During Migration',
-      'Caching Configuration',
-      'Image Optimization',
-      'Performance Testing & Tuning',
-    ],
-  },
-  {
-    id: 'advanced-setup',
-    name: 'Advanced Server Setup',
-    price: 299,
-    icon: Settings,
-    description:
-      'Custom server configuration and advanced hosting environment setup.',
-    features: [
-      'Custom Server Configuration',
-      'Advanced Security Hardening',
-      'Performance Tuning',
-      'Monitoring Setup',
-    ],
-  },
-];
 
 const migrationCustomFields: CustomField[] = [
   {
@@ -142,13 +72,16 @@ const migrationCustomFields: CustomField[] = [
   },
 ];
 
-const WebsiteMigrationStepper = () => {
+const WebsiteMigrationStepper = ({
+  addOnServices,
+  coreService,
+}: Pick<ServiceStepperProps, 'addOnServices' | 'coreService'>) => {
   return (
     <ServiceStepper
       title='Professional Website Migration'
       subtitle='Migrate your website safely and efficiently with zero downtime. Our experts handle all technical aspects while preserving your SEO and functionality.'
-      coreService={migrationCoreService}
-      addOnServices={migrationAddOns}
+      coreService={coreService}
+      addOnServices={addOnServices}
       customFields={migrationCustomFields}
       emergencyService={false}
       allowMultipleSites={false}

@@ -43,7 +43,7 @@ export interface ServiceStepperProps {
   requiresSiteUrl?: boolean;
   requiresDescription?: boolean;
   customFields?: CustomField[];
-  guarantees: string[];
+  guarantees?: string[];
 }
 
 export interface FormData {

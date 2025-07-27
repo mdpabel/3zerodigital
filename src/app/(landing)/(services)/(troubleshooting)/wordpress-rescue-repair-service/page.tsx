@@ -1,12 +1,14 @@
 import ServiceHero from '@/components/common/Hero';
-import UnderDevelopment from '@/components/common/under-development';
-import React from 'react';
-import TroubleshootingPricing from '../pricing-table';
 import ErrorResolutionDashboard from '../error-dashboard';
 import WordPressRescueService from './wordpress-rescue';
 import WordPressRescueStepper from './wordpress-rescue-stapper';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
-const page = () => {
+const slug = 'wordpress-rescue-repair-service';
+
+const page = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -52,7 +54,10 @@ const page = () => {
         }}
       />
 
-      <WordPressRescueStepper />
+      <WordPressRescueStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
 
       <ErrorResolutionDashboard />
       <WordPressRescueService />

@@ -1,8 +1,13 @@
 import ServiceHero from '@/components/common/Hero';
-import TroubleshootingPricing from '../pricing-table';
 import DnsIssueStepper from './dns-stapper';
+import prisma from '../../../../../../prisma/db';
+import { getServiceWithRelated } from '@/actions/service-actions';
 
-const page = () => {
+const slug = 'dns-configuration-issue-resolution';
+
+const page = async () => {
+  const service = await getServiceWithRelated(slug);
+
   return (
     <div>
       <ServiceHero
@@ -48,7 +53,10 @@ const page = () => {
         }}
       />
 
-      <DnsIssueStepper />
+      <DnsIssueStepper
+        addOnServices={service.relatedTo}
+        coreService={service}
+      />
     </div>
   );
 };

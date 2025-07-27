@@ -11,66 +11,12 @@ import {
   Phone,
   MapPin,
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import ComponentWrapper from '@/components/common/component-wrapper';
 import Logo from './logo';
 import NewsletterSection from './newsletter-section';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
-  const serviceCategories = [
-    {
-      title: 'Development Services',
-      links: [
-        { name: 'WordPress Development', href: '/wordpress-development' },
-        {
-          name: 'Headless WordPress & Next.js',
-          href: '/headless-wordpress-nextjs',
-        },
-        { name: 'Shopify Store Development', href: '/shopify-development' },
-        { name: 'MERN Stack Development', href: '/mern-stack-development' },
-        {
-          name: 'React Frontend Development',
-          href: '/react-frontend-development',
-        },
-        { name: 'Next.js Applications', href: '/nextjs-applications' },
-      ],
-    },
-    {
-      title: 'Digital Marketing',
-      links: [
-        { name: 'SEO Services', href: '/seo-services' },
-        { name: 'Google Ads Management', href: '/google-ads' },
-        { name: 'Meta Ads (Facebook)', href: '/meta-ads' },
-        { name: 'TikTok Ads', href: '/tiktok-ads' },
-        { name: 'LinkedIn Ads', href: '/linkedin-ads' },
-        { name: 'Local SEO', href: '/local-seo' },
-      ],
-    },
-    {
-      title: 'Maintenance & Support',
-      links: [
-        { name: 'WordPress Maintenance', href: '/wordpress-maintenance' },
-        { name: 'Malware Removal', href: '/malware-removal' },
-        { name: 'Speed Optimization', href: '/speed-optimization' },
-        { name: 'SSL Installation', href: '/ssl-installation' },
-        { name: 'Website Migration', href: '/website-migration' },
-        { name: 'Security Services', href: '/security-services' },
-      ],
-    },
-    {
-      title: 'Graphics & Video',
-      links: [
-        { name: 'Logo Design', href: '/logo-design' },
-        { name: 'Brochure Design', href: '/brochure-design' },
-        { name: 'Video Ads Creation', href: '/video-ads' },
-        { name: 'Brand Identity', href: '/brand-identity' },
-        { name: 'Social Media Graphics', href: '/social-media-graphics' },
-      ],
-    },
-  ];
 
   const companyLinks = [
     { name: 'About Us', href: '/about' },
@@ -162,74 +108,52 @@ const Footer = () => {
                 </div>
               </div>
 
-              {/* Services */}
-              {serviceCategories.map((category) => (
-                <div key={category.title}>
-                  <h4 className='mb-4 font-semibold text-white'>
-                    {category.title}
-                  </h4>
-                  <ul className='space-y-2'>
-                    {category.links.map((link) => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className='text-gray-400 hover:text-white text-sm transition-colors'>
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+              {/* Company */}
+              <div>
+                <h4 className='mb-4 font-semibold text-white'>Company</h4>
+                <ul className='space-y-2'>
+                  {companyLinks.map((link) => (
+                    <li key={link.name}>
+                      <Link
+                        href={link.href}
+                        className='text-gray-400 hover:text-white text-sm transition-colors'>
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            {/* Additional Links */}
-            <div className='mt-12 pt-8 border-gray-800 border-t'>
-              <div className='gap-8 grid grid-cols-1 md:grid-cols-3'>
-                <div>
-                  <h4 className='mb-4 font-semibold text-white'>Company</h4>
-                  <ul className='space-y-2'>
-                    {companyLinks.map((link) => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className='text-gray-400 hover:text-white text-sm transition-colors'>
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              {/* Support */}
+              <div>
+                <h4 className='mb-4 font-semibold text-white'>Support</h4>
+                <ul className='space-y-2'>
+                  {supportLinks.map((link) => (
+                    <li key={link.name}>
+                      <Link
+                        href={link.href}
+                        className='text-gray-400 hover:text-white text-sm transition-colors'>
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-                <div>
-                  <h4 className='mb-4 font-semibold text-white'>Support</h4>
-                  <ul className='space-y-2'>
-                    {supportLinks.map((link) => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className='text-gray-400 hover:text-white text-sm transition-colors'>
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className='mb-4 font-semibold text-white'>Legal</h4>
-                  <ul className='space-y-2'>
-                    {legalLinks.map((link) => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className='text-gray-400 hover:text-white text-sm transition-colors'>
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              {/* Legal */}
+              <div>
+                <h4 className='mb-4 font-semibold text-white'>Legal</h4>
+                <ul className='space-y-2'>
+                  {legalLinks.map((link) => (
+                    <li key={link.name}>
+                      <Link
+                        href={link.href}
+                        className='text-gray-400 hover:text-white text-sm transition-colors'>
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </ComponentWrapper>

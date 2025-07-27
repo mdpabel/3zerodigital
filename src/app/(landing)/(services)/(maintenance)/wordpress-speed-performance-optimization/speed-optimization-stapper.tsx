@@ -1,83 +1,10 @@
-// app/services/speed-optimization/page.tsx
 'use client';
 
 import ServiceStepper from '@/components/service-stepper';
 import {
-  CoreService,
-  AddOnService,
   CustomField,
+  ServiceStepperProps,
 } from '@/components/service-stepper/types';
-import { Zap, Image, Database, Globe, BarChart3 } from 'lucide-react';
-
-const speedOptimizationCoreService: CoreService = {
-  id: 'speed-optimization-pro',
-  name: 'WordPress Speed Optimization Pro',
-  price: 299,
-  originalPrice: 399,
-  responseTime: 'Within 24 hours',
-  completionTime: '3-5 business days',
-  features: [
-    'Complete Performance Audit',
-    'Image Optimization & Compression',
-    'Caching Configuration',
-    'Database Optimization',
-    'Code Minification & Compression',
-    'CDN Setup & Configuration',
-    'Mobile Speed Optimization',
-    'Core Web Vitals Improvement',
-    'Before/After Performance Report',
-  ],
-  guarantees: [
-    '50%+ Speed Improvement Guarantee',
-    '30-Day Performance Monitoring',
-  ],
-};
-
-const speedOptimizationAddOns: AddOnService[] = [
-  {
-    id: 'premium-cdn',
-    name: 'Premium CDN Setup',
-    price: 149,
-    icon: Globe,
-    popular: true,
-    description:
-      'Enterprise-grade CDN with advanced caching and global edge locations.',
-    features: [
-      'Premium CDN Service Setup',
-      'Advanced Caching Rules',
-      'Image Optimization CDN',
-      '6-Month CDN Service Included',
-    ],
-  },
-  {
-    id: 'advanced-caching',
-    name: 'Advanced Caching Solution',
-    price: 199,
-    icon: Zap,
-    description:
-      'Server-level caching with Redis/Memcached and advanced optimization.',
-    features: [
-      'Redis/Memcached Setup',
-      'Object Caching Configuration',
-      'Advanced Cache Purging',
-      'Server-Level Optimizations',
-    ],
-  },
-  {
-    id: 'ongoing-monitoring',
-    name: 'Performance Monitoring',
-    price: 79,
-    icon: BarChart3,
-    description:
-      'Continuous performance monitoring with monthly optimization reports.',
-    features: [
-      'Monthly Speed Audits',
-      'Performance Alerts',
-      'Core Web Vitals Tracking',
-      'Optimization Recommendations',
-    ],
-  },
-];
 
 const speedOptimizationCustomFields: CustomField[] = [
   {
@@ -137,13 +64,16 @@ const speedOptimizationCustomFields: CustomField[] = [
   },
 ];
 
-const SpeedOptimizationStepper = () => {
+const SpeedOptimizationStepper = ({
+  addOnServices,
+  coreService,
+}: Pick<ServiceStepperProps, 'addOnServices' | 'coreService'>) => {
   return (
     <ServiceStepper
       title='WordPress Speed Optimization'
       subtitle='Dramatically improve your website loading speed, boost SEO rankings, and enhance user experience with our comprehensive optimization service.'
-      coreService={speedOptimizationCoreService}
-      addOnServices={speedOptimizationAddOns}
+      coreService={coreService}
+      addOnServices={addOnServices}
       customFields={speedOptimizationCustomFields}
       emergencyService={false}
       allowMultipleSites={false}
