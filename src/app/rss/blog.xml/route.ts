@@ -11,7 +11,7 @@ export async function GET() {
   // Fetch all published posts
   const { posts, total } = await wordpress.getPosts({
     status: 'publish',
-    perPage: 10000,
+    perPage: 100,
   });
 
   console.log(`Total published posts: ${total}`);
