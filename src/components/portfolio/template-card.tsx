@@ -133,7 +133,7 @@ const TemplateCard = ({ template, index }: Props) => {
           <div className='flex justify-center items-center w-full h-full'>
             <div
               className={cn(
-                'p-4 rounded-2xl bg-gradient-to-r shadow-lg',
+                'bg-gradient-to-r shadow-lg p-4 rounded-2xl',
                 color,
               )}>
               <Monitor className='w-8 h-8 text-white' />
@@ -147,7 +147,7 @@ const TemplateCard = ({ template, index }: Props) => {
             <Badge
               key={category.id}
               className={cn(
-                'bg-gradient-to-r text-white border-0 shadow-lg text-xs',
+                'bg-gradient-to-r shadow-lg border-0 text-white text-xs',
                 idx === 0 ? color : 'from-slate-600 to-slate-700',
               )}>
               {category.name}
@@ -195,7 +195,7 @@ const TemplateCard = ({ template, index }: Props) => {
               variant='outline'
               className='bg-white/10 hover:bg-white/20 backdrop-blur-md border-white/30 text-white'>
               <Link
-                href={`/shop/${template.slug}`}
+                href={`/templates/${template.slug}`}
                 className='flex items-center gap-2'>
                 <ExternalLink className='w-4 h-4' />
                 Details
@@ -276,8 +276,8 @@ const TemplateCard = ({ template, index }: Props) => {
           <Button
             asChild
             size='sm'
-            className={cn('bg-gradient-to-r text-white border-0', color)}>
-            <Link href={`/shop/${template.slug}`}>View Template</Link>
+            className={cn('bg-gradient-to-r border-0 text-white', color)}>
+            <Link href={`/templates/${template.slug}`}>View Template</Link>
           </Button>
         </div>
       </div>
@@ -285,7 +285,7 @@ const TemplateCard = ({ template, index }: Props) => {
       {/* Hover Glow Effect */}
       <div
         className={cn(
-          'absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-5 rounded-2xl md:rounded-3xl transition-opacity duration-300',
+          '-z-50 absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-5 rounded-2xl md:rounded-3xl transition-opacity duration-300',
           color,
         )}
       />

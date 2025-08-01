@@ -19,7 +19,7 @@ export async function generateMetadata({
     title: product?.name,
     description: product?.description,
     alternates: {
-      canonical: `/case-studies/${slug}`,
+      canonical: `/templates/${slug}`,
     },
   };
 }
