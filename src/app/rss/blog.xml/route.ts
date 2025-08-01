@@ -8,15 +8,40 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const siteUrl = 'https://www.3zerodigital.com';
 
-  // Fetch all published posts
-  const { posts, total } = await wordpress.getPosts({
+  // Set perPage to the maximum allowed to minimize the number of requests
+  const perPage = 100;
+
+  // Fetch the first page to get totalPages
+  const initial = await wordpress.getPosts({
     status: 'publish',
-    perPage: 100,
+    page: 1,
+    perPage,
   });
 
+  let allPosts = initial.posts;
+
+  const totalPages = initial.totalPages;
+
+  // If there are more pages, fetch them in parallel
+  if (totalPages > 1) {
+    const pageNumbers = Array.from({ length: totalPages - 1 }, (_, i) => i + 2);
+    const promises = pageNumbers.map((page) =>
+      wordpress.getPosts({
+        status: 'publish',
+        page,
+        perPage,
+      }),
+    );
+    const results = await Promise.all(promises);
+    results.forEach((res) => {
+      allPosts = allPosts.concat(res.posts);
+    });
+  }
+
+  const total = allPosts.length;
   console.log(`Total published posts: ${total}`);
 
-  if (!posts || posts.length === 0) {
+  if (!allPosts || allPosts.length === 0) {
     return new Response('No posts found', { status: 404 });
   }
 
@@ -33,14 +58,14 @@ export async function GET() {
   });
 
   // Add each blog post to the feed
-  posts.forEach((post) => {
+  allPosts.forEach((post) => {
     const postUrl = `${siteUrl}/blog/${post.slug}`;
     feed.item({
       title: he.decode(post.title),
       url: postUrl,
       guid: postUrl,
       description: post.excerpt,
-      custom_elements: [{ 'content:encoded': post.content }],
+      // custom_elements: [{ 'content:encoded': post.content }],
       date: post.date,
       author: post.author?.name || 'MD Pabel Team',
       categories: post.categories?.map((cat) => cat.name) || [],
