@@ -19,13 +19,13 @@ export const metadata = genMetaData({
 
 export default async function CareerPage() {
   return (
-    <div className='mx-auto px-4 py-12 p-4 max-w-5xl'>
+    <div className='mx-auto p-4 px-4 py-12 max-w-5xl'>
       <section className='mb-16 text-center'>
         <h1 className='mb-4 font-bold text-4xl'>
-          Join Our Team at 3 Zero Digital
+          Join Our Team at 3Zero Digital
         </h1>
         <p className='mx-auto max-w-3xl text-muted-foreground text-xl'>
-          At 3 Zero Digital, we're committed to achieving 0 Vulnerability, 0
+          At 3Zero Digital, we're committed to achieving 0 Vulnerability, 0
           Downtime, and 0 Error. Join us and be part of a team that is
           transforming digital experiences with precision and excellence.
         </p>
@@ -33,7 +33,7 @@ export default async function CareerPage() {
 
       <section className='mb-16'>
         <h2 className='mb-8 font-semibold text-3xl'>
-          Why Work With 3 Zero Digital
+          Why Work With 3Zero Digital
         </h2>
         <div className='gap-8 grid md:grid-cols-3'>
           {[

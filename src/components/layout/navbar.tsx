@@ -30,7 +30,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import ComponentWrapper from '@/components/common/component-wrapper';
-import { SearchMenu } from '@/components/common/search-commands';
+import SearchMenu from '@/components/common/search-commands';
 import { Prisma } from '@prisma/client';
 import IconRenderer from '@/components/common/icon-render';
 import Logo from './logo';
@@ -126,8 +126,8 @@ const MobileNavbar = ({
   session: any;
 }) => (
   <div className='md:hidden flex justify-between items-center w-full'>
-    <Logo />
-    <div className='flex items-center gap-2'>
+    <div className='flex items-center'>
+      <Logo />
       <Sheet>
         <SheetTrigger asChild>
           <Button variant='ghost'>Services</Button>
@@ -174,9 +174,10 @@ const MobileNavbar = ({
           </ScrollArea>
         </SheetContent>
       </Sheet>
-      <Button asChild size='sm'>
-        <Link href='/book-a-call'>Book a Call</Link>
-      </Button>
+    </div>
+
+    <div className='flex items-center gap-2'>
+      <SearchMenu />
       <Button asChild size='sm'>
         <Link href={session ? '/dashboard' : '/login'}>
           {session ? 'Dashboard' : 'Login'}

@@ -15,7 +15,7 @@ export default async function DatabaseConnectionError() {
       <ServiceHero
         title='Error Establishing a Database Connection'
         subtitle='Restore Database Connectivity'
-        description='Fix “Error Establishing a Database Connection” fast with 3 Zero Digital – expert diagnosis and recovery to get your WordPress site back online with 0 Downtime.'
+        description='Fix “Error Establishing a Database Connection” fast with 3Zero Digital – expert diagnosis and recovery to get your WordPress site back online with 0 Downtime.'
         badge='Database Fix'
         backgroundGradient='from-blue-600/20 via-emerald-600/10 to-red-600/20 dark:from-blue-900/30 dark:via-emerald-900/20 dark:to-red-900/30'
         primaryColor='from-blue-600 to-red-600'

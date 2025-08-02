@@ -14,6 +14,8 @@ import {
 import ComponentWrapper from '@/components/common/component-wrapper';
 import Logo from './logo';
 import NewsletterSection from './newsletter-section';
+import { FaMediumM } from 'react-icons/fa';
+import { SiDevdotto } from 'react-icons/si';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -37,19 +39,40 @@ const Footer = () => {
   ];
 
   const legalLinks = [
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Terms of Service', href: '/terms' },
-    { name: 'Cookie Policy', href: '/cookies' },
+    { name: 'Privacy Policy', href: '/privacy-policy' },
+    { name: 'Terms of Service', href: '/terms-of-service' },
+    { name: 'Cookie Policy', href: '/cookie-policy' },
     { name: 'GDPR Compliance', href: '/gdpr' },
     { name: 'Refund Policy', href: '/refund-policy' },
   ];
 
   const socialLinks = [
-    { name: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
-    { name: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
-    { name: 'Instagram', icon: Instagram, href: 'https://instagram.com' },
-    { name: 'LinkedIn', icon: Linkedin, href: 'https://linkedin.com' },
-    { name: 'YouTube', icon: Youtube, href: 'https://youtube.com' },
+    {
+      name: 'Facebook',
+      icon: Facebook,
+      href: 'https://www.facebook.com/3zerodigital.LLC',
+    },
+    { name: 'Twitter', icon: Twitter, href: 'https://x.com/3ZeroDigital' },
+    {
+      name: 'Instagram',
+      icon: Instagram,
+      href: 'https://www.instagram.com/3zero_digital/',
+    },
+    {
+      name: 'LinkedIn',
+      icon: Linkedin,
+      href: 'https://www.linkedin.com/company/3zerodigital',
+    },
+    {
+      name: 'Medium',
+      icon: FaMediumM,
+      href: 'https://3zerodigitalltd.medium.com/',
+    },
+    {
+      name: 'Dev.to',
+      icon: SiDevdotto,
+      href: 'https://dev.to/3zerodigital',
+    },
   ];
 
   return (
@@ -66,25 +89,33 @@ const Footer = () => {
               <div className='lg:col-span-2'>
                 <Logo />
                 <p className='mt-4 text-gray-400 text-sm leading-relaxed'>
-                  Your trusted partner for web development, digital marketing,
-                  and business growth. We deliver cutting-edge solutions that
-                  help businesses thrive in the digital world.
+                  3Zero Digital – Delivering cutting-edge web development and
+                  WordPress security solutions with a focus on 0 Vulnerability,
+                  0 Downtime, 0 Error. Trusted by global clients to build
+                  secure, high-performance digital experiences.
                 </p>
 
                 {/* Contact Info */}
                 <div className='space-y-3 mt-6'>
                   <div className='flex items-center gap-3'>
-                    <Phone className='w-4 h-4 text-blue-400' />
-                    <span className='text-sm'>+1 (555) 123-4567</span>
+                    <div>
+                      <Phone className='w-4 h-4 text-blue-400' />
+                    </div>
+                    <span className='text-sm'>+44 7878 798374</span>
                   </div>
                   <div className='flex items-center gap-3'>
-                    <Mail className='w-4 h-4 text-blue-400' />
-                    <span className='text-sm'>hello@yourcompany.com</span>
+                    <div>
+                      <Mail className='w-4 h-4 text-blue-400' />
+                    </div>
+                    <span className='text-sm'>support@3zerodigital.com</span>
                   </div>
                   <div className='flex items-center gap-3'>
-                    <MapPin className='w-4 h-4 text-blue-400' />
+                    <div>
+                      <MapPin className='!w-4 !h-4 text-blue-400' />
+                    </div>
                     <span className='text-sm'>
-                      123 Business Ave, Tech City, TC 12345
+                      Suite A 82 James Carter Road, Mildenhall, Bury St.
+                      Edmunds, England, United Kingdom, IP28 7DE
                     </span>
                   </div>
                 </div>

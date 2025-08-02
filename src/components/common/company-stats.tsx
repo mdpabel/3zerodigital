@@ -22,7 +22,7 @@ const stats = [
     label: 'Projects Delivered',
     description: 'Successful websites and applications launched',
     icon: Globe,
-    color: 'from-blue-600 to-blue-700',
+    color: 'from-emerald-600 to-emerald-700',
     zeroStat: '0 failed launches',
   },
   {
@@ -58,7 +58,7 @@ const stats = [
     label: 'Average Load Time',
     description: 'Optimized performance across all projects',
     icon: TrendingUp,
-    color: 'from-red-600 to-red-700',
+    color: 'from-emerald-600 to-emerald-700',
     zeroStat: '0 slow-loading sites',
   },
   {
@@ -127,7 +127,7 @@ const CompanyStats = () => {
                   {/* Icon */}
                   <div
                     className={cn(
-                      'inline-flex p-4 rounded-2xl mb-6 bg-gradient-to-r shadow-lg',
+                      'inline-flex bg-gradient-to-r shadow-lg mb-6 p-4 rounded-2xl',
                       stat.color,
                     )}>
                     <stat.icon className='w-8 h-8 text-white' />

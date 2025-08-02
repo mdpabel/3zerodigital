@@ -310,7 +310,7 @@ const Hero = () => {
                 size='lg'
                 className='relative shadow-xl md:shadow-2xl md:group-hover:shadow-blue-500/25 group-hover:shadow-xl px-8 md:px-10 py-6 md:py-7 w-full sm:w-auto overflow-hidden font-semibold text-base md:text-lg transition-all duration-300'>
                 <Link
-                  href='#getStarted'
+                  href='/services'
                   className='flex justify-center items-center gap-3'>
                   Get Started
                   <ArrowRight className='w-4 md:w-5 h-4 md:h-5 transition-transform group-hover:translate-x-1' />

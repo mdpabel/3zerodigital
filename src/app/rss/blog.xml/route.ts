@@ -47,14 +47,14 @@ export async function GET() {
 
   // Create RSS feed for blog
   const feed = new RSS({
-    title: '3 Zero Digital Blog Posts',
+    title: '3Zero Digital Blog Posts',
     description:
       'General blog posts on WordPress issues, performance, and more.',
     site_url: siteUrl,
     feed_url: `${siteUrl}/rss/blog.xml`,
     language: 'en-US',
     pubDate: new Date(),
-    copyright: `All rights reserved ${new Date().getFullYear()}, 3 Zero Digital`,
+    copyright: `All rights reserved ${new Date().getFullYear()}, 3Zero Digital`,
   });
 
   // Add each blog post to the feed

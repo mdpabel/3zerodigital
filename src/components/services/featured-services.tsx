@@ -201,7 +201,7 @@ const FeaturedServices = ({
                         asChild
                         size='lg'
                         className='group w-full sm:w-auto'>
-                        <Link href={`/services/${activeService.slug}`}>
+                        <Link href={`/${activeService.slug}`}>
                           Learn More
                           <ArrowRight className='ml-2 w-4 h-4 transition-transform group-hover:translate-x-1' />
                         </Link>

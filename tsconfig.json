@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/(landing)/(services)/(development)/headless-wordpress-and-next.js/key-benefits.tsx"
+    "src/app/(landing)/(services)/(development)/headless-wordpress-nextjs-development/key-benefits.tsx"
   ],
   "exclude": ["node_modules"]
 }

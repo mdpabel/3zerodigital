@@ -5,23 +5,23 @@ export const dynamic = 'force-static';
 
 export const metadata = genMetaData({
   title: 'Privacy Policy',
-  url: '/privacy-policy',
+  url: '/privacy-policy-policy',
 });
 
 const PrivacyPolicy = () => {
   return (
     <div className='px-6 py-12 md:py-20'>
       <div className='mx-auto max-w-5xl'>
-        <h1 className='font-bold text-3xl text-center text-gray-900 md:text-5xl dark:text-white'>
+        <h1 className='font-bold text-gray-900 dark:text-white text-3xl md:text-5xl text-center'>
           Privacy Policy
         </h1>
-        <p className='mt-4 text-center text-lg dark:text-gray-300'>
+        <p className='mt-4 dark:text-gray-300 text-lg text-center'>
           Last Updated: <span className='font-semibold'>November 9, 2024</span>
         </p>
         <div className='space-y-10 mt-8'>
           {/* Section 1 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaUserShield className='inline-block mr-2' />
               1. Information We Collect
             </h2>
@@ -49,7 +49,7 @@ const PrivacyPolicy = () => {
 
           {/* Section 2 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaRegEdit className='inline-block mr-2' />
               2. How We Use Your Information
             </h2>
@@ -68,7 +68,7 @@ const PrivacyPolicy = () => {
 
           {/* Section 3 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaLock className='inline-block mr-2' />
               3. Sharing Your Information
             </h2>
@@ -95,7 +95,7 @@ const PrivacyPolicy = () => {
 
           {/* Section 4 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaCookieBite className='inline-block mr-2' />
               4. Cookies and Tracking
             </h2>
@@ -108,7 +108,7 @@ const PrivacyPolicy = () => {
 
           {/* Section 5 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               5. How We Protect Your Information
             </h2>
             <p className='mt-4 text-gray-700 dark:text-gray-300'>
@@ -124,7 +124,7 @@ const PrivacyPolicy = () => {
 
           {/* Section 6 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               6. Your Rights
             </h2>
             <p className='mt-4 text-gray-700 dark:text-gray-300'>
@@ -135,7 +135,7 @@ const PrivacyPolicy = () => {
 
           {/* Section 7 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               7. Changes to This Policy
             </h2>
             <p className='mt-4 text-gray-700 dark:text-gray-300'>
@@ -146,7 +146,7 @@ const PrivacyPolicy = () => {
 
           {/* Section 8 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               9. Contact Us
             </h2>
             <p className='mt-4 text-gray-700 dark:text-gray-300'>

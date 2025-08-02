@@ -317,13 +317,13 @@ const SignUpForm = ({
                             <FormLabel className='text-sm'>
                               I agree to the{' '}
                               <Link
-                                href='/terms'
+                                href='/terms-of-service'
                                 className='text-blue-600 hover:underline'>
                                 Terms of Service
                               </Link>{' '}
                               and{' '}
                               <Link
-                                href='/privacy'
+                                href='/privacy-policy'
                                 className='text-blue-600 hover:underline'>
                                 Privacy Policy
                               </Link>

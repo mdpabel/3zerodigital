@@ -12,17 +12,17 @@ export const dynamic = 'force-static';
 
 export const metadata = genMetaData({
   title: 'Terms of Service',
-  url: '/terms-of-service',
+  url: '/terms-of-service-of-service',
 });
 
 const TermsOfService = () => {
   return (
     <div className='px-6 py-12 md:py-20'>
       <div className='mx-auto max-w-5xl'>
-        <h1 className='font-bold text-3xl text-center text-gray-900 md:text-5xl dark:text-white'>
+        <h1 className='font-bold text-gray-900 dark:text-white text-3xl md:text-5xl text-center'>
           Terms of Service (ToS)
         </h1>
-        <p className='mt-4 text-center text-lg dark:text-gray-300'>
+        <p className='mt-4 dark:text-gray-300 text-lg text-center'>
           Effective Date:{' '}
           <span className='font-semibold'>November 9, 2024</span> <br />
           Last Updated: <span className='font-semibold'>November 9, 2024</span>
@@ -30,7 +30,7 @@ const TermsOfService = () => {
         <div className='space-y-10 mt-8'>
           {/* Section 1 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaShieldAlt className='inline-block mr-2' />
               1. Our Commitment
             </h2>
@@ -45,7 +45,7 @@ const TermsOfService = () => {
 
           {/* Section 2 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaUserCheck className='inline-block mr-2' />
               2. Eligibility
             </h2>
@@ -58,7 +58,7 @@ const TermsOfService = () => {
 
           {/* Section 3 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaLaptopCode className='inline-block mr-2' />
               3. Services We Offer
             </h2>
@@ -88,7 +88,7 @@ const TermsOfService = () => {
 
           {/* Section 4 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaHandshake className='inline-block mr-2' />
               4. Use of Third-Party Services
             </h2>
@@ -104,7 +104,7 @@ const TermsOfService = () => {
 
           {/* Section 5 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaExclamationTriangle className='inline-block mr-2' />
               5. Your Responsibilities
             </h2>
@@ -123,7 +123,7 @@ const TermsOfService = () => {
 
           {/* Section 6 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               <FaMoneyBillWave className='inline-block mr-2' />
               6. Payment and Refunds
             </h2>
@@ -135,7 +135,7 @@ const TermsOfService = () => {
 
           {/* Section 7 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               7. Limitation of Liability
             </h2>
             <p className='mt-4 text-gray-700 dark:text-gray-300'>
@@ -147,7 +147,7 @@ const TermsOfService = () => {
 
           {/* Section 8 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               8. Changes to Terms
             </h2>
             <p className='mt-4 text-gray-700 dark:text-gray-300'>
@@ -159,7 +159,7 @@ const TermsOfService = () => {
 
           {/* Section 9 */}
           <section>
-            <h2 className='font-semibold text-2xl text-gray-800 dark:text-gray-200'>
+            <h2 className='font-semibold text-gray-800 dark:text-gray-200 text-2xl'>
               9. Contact Us
             </h2>
             <p className='mt-4 text-gray-700 dark:text-gray-300'>
