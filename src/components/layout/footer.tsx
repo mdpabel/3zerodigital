@@ -33,7 +33,7 @@ const Footer = () => {
     { name: 'Help Center', href: '/help' },
     { name: 'Documentation', href: '/docs' },
     { name: 'Tutorials', href: '/tutorials' },
-    { name: 'Book a Call', href: '/book-call' },
+    { name: 'Book a Call', href: '/book-a-call' },
     { name: 'Submit Ticket', href: '/support/tickets/create' },
     { name: 'System Status', href: '/status' },
   ];
