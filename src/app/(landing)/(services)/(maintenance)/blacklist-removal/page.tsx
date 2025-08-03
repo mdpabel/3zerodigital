@@ -1,11 +1,17 @@
 import ServiceHero from '@/components/common/Hero';
-import BlacklistRemovalPricing from './blacklist-removal-pricing-table';
 import BlacklistRemovalStepper from './pricing-stepper';
 import { getServiceWithRelated } from '@/actions/service-actions';
+import { allSupportedProviders } from './data';
 
 export const dynamic = 'force-static';
 
-const slug = 'blacklist-removal-reputation-repair';
+const slug = 'blacklist-removal';
+
+export async function generateStaticParams() {
+  return allSupportedProviders.map((vendor) => ({
+    slug: vendor.slug,
+  }));
+}
 
 const page = async () => {
   const service = await getServiceWithRelated(slug);

@@ -8,31 +8,18 @@ import {
   Phone,
   MessageSquare,
   ArrowRight,
-  Sparkles,
   Search,
-  Globe,
   Lock,
   Eye,
   Settings,
   Mail,
-  Zap,
   TrendingUp,
-  FileCheck,
   Clock,
   Award,
   Users,
   Star,
-  Database,
   Minus,
   Plus,
-  Server,
-  Bug,
-  HardDrive,
-  Cpu,
-  MonitorSpeaker,
-  Wifi,
-  Router,
-  Network,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,61 +27,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import ComponentWrapper from '@/components/common/component-wrapper';
-
-// All supported blacklist providers with icons
-const allSupportedProviders = [
-  { name: 'Google Safe Browsing', icon: Search, category: 'Critical' },
-  { name: 'Microsoft Defender', icon: Shield, category: 'Critical' },
-  { name: 'Kaspersky', icon: Lock, category: 'High' },
-  { name: 'Symantec', icon: Award, category: 'High' },
-  { name: 'McAfee', icon: Shield, category: 'High' },
-  { name: 'Norton', icon: Lock, category: 'Medium' },
-  { name: 'Sophos', icon: Shield, category: 'Medium' },
-  { name: 'Webroot', icon: Globe, category: 'Medium' },
-  { name: 'Malwarebytes', icon: Shield, category: 'Medium' },
-  { name: 'ESET', icon: Lock, category: 'Medium' },
-  { name: 'Avast', icon: Shield, category: 'Medium' },
-  { name: 'AVG', icon: Lock, category: 'Medium' },
-  { name: 'BitDefender', icon: Shield, category: 'High' },
-  { name: 'F-Secure', icon: Lock, category: 'Medium' },
-  { name: 'Trend Micro', icon: Shield, category: 'High' },
-  { name: 'Fortinet', icon: Network, category: 'High' },
-  { name: 'Panda', icon: Shield, category: 'Medium' },
-  { name: 'DrWeb', icon: Bug, category: 'Medium' },
-  { name: 'ClamAV', icon: Server, category: 'Medium' },
-  { name: 'Spamhaus', icon: Mail, category: 'High' },
-  { name: 'Sucuri', icon: Globe, category: 'Medium' },
-  { name: 'Clean-MX', icon: Database, category: 'Medium' },
-  { name: 'Netcraft', icon: Globe, category: 'Medium' },
-  { name: 'PhishLabs', icon: Eye, category: 'Medium' },
-  { name: 'CrowdStrike', icon: Shield, category: 'High' },
-  { name: 'FireEye', icon: Zap, category: 'High' },
-  { name: 'Cylance', icon: Lock, category: 'High' },
-  { name: 'Cybereason', icon: Shield, category: 'High' },
-  { name: 'SentinelOne', icon: Eye, category: 'High' },
-  { name: 'Trustwave', icon: Globe, category: 'Medium' },
-  { name: 'Baidu', icon: Search, category: 'Medium' },
-  { name: 'Yandex', icon: Search, category: 'Medium' },
-  { name: 'Qihoo360', icon: Shield, category: 'Medium' },
-  { name: 'Tencent', icon: Shield, category: 'Medium' },
-  { name: 'Alibaba', icon: Globe, category: 'Medium' },
-  { name: 'Ahnlab', icon: Lock, category: 'Medium' },
-  { name: 'Hauri', icon: Shield, category: 'Medium' },
-  { name: 'K7', icon: Lock, category: 'Medium' },
-  { name: 'Quick Heal', icon: Shield, category: 'Medium' },
-  { name: 'Bkav', icon: Lock, category: 'Medium' },
-  { name: 'Jiangmin', icon: Shield, category: 'Medium' },
-  { name: 'Rising', icon: TrendingUp, category: 'Medium' },
-  { name: 'VBA32', icon: Lock, category: 'Medium' },
-  { name: 'Zillya', icon: Shield, category: 'Medium' },
-  { name: 'ZoneAlarm', icon: Shield, category: 'Medium' },
-  { name: 'Emsisoft', icon: Lock, category: 'Medium' },
-  { name: 'GData', icon: Database, category: 'Medium' },
-  { name: 'Ikarus', icon: Shield, category: 'Medium' },
-  { name: 'Vipre', icon: Lock, category: 'Medium' },
-  { name: 'VirIT', icon: Bug, category: 'Medium' },
-  // Add more providers as needed...
-];
+import { allSupportedProviders } from './data';
 
 // Pricing structure based on blacklist count
 const pricingTiers = [
@@ -348,7 +281,7 @@ const BlacklistRemovalPricing = () => {
                       <div
                         key={tierItem.name}
                         className={cn(
-                          'p-4 rounded-lg border-2 transition-all duration-300',
+                          'p-4 border-2 rounded-lg transition-all duration-300',
                           tier === tierItem
                             ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-500'
                             : 'bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700',
@@ -620,7 +553,7 @@ const BlacklistRemovalPricing = () => {
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleAddOnToggle(service.id)}
                   className={cn(
-                    'cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative',
+                    'relative p-6 border-2 rounded-xl transition-all duration-300 cursor-pointer',
                     selectedAddOns.includes(service.id)
                       ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-500'
                       : 'bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300',

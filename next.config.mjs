@@ -43,38 +43,58 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      {
-        source:
-          '/blog/how-we-cleaned-242000-japanese-hack-pages-from-a-site-in-10-hours',
-        destination:
-          '/blog/how-we-removed-242000-japanese-seo-spam-pages-from-a-hacked-site-in-10-hours',
-        permanent: true,
-      },
-
-      {
-        source: '/affordable-personal-website-development',
-        destination: '/affordable-personal-web-development',
-        permanent: true,
-      },
-
-      {
-        source: '/affordable-personal-website-development-lite',
-        destination: '/affordable-personal-web-development',
-        permanent: true,
-      },
-      {
-        source: 'https://www.3zerodigital.com/3d-animation',
-        destination:
-          'https://www.3zerodigital.com/social-video-ads-reels-creation',
-        permanent: true,
-      },
-      {
-        source: 'https://www.3zerodigital.com/3d-model',
-        destination:
-          'https://www.3zerodigital.com/social-video-ads-reels-creation',
-        permanent: true,
-      },
-    ];
+      [
+        '/blog/how-we-cleaned-242000-japanese-hack-pages-from-a-site-in-10-hours',
+        '/blog/how-we-removed-242000-japanese-seo-spam-pages-from-a-hacked-site-in-10-hours',
+      ],
+      [
+        '/affordable-personal-website-development',
+        '/affordable-personal-web-development',
+      ],
+      [
+        '/affordable-personal-website-development-lite',
+        '/affordable-personal-web-development',
+      ],
+      ['/3d-animation', '/social-video-ads-reels-creation'],
+      ['/3d-model', '/social-video-ads-reels-creation'],
+      ['/3d-model', '/social-video-ads-reels-creation'],
+      ['/3d-render-image', '/social-video-ads-reels-creation'],
+      ['/403-forbidden', '/fix-403-forbidden-errors'],
+      ['/404-not-found-error', '/fix-404-not-found-errors'],
+      ['/500-internal-server-error', '/fix-500-internal-server-errors'],
+      [
+        '/affordable-e-commerce-website-development',
+        '/affordable-all-in-one-web-development',
+      ],
+      ['/wordpress-maintenance', '/ongoing-wordpress-maintenance-updates'],
+      [
+        '/why-you-should-choose-wordpress-for-your-website-in-2024',
+        '/blog/why-you-should-choose-wordpress-for-your-website-in-2024',
+      ],
+      [
+        '/why-websites-with-3-zero-stand-out-virtually-zero-vulnerability-downtime-and-errors',
+        '/blog/why-websites-with-3-zero-stand-out-virtually-zero-vulnerability-downtime-and-errors',
+      ],
+      [
+        '/why-ecommerce-website-maintenance-services-matter-for-your-business',
+        '/blog/why-ecommerce-website-maintenance-services-matter-for-your-business',
+      ],
+      [
+        '/why-ai-cant-replace-humans-the-critical-role-of-judgment',
+        '/blog/why-ai-cant-replace-humans-the-critical-role-of-judgment',
+      ],
+      ['/website-for-doctors', '/affordable-all-in-one-web-development'],
+      [
+        '/understanding-short-tail-and-long-tail-keywords',
+        '/blog/understanding-short-tail-and-long-tail-keywords',
+      ],
+      ['/understanding-lsi-keywords', '/blog/understanding-lsi-keywords'],
+      ['/website-for-doctors', '/affordable-all-in-one-web-development'],
+    ].map(([source, destination]) => ({
+      source,
+      destination,
+      permanent: true,
+    }));
   },
 };
 
