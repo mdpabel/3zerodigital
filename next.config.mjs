@@ -62,6 +62,18 @@ const nextConfig = {
         destination: '/affordable-personal-web-development',
         permanent: true,
       },
+      {
+        source: 'https://www.3zerodigital.com/3d-animation',
+        destination:
+          'https://www.3zerodigital.com/social-video-ads-reels-creation',
+        permanent: true,
+      },
+      {
+        source: 'https://www.3zerodigital.com/3d-model',
+        destination:
+          'https://www.3zerodigital.com/social-video-ads-reels-creation',
+        permanent: true,
+      },
     ];
   },
 };
