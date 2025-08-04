@@ -2,7 +2,7 @@ import {
   getCategories,
   getServices, // We'll assume a new paginated action
 } from '@/actions/service-actions';
-import ServicesBrowser from './services-browser';
+import ServicesBrowser from '../../../../components/services/services-browser';
 
 // This page can be statically generated and revalidated
 export const revalidate = 3600; // Revalidate every hour
