@@ -184,6 +184,7 @@ const nextConfig = {
       ['/terms', '/'],
       ['/tiktok-ads', '/'],
       ['/tutorials', '/'],
+      ['/affordable-web-development', '/affordable-all-in-one-web-development'],
     ].map(([source, destination]) => ({
       source,
       destination,

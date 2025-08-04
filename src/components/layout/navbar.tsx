@@ -132,14 +132,14 @@ const MobileNavbar = ({
         <SheetTrigger asChild>
           <Button variant='ghost'>Services</Button>
         </SheetTrigger>
-        <SheetContent side='bottom' className='h-[85vh]'>
+        <SheetContent side='bottom' className='h-[90vh]'>
           <SheetHeader>
             <SheetTitle>Our Services</SheetTitle>
             <SheetDescription>
               Explore our range of professional services.
             </SheetDescription>
           </SheetHeader>
-          <ScrollArea className='pr-4 h-[calc(85vh-80px)]'>
+          <ScrollArea className='pr-4 h-[calc(90vh-80px)]'>
             <CleanBackground>
               <Accordion
                 type='single'
@@ -214,7 +214,7 @@ const DesktopNavbar = ({
               </NavigationMenuTrigger>
               <NavigationMenuContent className='!w-[950px]'>
                 <div className='flex p-4'>
-                  <ScrollArea className='flex-1 pr-4 border-r h-[400px]'>
+                  <ScrollArea className='flex-1 pr-4 border-r h-[500px]'>
                     {services.map((cat) => (
                       <div
                         key={cat.id}
@@ -233,7 +233,7 @@ const DesktopNavbar = ({
                       </div>
                     ))}
                   </ScrollArea>
-                  <ScrollArea className='flex-[2] pl-4 h-[400px]'>
+                  <ScrollArea className='flex-[2] pl-4 h-[500px]'>
                     {activeCategoryData ? (
                       <>
                         <h3 className='mb-2 font-medium text-base'>
@@ -249,7 +249,7 @@ const DesktopNavbar = ({
                                   <IconRenderer iconName={p.icon || ''} />
                                   {p.name}
                                 </div>
-                                <p className='mt-1 text-muted-foreground text-xs line-clamp-2'>
+                                <p className='mt-1 text-muted-foreground line-clamp-2 text'>
                                   {p.description || 'No description.'}
                                 </p>
                               </Link>
