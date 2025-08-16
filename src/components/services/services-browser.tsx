@@ -120,13 +120,13 @@ const ServicesBrowser = ({ services, categories }: Props) => {
           className='z-10 relative mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl'>
           {/* Header */}
           <motion.div variants={itemVariants} className='mb-12 text-center'>
-            <h1 className='mb-6 font-bold text-5xl'>
+            <h1 className='mb-6 font-bold text-4xl md:text-5xl'>
               <span className='bg-clip-text bg-gradient-to-r from-slate-900 dark:from-white via-blue-900 dark:via-blue-100 to-slate-900 dark:to-white text-transparent'>
                 Service Explorer
               </span>
             </h1>
 
-            <div className='flex justify-center gap-3'>
+            <div className='md:flex md:flex-wrap md:justify-center gap-3 grid'>
               {categories.map((category) => (
                 <button
                   key={category.slug}
@@ -150,7 +150,9 @@ const ServicesBrowser = ({ services, categories }: Props) => {
             {/* Left Side - Service List */}
             <motion.div
               variants={containerVariants}
-              className='bg-white/50 dark:bg-slate-800/50 shadow-xl backdrop-blur-lg p-6 md:p-8 border border-slate-200/50 dark:border-slate-700/50 rounded-2xl h-[700px] overflow-y-auto'>
+              className={`${
+                selectedService ? 'hidden lg:block' : 'block'
+              } bg-white/50 dark:bg-slate-800/50 shadow-xl backdrop-blur-lg p-6 md:p-8 border border-slate-200/50 dark:border-slate-700/50 rounded-2xl min-h-[400px] lg:h-[700px] overflow-y-auto`}>
               <div className='mb-6'>
                 <h2 className='mb-2 font-bold text-slate-900 dark:text-white text-2xl'>
                   {categories.find((cat) => cat.slug === activeCategory)?.name}{' '}
@@ -203,9 +205,9 @@ const ServicesBrowser = ({ services, categories }: Props) => {
                             <h3 className='font-bold text-slate-800 dark:text-slate-100 text-lg'>
                               {service.name}
                             </h3>
-                            <p className='text-slate-500 dark:text-slate-400 text-sm'>
+                            <p className='text-slate-500 dark:text-slate-400 text-sm line-clamp-1'>
                               ${Number(service.price).toFixed(0)} -{' '}
-                              {service.description.slice(0, 50)}...
+                              {service.description}
                             </p>
                           </div>
                         </div>
@@ -217,7 +219,7 @@ const ServicesBrowser = ({ services, categories }: Props) => {
             </motion.div>
 
             {/* Right Side - Service Details */}
-            <div className='bg-white/50 dark:bg-slate-800/50 shadow-xl backdrop-blur-lg p-6 md:p-8 border border-slate-200/50 dark:border-slate-700/50 rounded-2xl h-[700px] overflow-y-auto'>
+            <div className='bg-white/50 dark:bg-slate-800/50 shadow-xl backdrop-blur-lg p-6 md:p-8 border border-slate-200/50 dark:border-slate-700/50 rounded-2xl lg:h-[700px] min-h-[400px] overflow-y-auto'>
               <AnimatePresence mode='wait'>
                 {selectedService && (
                   <motion.div
@@ -228,7 +230,7 @@ const ServicesBrowser = ({ services, categories }: Props) => {
                     exit='exit'
                     className='flex flex-col h-full'>
                     <div className='flex-grow'>
-                      <div className='flex justify-between items-center mb-6'>
+                      <div className='flex md:flex-row flex-col justify-between items-center gap-3 md:gap-0 mb-6'>
                         <div className='flex items-center gap-4'>
                           <div className='bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg p-3 rounded-lg text-white'>
                             <IconComponent
