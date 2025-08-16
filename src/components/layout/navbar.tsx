@@ -366,7 +366,7 @@ export function Navbar({
   const { data: session } = authClient.useSession();
 
   return (
-    <div className='top-0 z-50 sticky bg-white dark:bg-slate-900/95 backdrop-blur-lg border-slate-200/60 border-b border-b-slate-300/50 dark:border-b-slate-700/50'>
+    <div className='top-0 z-50 sticky bg-white dark:bg-slate-900/50 backdrop-blur-lg border-slate-200/60 border-b border-b-slate-300/50 dark:border-b-slate-700/50'>
       <ComponentWrapper className='flex items-center mx-auto px-4 h-16 container'>
         {/* Renders the correct navbar based on screen size */}
         <MobileNavbar services={services} session={session} />
