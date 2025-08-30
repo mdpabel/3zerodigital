@@ -1,4 +1,4 @@
-// app/account/page.tsx
+// app/dashboard/page.tsx
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,28 +18,28 @@ const AccountDashboard = () => {
       value: '24',
       icon: ShoppingBag,
       color: 'text-blue-600',
-      href: '/account/orders',
+      href: '/dashboard/orders',
     },
     {
       title: 'Active Tickets',
       value: '2',
       icon: Headphones,
       color: 'text-green-600',
-      href: '/account/tickets',
+      href: '/dashboard/tickets',
     },
     {
       title: 'Downloads',
       value: '18',
       icon: Download,
       color: 'text-purple-600',
-      href: '/account/downloads',
+      href: '/dashboard/downloads',
     },
     {
       title: 'Total Spent',
       value: '$4,287',
       icon: CreditCard,
       color: 'text-orange-600',
-      href: '/account/billing',
+      href: '/dashboard/billing',
     },
   ];
 
@@ -124,7 +124,7 @@ const AccountDashboard = () => {
           <CardHeader>
             <CardTitle className='flex justify-between items-center'>
               Recent Orders
-              <Link href='/account/orders'>
+              <Link href='/dashboard/orders'>
                 <Button variant='outline' size='sm'>
                   View All
                 </Button>
@@ -165,7 +165,7 @@ const AccountDashboard = () => {
           <CardHeader>
             <CardTitle className='flex justify-between items-center'>
               Support Tickets
-              <Link href='/account/tickets'>
+              <Link href='/dashboard/tickets'>
                 <Button variant='outline' size='sm'>
                   View All
                 </Button>
@@ -217,7 +217,7 @@ const AccountDashboard = () => {
                 Browse Services
               </Button>
             </Link>
-            <Link href='/account/tickets/create'>
+            <Link href='/dashboard/tickets/create'>
               <Button variant='outline' className='flex-col gap-2 w-full h-20'>
                 <Headphones className='w-6 h-6' />
                 Get Support

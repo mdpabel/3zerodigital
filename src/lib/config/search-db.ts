@@ -39,7 +39,7 @@ export const searchDb = {
         },
         {
           title: 'Shopify Store Setup & Customization',
-          href: '/shopify-store-development',
+          href: '/templateify-store-development',
         },
         {
           title: 'WordPress Development',

@@ -188,7 +188,7 @@ const PortfolioClient = ({
                 asChild
                 size='lg'
                 className='bg-gradient-to-r from-blue-600 hover:from-blue-700 to-purple-600 hover:to-purple-700 shadow-xl hover:shadow-2xl px-8 py-6 text-white transition-all duration-300'>
-                <Link href='/shop' className='flex items-center gap-3'>
+                <Link href='/template' className='flex items-center gap-3'>
                   Browse All Templates
                   <ExternalLink className='w-5 h-5' />
                 </Link>

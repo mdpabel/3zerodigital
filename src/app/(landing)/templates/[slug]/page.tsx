@@ -4,6 +4,7 @@ import ImageCarousel from './image-carousel';
 import { FaRegClock, FaRegFileAlt } from 'react-icons/fa'; // For "Recently Updated" and "Well Documented" icons
 import { Button } from '@/components/ui/button';
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 export async function generateMetadata({
   params,
@@ -32,7 +33,7 @@ export async function generateStaticParams() {
   }));
 }
 
-const ProductDetails = async ({
+const TemplateDetails = async ({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -138,7 +139,17 @@ const ProductDetails = async ({
               </div>
 
               {/* Checkout Button */}
-              <div className='mt-6'>Place Order</div>
+              <div className='mt-6'>
+                <Button>
+                  <Link
+                    href={`/checkout?${new URLSearchParams({
+                      templateId: product.id,
+                    }).toString()}`}>
+                    Get Started
+                  </Link>
+                </Button>
+                ;
+              </div>
             </div>
           </div>
         </div>
@@ -174,4 +185,4 @@ const ProductDetails = async ({
   );
 };
 
-export default ProductDetails;
+export default TemplateDetails;

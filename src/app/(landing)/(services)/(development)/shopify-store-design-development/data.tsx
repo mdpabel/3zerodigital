@@ -1,7 +1,7 @@
 import { FaShieldAlt, FaRocket, FaShoppingCart } from 'react-icons/fa';
-import shopifySecurity from '@/../public/images/services/shopify-security.png';
-import shopifyPerformance from '@/../public/images/services/shopify-performance.png';
-import shopifyUX from '@/../public/images/services/shopify-ui-ux.png';
+import shopifySecurity from '@/../public/images/services/templateify-security.png';
+import shopifyPerformance from '@/../public/images/services/templateify-performance.png';
+import shopifyUX from '@/../public/images/services/templateify-ui-ux.png';
 
 // Benefits for Shopify Service
 export const benefits = [

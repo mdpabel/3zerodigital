@@ -14,7 +14,7 @@ const generateStaticSitemap = () => {
     '/about-us',
     '/case-studies',
     '/blogs',
-    '/shop',
+    '/template',
     '/faq',
     '/careers',
     '/book-a-call',
@@ -94,7 +94,7 @@ const generateStaticSitemap = () => {
 const generateTemplateCategorySitemap = async () => {
   const categories = await prisma.templateCategory.findMany();
 
-  const baseUrl = 'https://www.3zerodigital.com/shop/category';
+  const baseUrl = 'https://www.3zerodigital.com/template/category';
 
   // Generate category URLs
   const categoriesUrl: MetadataRoute.Sitemap = categories.map((category) => ({

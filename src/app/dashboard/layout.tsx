@@ -1,4 +1,4 @@
-// components/account/account-layout.tsx
+// components/dashboard/dashboard-layout.tsx
 'use client';
 
 import { ReactNode } from 'react';
@@ -29,47 +29,47 @@ const AccountLayout = ({ children }: AccountLayoutProps) => {
   const navigationItems = [
     {
       title: 'Dashboard',
-      href: '/account',
+      href: '/dashboard',
       icon: User,
     },
     {
       title: 'Orders',
-      href: '/account/orders',
+      href: '/dashboard/orders',
       icon: ShoppingBag,
     },
     {
       title: 'Support Tickets',
-      href: '/account/tickets',
+      href: '/dashboard/tickets',
       icon: Headphones,
     },
     {
       title: 'Billing & Payments',
-      href: '/account/billing',
+      href: '/dashboard/billing',
       icon: CreditCard,
     },
     {
       title: 'Downloads',
-      href: '/account/downloads',
+      href: '/dashboard/downloads',
       icon: Download,
     },
     {
       title: 'Wishlist',
-      href: '/account/wishlist',
+      href: '/dashboard/wishlist',
       icon: Heart,
     },
     {
       title: 'Activity Log',
-      href: '/account/activity',
+      href: '/dashboard/activity',
       icon: Clock,
     },
     {
       title: 'Notifications',
-      href: '/account/notifications',
+      href: '/dashboard/notifications',
       icon: Bell,
     },
     {
       title: 'Settings',
-      href: '/account/settings',
+      href: '/dashboard/settings',
       icon: Settings,
     },
   ];

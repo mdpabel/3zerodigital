@@ -80,7 +80,7 @@ const TicketsPage = () => {
             Get help from our support team
           </p>
         </div>
-        <Link href='/account/tickets/create'>
+        <Link href='/dashboard/tickets/create'>
           <Button>
             <Plus className='mr-2 w-4 h-4' />
             New Ticket
@@ -166,7 +166,7 @@ const TicketsPage = () => {
                   </div>
                 </div>
                 <div className='flex flex-col gap-2 lg:min-w-[150px]'>
-                  <Link href={`/account/tickets/${ticket.id}`}>
+                  <Link href={`/dashboard/tickets/${ticket.id}`}>
                     <Button variant='outline' size='sm' className='w-full'>
                       <MessageSquare className='mr-2 w-4 h-4' />
                       View & Reply

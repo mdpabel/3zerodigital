@@ -1,4 +1,4 @@
-// components/services/shopify/conversion-optimizer.tsx
+// components/services/templateify/conversion-optimizer.tsx
 import ComponentWrapper from '@/components/common/component-wrapper';
 import { TrendingUp, ShoppingCart, CreditCard, Users } from 'lucide-react';
 

@@ -90,7 +90,8 @@ model Order {
   payments   Payment[]
 
   // Custom fields data (JSON for flexibility)
-  customFields Json?
+  customFields      Json?
+  TemplateOrderItem TemplateOrderItem[]
 
   @@index([userId])
   @@index([customerEmail])
@@ -98,6 +99,12 @@ model Order {
   @@index([paymentStatus])
   @@index([createdAt])
   @@map("orders")
+}
+
+enum OrderType {
+  SERVICE
+  TEMPLATE
+  MIXED
 }
 
 model OrderItem {
@@ -113,9 +120,32 @@ model OrderItem {
   serviceId String
   service   Service @relation(fields: [serviceId], references: [id])
 
+  templateItems TemplateOrderItem[]
+  orderType     OrderType?          @default(SERVICE)
+
   @@index([orderId])
   @@index([serviceId])
   @@map("order_items")
+}
+
+model TemplateOrderItem {
+  id             String @id @default(cuid())
+  quantity       Int    @default(1)
+  unitPrice      Float
+  totalPrice     Float
+  specifications Json? // Custom notes, e.g., for combos
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  templateId  String
+  template    Template   @relation(fields: [templateId], references: [id])
+  OrderItem   OrderItem? @relation(fields: [orderItemId], references: [id])
+  orderItemId String?
+
+  @@index([orderId])
+  @@index([templateId])
+  @@map("template_order_items")
 }
 
 //  Payment model for tracking all payment transactions
@@ -164,6 +194,8 @@ enum OrderStatus {
   COMPLETED
   CANCELLED
   REFUNDED
+  FREE
+  PARTIALLY_REFUNDED
 }
 
 enum PaymentStatus {
@@ -189,19 +221,20 @@ enum UrgencyLevel {
 }
 
 model Template {
-  id          String                       @id @default(cuid())
-  name        String                       @unique
-  slug        String
-  fileUrl     String
-  liveUrl     String
-  description String?
-  price       Float
-  salePrice   Float
-  images      String[]
-  deleted     Boolean                      @default(false)
-  createdAt   DateTime                     @default(now())
-  updatedAt   DateTime                     @updatedAt
-  categories  TemplateCategoryOnTemplate[]
+  id                String                       @id @default(cuid())
+  name              String                       @unique
+  slug              String
+  fileUrl           String
+  liveUrl           String
+  description       String?
+  price             Float
+  salePrice         Float
+  images            String[]
+  deleted           Boolean                      @default(false)
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+  categories        TemplateCategoryOnTemplate[]
+  TemplateOrderItem TemplateOrderItem[]
 }
 
 model TemplateCategory {

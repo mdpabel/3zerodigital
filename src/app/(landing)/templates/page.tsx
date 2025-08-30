@@ -8,7 +8,7 @@ import PortfolioSkeleton from '@/components/portfolio/portfolio-skeleton';
 
 export const metadata = genMetaData({
   title: 'Shop',
-  url: '/shop',
+  url: '/template',
 });
 
 export async function generateStaticParams() {

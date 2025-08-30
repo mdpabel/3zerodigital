@@ -1,4 +1,4 @@
-// app/account/tickets/create/page.tsx
+// app/dashboard/tickets/create/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -34,7 +34,7 @@ const CreateTicketPage = () => {
   return (
     <div className='max-w-2xl'>
       <div className='flex items-center gap-4 mb-6'>
-        <Link href='/account/tickets'>
+        <Link href='/dashboard/tickets'>
           <Button variant='outline' size='sm'>
             <ArrowLeft className='mr-2 w-4 h-4' />
             Back to Tickets
@@ -158,7 +158,7 @@ const CreateTicketPage = () => {
               <Button type='submit' className='flex-1'>
                 Create Ticket
               </Button>
-              <Link href='/account/tickets'>
+              <Link href='/dashboard/tickets'>
                 <Button type='button' variant='outline'>
                   Cancel
                 </Button>

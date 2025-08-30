@@ -228,6 +228,45 @@ const TemplateCard = ({ template, index }: Props) => {
           )}
         </div>
 
+        {/* Features/Tech badges */}
+        {/* <div className='mb-4'>
+          <div className='flex flex-wrap gap-2'>
+            <Badge
+              variant='outline'
+              className='bg-slate-50/50 dark:bg-slate-900/50 text-xs'>
+              Responsive
+            </Badge>
+            <Badge
+              variant='outline'
+              className='bg-slate-50/50 dark:bg-slate-900/50 text-xs'>
+              Modern Design
+            </Badge>
+            <Badge
+              variant='outline'
+              className='bg-slate-50/50 dark:bg-slate-900/50 text-xs'>
+              Fast Loading
+            </Badge>
+          </div>
+        </div> */}
+
+        {/* Key Features */}
+        {/* <div className='mb-4'>
+          <div className='space-y-1'>
+            <div className='flex items-center gap-2'>
+              <CheckCircle className='flex-shrink-0 w-3 h-3 text-green-600 dark:text-green-400' />
+              <span className='text-slate-600 dark:text-slate-400 text-xs'>
+                Mobile Optimized
+              </span>
+            </div>
+            <div className='flex items-center gap-2'>
+              <CheckCircle className='flex-shrink-0 w-3 h-3 text-green-600 dark:text-green-400' />
+              <span className='text-slate-600 dark:text-slate-400 text-xs'>
+                SEO Ready
+              </span>
+            </div>
+          </div>
+        </div> */}
+
         {/* Price & Purchase */}
         <div className='flex justify-between items-center pt-4 border-slate-200/30 dark:border-slate-700/30 border-t'>
           <div className='flex items-center gap-2'>

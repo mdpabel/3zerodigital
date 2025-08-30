@@ -112,7 +112,6 @@ const nextConfig = {
       ['/category/domain-name-system', '/blog'],
       ['/category/hacking', '/blog'],
       ['/category/security', '/blog'],
-      ['/checkout', '/services'],
       [
         '/common-wordpress-security-issues-fix-them-protect-your-site-now',
         '/blog/common-wordpress-security-issues-fix-them-protect-your-site-now',
