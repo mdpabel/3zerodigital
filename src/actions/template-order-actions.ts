@@ -74,8 +74,7 @@ export async function templateOrderAction(
 
     // 4. Determine order status based on template price
     const isFree = template.price === 0 || template.salePrice === 0;
-    const actualPrice =
-      template.salePrice > 0 ? template.salePrice : template.price;
+    const actualPrice = template.salePrice > 0 ? template.salePrice : 0;
 
     // 5. Create order number
     const orderNumber = generateOrderNumber();
@@ -126,7 +125,7 @@ export async function templateOrderAction(
         success: true,
         message: 'Your template has been added to your account successfully!',
         orderId: order.id,
-        redirectUrl: '/dashboard/downloads',
+        redirectUrl: '/dashboard/orders',
       };
     } else {
       return {

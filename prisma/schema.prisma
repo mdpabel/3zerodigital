@@ -225,6 +225,7 @@ model Template {
   name              String                       @unique
   slug              String
   fileUrl           String
+  fileKey           String
   liveUrl           String
   description       String?
   price             Float
@@ -322,4 +323,14 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model DownloadLog {
+  id         String   @id @default(cuid())
+  userId     String
+  orderId    String
+  templateId String
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
 }

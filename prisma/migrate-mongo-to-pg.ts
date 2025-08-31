@@ -51,6 +51,7 @@ async function main() {
           deleted: t.deleted,
           createdAt: new Date(t.createdAt),
           updatedAt: new Date(t.updatedAt),
+          fileKey: 'decoupled-architecture.png',
         },
         update: {
           name: t.name,
