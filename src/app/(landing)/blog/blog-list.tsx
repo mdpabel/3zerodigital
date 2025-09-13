@@ -95,8 +95,6 @@ const BlogList: React.FC<BlogPageProps> = ({
   const featuredPost = filteredPosts[0];
   const otherPosts = filteredPosts.slice(1);
 
-  console.log(otherPosts.map((f) => f.featuredImage));
-
   return (
     <section className='relative py-16 md:py-24 min-h-screen overflow-hidden'>
       <ComponentWrapper>

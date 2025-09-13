@@ -5,7 +5,7 @@ import { allSupportedProviders } from './data';
 
 export const dynamic = 'force-static';
 
-const slug = 'blacklist-removal';
+const slug = 'blacklist-removal-reputation-repair';
 
 export async function generateStaticParams() {
   return allSupportedProviders.map((vendor) => ({

@@ -1,9 +1,6 @@
 import RSS from 'rss';
-import { NextResponse } from 'next/server';
 import { wordpress } from '@/lib/wordpress';
 import he from 'he'; // Import he for decoding
-
-export const dynamic = 'force-static';
 
 export async function GET() {
   const siteUrl = 'https://www.3zerodigital.com';
