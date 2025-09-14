@@ -5,6 +5,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { admin } from 'better-auth/plugins';
 import { sendEmail } from './send-email';
 import PasswordResetEmail from '@/components/email/password-reset';
+import { captcha } from 'better-auth/plugins';
 
 const prisma = new PrismaClient();
 
@@ -54,7 +55,14 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
-  plugins: [nextCookies(), admin()],
+  plugins: [
+    nextCookies(),
+    admin(),
+    captcha({
+      provider: 'cloudflare-turnstile',
+      secretKey: process.env.TURNSTILE_SECRET_KEY!,
+    }),
+  ],
   session: {
     cookieCache: {
       enabled: true,
