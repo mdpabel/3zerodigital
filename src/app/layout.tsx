@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
-import { GoogleTagManager } from '@next/third-parties/google';
+// import { GoogleTagManager } from '@next/third-parties/google';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import Providers from './providers';
 import { siteMetadata } from './metadata';
@@ -81,7 +82,8 @@ export default function RootLayout({
           <SubtleGradientBackground>{children}</SubtleGradientBackground>
         </Providers>
         <Toaster />
-        <GoogleTagManager gtmId='GTM-NMFF2J6X' />
+        {/* <GoogleTagManager gtmId='GTM-NMFF2J6X' /> */}
+        <Analytics />
       </body>
     </html>
   );
