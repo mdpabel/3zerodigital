@@ -7,6 +7,7 @@ import CompanyStats from '@/components/common/company-stats';
 import { getServices } from '@/actions/service-actions';
 import ServicesBrowser from '@/components/services/services-browser';
 import { getCategories } from '@/actions/category-actions';
+import FreePerksBadge from '@/components/common/free-perk-badge';
 
 const Home = async () => {
   const services = await getServices();

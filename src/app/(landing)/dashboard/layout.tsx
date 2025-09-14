@@ -9,7 +9,7 @@ import {
   FileImage,
   User as UserIcon,
   LogOut,
-  Loader2, // 👈 spinner icon
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ComponentWrapper from '@/components/common/component-wrapper';
@@ -34,6 +34,7 @@ export const NAV: readonly NavItem[] = [
 ] as const;
 
 export default function AccountLayout({ children }: AccountLayoutProps) {
+  const session = authClient.useSession();
   const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -51,6 +52,7 @@ export default function AccountLayout({ children }: AccountLayoutProps) {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
+            session.refetch();
             router.push('/login');
           },
         },

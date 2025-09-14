@@ -1,18 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { motion } from 'framer-motion';
-import {
-  ArrowRight,
-  CheckCircle2,
-  CreditCard,
-  Shield,
-  User,
-} from 'lucide-react';
+import { ArrowRight, CheckCircle2, Shield, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -38,62 +32,99 @@ import {
 import ComponentWrapper from '@/components/common/component-wrapper';
 import { Template } from '@prisma/client';
 import { templateOrderAction } from '@/actions/template-order-actions';
+import { authClient } from '@/lib/auth-client';
 
-const checkoutFormSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  phone: z.string().optional(),
-  additionalNotes: z.string().optional(),
-});
-
-type CheckoutFormValues = z.infer<typeof checkoutFormSchema>;
+function splitName(full?: string | null) {
+  if (!full) return { firstName: '', lastName: '' };
+  const parts = full.trim().split(/\s+/);
+  const firstName = parts[0] || '';
+  const lastName = parts.slice(1).join(' ') || '';
+  return { firstName, lastName };
+}
 
 const CheckoutForm = ({ template }: { template: Template }) => {
+  const session = authClient.useSession();
   const router = useRouter();
+
+  const loggedIn = !!session.data?.user;
+  const user = session.data?.user || null;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize form with React Hook Form and Zod validation
+  // Build schema dynamically so password is only required when logged out
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        firstName: z
+          .string()
+          .min(2, 'First name must be at least 2 characters'),
+        lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+        email: z.string().email('Please enter a valid email address'),
+        password: loggedIn
+          ? z.string().optional()
+          : z.string().min(8, 'Password must be at least 8 characters'),
+        phone: z.string().optional(),
+        additionalNotes: z.string().optional(),
+      }),
+    [loggedIn],
+  );
+  type CheckoutFormValues = z.infer<typeof formSchema>;
+
+  const { firstName: fn, lastName: ln } = splitName(user?.name);
+
   const form = useForm<CheckoutFormValues>({
-    resolver: zodResolver(checkoutFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
+      firstName: loggedIn ? fn : '',
+      lastName: loggedIn ? ln : '',
+      email: loggedIn ? (user?.email ?? '') : '',
       password: '',
       phone: '',
       additionalNotes: '',
     },
   });
 
-  // Form submission handler
+  // If session resolves after mount, update form defaults
+  useEffect(() => {
+    if (!loggedIn) return;
+    form.reset({
+      firstName: fn,
+      lastName: ln,
+      email: user?.email ?? '',
+      password: '', // hidden anyway when logged in
+      phone: form.getValues('phone'),
+      additionalNotes: form.getValues('additionalNotes'),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loggedIn, user?.email, user?.name]);
+
   const onSubmit = async (data: CheckoutFormValues) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
+      // If logged in, ignore password on the server side (send only if present)
       const response = await templateOrderAction({
         ...data,
+        password: data.password || '',
         templateId: template.id,
       });
 
-      console.log({ response });
-
       if (!response.success) {
         setError(
-          response.message || response.error || 'An unknown error occurred',
+          response.message ||
+            (response as any).error ||
+            'An unknown error occurred',
         );
         return;
       }
 
-      // Redirect based on response
       if (response.redirectUrl) {
         router.push(response.redirectUrl);
       }
-    } catch (error) {
-      console.error('Checkout error:', error);
+    } catch (err) {
+      console.error('Checkout error:', err);
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -114,10 +145,24 @@ const CheckoutForm = ({ template }: { template: Template }) => {
           <p className='mx-auto max-w-2xl text-slate-600 dark:text-slate-300'>
             You're one step away from accessing your template
           </p>
+          {loggedIn && (
+            <div className='inline-flex items-center gap-2 bg-white/70 dark:bg-slate-800/70 mt-4 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-md text-slate-700 dark:text-slate-200 text-sm'>
+              <CheckCircle2 className='w-4 h-4 text-green-600' />
+              <span>
+                Signed in as <strong>{user?.name || user?.email}</strong> (
+                {user?.email})
+              </span>
+              <a
+                href='/logout'
+                className='ml-2 text-blue-600 dark:text-blue-400 hover:underline'>
+                Switch account
+              </a>
+            </div>
+          )}
         </motion.div>
 
         <div className='gap-8 grid md:grid-cols-5 mx-auto px-4 max-w-7xl'>
-          {/* Left side: Checkout Form (3 columns) */}
+          {/* Left: form */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -130,8 +175,9 @@ const CheckoutForm = ({ template }: { template: Template }) => {
                   Account Details
                 </CardTitle>
                 <CardDescription>
-                  We'll use this information to create your account and process
-                  your order
+                  {loggedIn
+                    ? 'We’ll use your existing account for this order.'
+                    : 'We’ll create your account and process your order.'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -147,7 +193,11 @@ const CheckoutForm = ({ template }: { template: Template }) => {
                           <FormItem>
                             <FormLabel>First Name</FormLabel>
                             <FormControl>
-                              <Input placeholder='John' {...field} />
+                              <Input
+                                placeholder='John'
+                                {...field}
+                                disabled={loggedIn}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -160,7 +210,11 @@ const CheckoutForm = ({ template }: { template: Template }) => {
                           <FormItem>
                             <FormLabel>Last Name</FormLabel>
                             <FormControl>
-                              <Input placeholder='Doe' {...field} />
+                              <Input
+                                placeholder='Doe'
+                                {...field}
+                                disabled={loggedIn}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -179,6 +233,7 @@ const CheckoutForm = ({ template }: { template: Template }) => {
                               type='email'
                               placeholder='your@email.com'
                               {...field}
+                              disabled={loggedIn}
                             />
                           </FormControl>
                           <FormMessage />
@@ -186,27 +241,29 @@ const CheckoutForm = ({ template }: { template: Template }) => {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name='password'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Create Password</FormLabel>
-                          <FormControl>
-                            <Input
-                              type='password'
-                              placeholder='••••••••'
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Must be at least 8 characters with mixed case and
-                            numbers
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {!loggedIn && (
+                      <FormField
+                        control={form.control}
+                        name='password'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Create Password</FormLabel>
+                            <FormControl>
+                              <Input
+                                type='password'
+                                placeholder='••••••••'
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Must be at least 8 characters with mixed case and
+                              numbers
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
                     <div className='pt-3'>
                       <h3 className='flex items-center gap-2 mb-4 font-medium text-slate-900 dark:text-white text-lg'>
@@ -250,16 +307,16 @@ const CheckoutForm = ({ template }: { template: Template }) => {
                       )}
                     />
 
-                    <div className='pt-2 pb-3'>
-                      <p className='text-slate-500 dark:text-slate-400 text-sm'>
+                    {!loggedIn && (
+                      <div className='pt-2 pb-3 text-slate-500 dark:text-slate-400 text-sm'>
                         Already have an account?{' '}
                         <a
                           href='/login'
                           className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>
                           Log in here
                         </a>
-                      </p>
-                    </div>
+                      </div>
+                    )}
 
                     {error && (
                       <motion.p
@@ -292,7 +349,7 @@ const CheckoutForm = ({ template }: { template: Template }) => {
             </Card>
           </motion.div>
 
-          {/* Right side: Template Details (2 columns) */}
+          {/* Right: summary */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
