@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import ComponentWrapper from '@/components/common/component-wrapper';
 import Logo from './logo';
-import NewsletterSection from './newsletter-section';
+// import NewsletterSection from './newsletter-section';
 import { FaMediumM } from 'react-icons/fa';
 import { SiDevdotto } from 'react-icons/si';
 
@@ -78,7 +78,7 @@ const Footer = () => {
   return (
     <footer>
       {/* Newsletter Section */}
-      <NewsletterSection />
+      {/* <NewsletterSection /> */}
 
       <div className='bg-gray-900'>
         {/* Main Footer Content */}
