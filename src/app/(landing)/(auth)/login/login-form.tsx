@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Lock, Mail } from 'lucide-react';
-import Turnstile, { useTurnstile } from 'react-turnstile';
 
 import {
   Card,
