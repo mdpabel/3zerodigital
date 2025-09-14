@@ -55,14 +55,7 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
-  plugins: [
-    nextCookies(),
-    admin(),
-    captcha({
-      provider: 'cloudflare-turnstile',
-      secretKey: process.env.TURNSTILE_SECRET_KEY!,
-    }),
-  ],
+  plugins: [nextCookies(), admin()],
   session: {
     cookieCache: {
       enabled: true,

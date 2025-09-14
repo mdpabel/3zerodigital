@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition, useState, useEffect } from 'react';
+import { useTransition, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -40,7 +40,6 @@ const LoginForm = ({ mode = 'normal' }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
-
   const [{ message, success }, setFormState] = useState({
     success: false,
     message: '',
@@ -51,65 +50,46 @@ const LoginForm = ({ mode = 'normal' }: Props) => {
     defaultValues: { email: '', password: '' },
   });
 
-  // --- Turnstile state ---
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const turnstileApi = useTurnstile();
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
-
-  // Optional: supply user's IP if you expose an endpoint for it
-  const [userIp, setUserIp] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    // Remove if you don't have /api/ip
-    fetch('/api/ip')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d?.ip && setUserIp(d.ip))
-      .catch(() => void 0);
-  }, []);
-
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
 
   const onSubmit = (values: LoginFormSchema) => {
-    if (!captchaToken) {
-      setFormState({
-        success: false,
-        message: 'Please complete the verification.',
-      });
-      return;
-    }
-
     startTransition(async () => {
       setFormState({ success: false, message: '' });
 
-      const { error } = await authClient.signIn.email({
-        email: values.email,
-        password: values.password,
-        rememberMe: true,
-        callbackURL: callbackUrl,
-        // ✅ Attach Turnstile token per Better Auth docs
-        fetchOptions: {
-          headers: {
-            'x-captcha-response': captchaToken,
-            ...(userIp ? { 'x-captcha-user-remote-ip': userIp } : {}),
+      const { error } = await authClient.signIn.email(
+        {
+          email: values.email,
+          password: values.password,
+          rememberMe: true,
+          callbackURL: callbackUrl,
+        },
+        {
+          onRequest: () => {
+            // optional: set UI state, analytics, etc.
+          },
+          onSuccess: () => {
+            setFormState({
+              success: true,
+              message: 'Signed in successfully. Redirecting…',
+            });
+            router.push(callbackUrl);
+          },
+          onError: (ctx) => {
+            setFormState({
+              success: false,
+              message: ctx.error.message ?? 'Sign-in failed.',
+            });
           },
         },
-      });
+      );
 
+      // If no onError was triggered but error exists, surface it.
       if (error) {
         setFormState({
           success: false,
           message: error.message ?? 'Sign-in failed.',
         });
-        // let the user try again
-        setCaptchaToken(null);
-        turnstileApi?.reset();
-        return;
       }
-
-      setFormState({
-        success: true,
-        message: 'Signed in successfully. Redirecting…',
-      });
-      router.push(callbackUrl);
     });
   };
 
@@ -133,8 +113,10 @@ const LoginForm = ({ mode = 'normal' }: Props) => {
               </CardHeader>
 
               <CardContent className='space-y-4'>
+                {/* Success/Error Messages */}
                 <AuthMessage message={message} success={success} />
 
+                {/* Email/Password Form */}
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -185,27 +167,9 @@ const LoginForm = ({ mode = 'normal' }: Props) => {
                       )}
                     />
 
-                    {/* Turnstile */}
-                    <div className='pt-1'>
-                      {siteKey ? (
-                        <Turnstile
-                          sitekey={siteKey}
-                          onVerify={(token) => setCaptchaToken(token)}
-                          onExpire={() => setCaptchaToken(null)}
-                          onError={() => setCaptchaToken(null)}
-                          theme='dark'
-                        />
-                      ) : (
-                        <div className='bg-amber-50 dark:bg-amber-950/30 px-3 py-2 border border-amber-300 dark:border-amber-900/50 rounded-md text-amber-800 dark:text-amber-200 text-sm'>
-                          Missing <code>NEXT_PUBLIC_TURNSTILE_SITE_KEY</code>.
-                          Add it to your env.
-                        </div>
-                      )}
-                    </div>
-
                     <Button
                       type='submit'
-                      disabled={pending || !captchaToken}
+                      disabled={pending}
                       className='bg-gradient-to-r from-blue-600 hover:from-blue-700 to-indigo-600 hover:to-indigo-700 w-full h-11 font-medium text-white'>
                       {pending ? (
                         <span className='flex items-center gap-2'>
@@ -234,6 +198,7 @@ const LoginForm = ({ mode = 'normal' }: Props) => {
 
                 <Separator />
 
+                {/* Hide signup CTA in place-order mode */}
                 {mode === 'normal' ? (
                   <div className='text-muted-foreground text-sm text-center'>
                     Don&apos;t have an account?{' '}
