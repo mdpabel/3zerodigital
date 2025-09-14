@@ -167,10 +167,10 @@ export function TemplateForm({
               />
               <FormField
                 control={form.control}
-                name='fileUrl'
+                name='fileKey'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>File URL (Download Link)</FormLabel>
+                    <FormLabel>File Key (From Cloudflare)</FormLabel>
                     <FormControl>
                       <Input placeholder='https://...' {...field} />
                     </FormControl>

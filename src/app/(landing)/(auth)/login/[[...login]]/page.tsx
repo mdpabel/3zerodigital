@@ -10,9 +10,7 @@ export const metadata = genMetaData({
 });
 
 const Login = async () => {
-  const categories = await getCategories();
-
-  return <LoginForm categories={categories} />;
+  return <LoginForm />;
 };
 
 export default Login;

@@ -3,6 +3,8 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/client';
 import { nextCookies } from 'better-auth/next-js';
 import { admin } from 'better-auth/plugins';
+import { sendEmail } from './send-email';
+import PasswordResetEmail from '@/components/email/password-reset';
 
 const prisma = new PrismaClient();
 
@@ -12,6 +14,23 @@ export const auth = betterAuth({
     minPasswordLength: 8,
     maxPasswordLength: 128,
     autoSignIn: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await sendEmail({
+        to: user.email,
+        subject: 'Reset your password',
+        name: user.name,
+        react: PasswordResetEmail({
+          resetUrl:
+            'http://3zerodigital.com/reset-password?token=' +
+            encodeURIComponent(token),
+          appName: '3Zero Digital',
+          userName: user.name ?? user.email,
+          expiresInHours: 1,
+          requestedAt: new Date().toLocaleString(),
+          supportEmail: 'support@3zerodigital.com',
+        }),
+      });
+    },
   },
   account: {
     accountLinking: {

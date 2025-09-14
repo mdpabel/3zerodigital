@@ -23,7 +23,7 @@ export const AuthMessage = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        'flex items-center gap-2 rounded-lg p-3 text-sm font-medium',
+        'flex items-center gap-2 p-3 rounded-lg font-medium text-sm',
         success
           ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-950 dark:text-green-200 dark:border-green-800'
           : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-950 dark:text-red-200 dark:border-red-800',

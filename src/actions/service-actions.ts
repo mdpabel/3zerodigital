@@ -1,4 +1,3 @@
-// lib/actions/service.ts
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -63,6 +62,8 @@ export async function createService(
     }
 
     revalidatePath('/admin/services');
+    revalidatePath('/');
+    revalidatePath('/services');
     return {
       success: true,
       message: 'Service created successfully',
@@ -136,6 +137,9 @@ export async function updateService(
     }
 
     revalidatePath('/admin/services');
+    revalidatePath('/');
+    revalidatePath('/services');
+
     return {
       success: true,
       message: 'Service updated successfully',
@@ -167,6 +171,9 @@ export async function deleteService(id: string): Promise<ActionResult> {
     });
 
     revalidatePath('/admin/services');
+    revalidatePath('/');
+    revalidatePath('/services');
+
     return {
       success: true,
       message: 'Service deleted successfully',

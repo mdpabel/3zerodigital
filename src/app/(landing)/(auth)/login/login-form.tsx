@@ -1,22 +1,12 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useTransition, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import {
-  AlertCircle,
-  ArrowRight,
-  CheckCircle2,
-  Eye,
-  EyeOff,
-  Github,
-  Loader2,
-  Lock,
-  Mail,
-} from 'lucide-react';
+import { ArrowRight, Lock, Mail } from 'lucide-react';
 
 import {
   Card,
@@ -37,91 +27,74 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
-import { signInAction } from '@/actions/auth-actions';
 import ComponentWrapper from '@/components/common/component-wrapper';
-import { Category } from '@prisma/client';
-import { FaGoogle } from 'react-icons/fa';
 import { LoginFormSchema, LoginSchema } from '@/lib/validations/auth';
 import { AuthMessage, PasswordInputField } from '@/components/common/auth';
 import { Spinner } from '@/components/common/spinner';
+import { authClient } from '@/lib/auth-client';
 
-const LoginForm = ({
-  mode = 'normal',
-}: {
-  mode?: 'place-order' | 'normal';
-}) => {
+type Props = { mode?: 'place-order' | 'normal' };
+
+const LoginForm = ({ mode = 'normal' }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [pending, startTransition] = useTransition();
   const [{ message, success }, setFormState] = useState({
     success: false,
     message: '',
   });
-  const [pending, startTransition] = useTransition();
 
   const form = useForm<LoginFormSchema>({
     resolver: zodResolver(LoginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
 
-  useEffect(() => {
-    if (success && message) {
-      router.push(callbackUrl);
-    }
-  }, [message, success, router, callbackUrl]);
-
-  const handleCredentialsSubmit = (formData: FormData) => {
+  const onSubmit = (values: LoginFormSchema) => {
     startTransition(async () => {
-      try {
-        const result = await signInAction(formData);
+      setFormState({ success: false, message: '' });
 
-        if (!result.success && result.errors) {
-          result.errors.forEach((error) => {
-            form.setError(error.field as keyof LoginFormSchema, {
-              message: error.message,
+      const { error } = await authClient.signIn.email(
+        {
+          email: values.email,
+          password: values.password,
+          rememberMe: true,
+          callbackURL: callbackUrl,
+        },
+        {
+          onRequest: () => {
+            // optional: set UI state, analytics, etc.
+          },
+          onSuccess: () => {
+            setFormState({
+              success: true,
+              message: 'Signed in successfully. Redirecting…',
             });
-          });
-        }
+            router.push(callbackUrl);
+          },
+          onError: (ctx) => {
+            setFormState({
+              success: false,
+              message: ctx.error.message ?? 'Sign-in failed.',
+            });
+          },
+        },
+      );
 
-        setFormState({
-          success: result.success,
-          message: result.message,
-        });
-
-        if (result.success) {
-          // Redirect to dashboard or another page
-          setTimeout(() => {
-            router.push('/');
-          }, 300);
-        }
-      } catch (error) {
+      // If no onError was triggered but error exists, surface it.
+      if (error) {
         setFormState({
           success: false,
-          message: 'An unexpected error occurred. Please try again.',
+          message: error.message ?? 'Sign-in failed.',
         });
       }
-    });
-  };
-
-  const handleSocialLogin = (provider: 'google' | 'github') => {
-    startTransition(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setFormState({
-        success: true,
-        message: `Successfully authenticated with ${provider}. Redirecting...`,
-      });
     });
   };
 
   return (
     <ComponentWrapper>
       <div className='mx-auto px-4 py-8 container'>
-        {/* Right Side - Login Form */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -134,64 +107,19 @@ const LoginForm = ({
                   Sign In
                 </CardTitle>
                 <CardDescription className='text-center'>
-                  Choose your preferred sign-in method
+                  Use your email and password
                 </CardDescription>
               </CardHeader>
 
               <CardContent className='space-y-4'>
-                {/* Social Login Buttons */}
-                <div className='space-y-3'>
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={() => handleSocialLogin('google')}
-                    disabled={pending}
-                    className='bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-200 dark:border-slate-700 w-full h-11'>
-                    <FaGoogle className='mr-3 w-5 h-5' />
-                    Continue with Google
-                  </Button>
-
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={() => handleSocialLogin('github')}
-                    disabled={pending}
-                    className='bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-200 dark:border-slate-700 w-full h-11'>
-                    <Github className='mr-3 w-5 h-5' />
-                    Continue with GitHub
-                  </Button>
-                </div>
-
-                <div className='relative'>
-                  <div className='absolute inset-0 flex items-center'>
-                    <Separator className='w-full' />
-                  </div>
-                  <div className='relative flex justify-center text-xs uppercase'>
-                    <span className='bg-background px-2 text-muted-foreground'>
-                      Or continue with email
-                    </span>
-                  </div>
-                </div>
-
                 {/* Success/Error Messages */}
                 <AuthMessage message={message} success={success} />
 
                 {/* Email/Password Form */}
                 <Form {...form}>
                   <form
-                    action={async (formData) => {
-                      const isValid = await form.trigger();
-                      if (isValid) {
-                        handleCredentialsSubmit(formData);
-                      }
-                    }}
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className='space-y-4'>
-                    <input
-                      type='hidden'
-                      name='callbackUrl'
-                      value={callbackUrl}
-                    />
-
                     <FormField
                       control={form.control}
                       name='email'
@@ -206,6 +134,7 @@ const LoginForm = ({
                               <Input
                                 placeholder='Enter your email'
                                 className='!pl-10 h-11'
+                                disabled={pending}
                                 {...field}
                               />
                             </div>
@@ -242,15 +171,15 @@ const LoginForm = ({
                       disabled={pending}
                       className='bg-gradient-to-r from-blue-600 hover:from-blue-700 to-indigo-600 hover:to-indigo-700 w-full h-11 font-medium text-white'>
                       {pending ? (
-                        <div className='flex items-center gap-2'>
+                        <span className='flex items-center gap-2'>
                           <Spinner />
-                          <span>Signing in...</span>
-                        </div>
+                          <span>Signing in…</span>
+                        </span>
                       ) : (
-                        <div className='flex items-center gap-2'>
+                        <span className='flex items-center gap-2'>
                           <span>Sign In</span>
                           <ArrowRight className='w-4 h-4' />
-                        </div>
+                        </span>
                       )}
                     </Button>
                   </form>
@@ -268,9 +197,10 @@ const LoginForm = ({
 
                 <Separator />
 
+                {/* Hide signup CTA in place-order mode */}
                 {mode === 'normal' ? (
                   <div className='text-muted-foreground text-sm text-center'>
-                    Don't have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link
                       href='/signup'
                       className='font-medium text-blue-600 hover:text-blue-700 dark:hover:text-blue-300 dark:text-blue-400'>

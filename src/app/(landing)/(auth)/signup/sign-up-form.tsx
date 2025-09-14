@@ -6,18 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import {
-  AlertCircle,
-  ArrowRight,
-  CheckCircle2,
-  Eye,
-  EyeOff,
-  Github,
-  Loader2,
-  Lock,
-  Mail,
-  User,
-} from 'lucide-react';
+import { ArrowRight, Lock, Mail, User } from 'lucide-react';
 
 import {
   Card,
@@ -39,13 +28,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { cn } from '@/lib/utils';
 import ComponentWrapper from '@/components/common/component-wrapper';
-import { FaGoogle } from 'react-icons/fa';
 import { SignUpFormSchema, SignUpSchema } from '@/lib/validations/auth';
-import { signUpAction } from '@/actions/auth-actions';
 import { AuthMessage, PasswordInputField } from '@/components/common/auth';
 import { Spinner } from '@/components/common/spinner';
+import { authClient } from '@/lib/auth-client';
 
 const SignUpForm = ({
   mode = 'normal',
@@ -71,51 +58,39 @@ const SignUpForm = ({
     },
   });
 
-  const handleSubmit = (formData: FormData) => {
-    formData.append(
-      'acceptTerms',
-      form.getValues('acceptTerms') ? 'true' : 'false',
-    );
+  const onSubmit = (values: SignUpFormSchema) => {
+    if (!values.acceptTerms) {
+      form.setError('acceptTerms', { message: 'You must accept the terms.' });
+      return;
+    }
 
     startTransition(async () => {
-      try {
-        const result = await signUpAction(formData);
+      setFormState({ success: false, message: '' });
 
-        if (!result.success && result.errors) {
-          result.errors.forEach((error) => {
-            form.setError(error.field as keyof SignUpFormSchema, {
-              message: error.message,
-            });
-          });
-        }
+      const name = `${values.firstName} ${values.lastName}`.trim();
+      const callbackURL = '/dashboard'; // change if you prefer a different landing page
 
-        setFormState({
-          success: result.success,
-          message: result.message,
-        });
+      const { error } = await authClient.signUp.email({
+        name,
+        email: values.email,
+        password: values.password,
+        // image: optional user avatar URL
+        callbackURL,
+      });
 
-        if (result.success) {
-          // Redirect to dashboard or another page
-          setTimeout(() => {
-            router.push('/');
-          }, 300);
-        }
-      } catch (error) {
+      if (error) {
         setFormState({
           success: false,
-          message: 'An unexpected error occurred. Please try again.',
+          message: error.message ?? 'Sign up failed.',
         });
+        return;
       }
-    });
-  };
 
-  const handleSocialSignup = (provider: 'google' | 'github') => {
-    startTransition(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       setFormState({
         success: true,
-        message: `Account created with ${provider}. Redirecting...`,
+        message: 'Account created. Redirecting…',
       });
+      router.push(callbackURL);
     });
   };
 
@@ -139,52 +114,13 @@ const SignUpForm = ({
               </CardHeader>
 
               <CardContent className='space-y-4'>
-                {/* Social Signup Buttons */}
-                <div className='space-y-3'>
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={() => handleSocialSignup('google')}
-                    disabled={pending}
-                    className='bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-200 dark:border-slate-700 w-full h-11'>
-                    <FaGoogle className='mr-3 w-5 h-5' />
-                    Sign up with Google
-                  </Button>
-
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={() => handleSocialSignup('github')}
-                    disabled={pending}
-                    className='bg-white hover:bg-gray-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-gray-200 dark:border-slate-700 w-full h-11'>
-                    <Github className='mr-3 w-5 h-5' />
-                    Sign up with GitHub
-                  </Button>
-                </div>
-
-                <div className='relative'>
-                  <div className='absolute inset-0 flex items-center'>
-                    <Separator className='w-full' />
-                  </div>
-                  <div className='relative flex justify-center text-xs uppercase'>
-                    <span className='bg-background px-2 text-muted-foreground'>
-                      Or create account with email
-                    </span>
-                  </div>
-                </div>
-
                 {/* Success/Error Messages */}
                 <AuthMessage message={message} success={success} />
 
                 {/* Email/Password Form */}
                 <Form {...form}>
                   <form
-                    action={async (formData) => {
-                      const isValid = await form.trigger();
-                      if (isValid) {
-                        handleSubmit(formData);
-                      }
-                    }}
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className='space-y-4'>
                     {/* Name Fields */}
                     <div className='gap-4 grid grid-cols-2'>
@@ -202,6 +138,7 @@ const SignUpForm = ({
                                 <Input
                                   placeholder='John'
                                   className='!pl-10 h-11'
+                                  disabled={pending}
                                   {...field}
                                 />
                               </div>
@@ -223,6 +160,7 @@ const SignUpForm = ({
                               <Input
                                 placeholder='Doe'
                                 className='h-11'
+                                disabled={pending}
                                 {...field}
                               />
                             </FormControl>
@@ -247,6 +185,7 @@ const SignUpForm = ({
                               <Input
                                 placeholder='john@example.com'
                                 className='!pl-10 h-11'
+                                disabled={pending}
                                 {...field}
                               />
                             </div>
@@ -311,6 +250,7 @@ const SignUpForm = ({
                             <Checkbox
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              disabled={pending}
                             />
                           </FormControl>
                           <div className='space-y-1 leading-none'>
@@ -341,7 +281,7 @@ const SignUpForm = ({
                       {pending ? (
                         <div className='flex items-center gap-2'>
                           <Spinner />
-                          <span>Creating account...</span>
+                          <span>Creating account…</span>
                         </div>
                       ) : (
                         <div className='flex items-center gap-2'>

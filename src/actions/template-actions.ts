@@ -77,6 +77,8 @@ export async function createTemplate(
     });
 
     revalidatePath('/admin/templates');
+    revalidatePath('/');
+    revalidatePath('/templates');
     return { success: true, message: 'Template created successfully.' };
   } catch (error) {
     return { success: false, message: 'Failed to create template.' };
@@ -119,6 +121,8 @@ export async function updateTemplate(
 
     revalidatePath('/admin/templates');
     revalidatePath(`/admin/templates/${id}/edit`);
+    revalidatePath('/');
+    revalidatePath('/templates');
     return { success: true, message: 'Template updated successfully.' };
   } catch (error) {
     return { success: false, message: 'Failed to update template.' };
@@ -133,6 +137,8 @@ export async function deleteTemplate(id: string): Promise<ActionResponse> {
       data: { deleted: true },
     });
     revalidatePath('/admin/templates');
+    revalidatePath('/');
+    revalidatePath('/templates');
     return { success: true, message: 'Template deleted successfully.' };
   } catch (error) {
     return { success: false, message: 'Failed to delete template.' };

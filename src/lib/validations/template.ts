@@ -8,6 +8,7 @@ export const createTemplateSchema = z.object({
     .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with hyphens.'),
   fileUrl: z.string().url('Must be a valid URL.'),
   liveUrl: z.string().url('Must be a valid URL.'),
+  fileKey: z.string().min(1, 'File key is required'),
   description: z.string().optional(),
   price: z.coerce.number().min(0, 'Price must be a positive number.'),
   salePrice: z.coerce.number().min(0, 'Sale price must be a positive number.'),
