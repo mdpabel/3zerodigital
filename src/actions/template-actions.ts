@@ -54,6 +54,7 @@ export async function getTemplateCategories() {
 export async function createTemplate(
   data: CreateTemplateInput,
 ): Promise<ActionResponse> {
+  console.log({ data });
   const validation = createTemplateSchema.safeParse(data);
   if (!validation.success) {
     return { success: false, message: 'Invalid input.' };

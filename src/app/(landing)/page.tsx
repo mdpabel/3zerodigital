@@ -1,12 +1,18 @@
 export const dynamic = 'force-static';
 
+import lazy from 'next/dynamic';
 import Portfolio from '@/components/portfolio/portfolio';
 import Hero from './hero';
-import CategoryWhyChooseUs from '@/components/common/why-choose-us';
-import CompanyStats from '@/components/common/company-stats';
 import { getServices } from '@/actions/service-actions';
-import ServicesBrowser from '@/components/services/services-browser';
 import { getCategories } from '@/actions/category-actions';
+
+const ServicesBrowser = lazy(
+  () => import('@/components/services/services-browser'),
+);
+const CategoryWhyChooseUs = lazy(
+  () => import('@/components/common/why-choose-us'),
+);
+const CompanyStats = lazy(() => import('@/components/common/company-stats'));
 
 const Home = async () => {
   const services = await getServices();
@@ -21,7 +27,6 @@ const Home = async () => {
   return (
     <div>
       <Hero />
-      {/* <FeaturedServices featuredServices={services} />  */}
       <ServicesBrowser services={services} categories={categories} />
       <CategoryWhyChooseUs />
       <Portfolio limit={6} />

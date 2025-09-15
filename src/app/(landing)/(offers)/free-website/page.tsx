@@ -3,8 +3,6 @@ import CampaignLanding from './campaign-landing';
 import prisma from '../../../../../prisma/db';
 
 const page = async () => {
-  const category = false;
-
   const [templates, categories, totalCount] = await Promise.all([
     // Fetch templates
     prisma.template.findMany({
@@ -19,15 +17,6 @@ const page = async () => {
       where: {
         deleted: false,
         salePrice: 0,
-        ...(category && {
-          categories: {
-            some: {
-              category: {
-                name: category,
-              },
-            },
-          },
-        }),
       },
       orderBy: {
         createdAt: 'desc',
@@ -54,15 +43,6 @@ const page = async () => {
     prisma.template.count({
       where: {
         deleted: false,
-        ...(category && {
-          categories: {
-            some: {
-              category: {
-                name: category,
-              },
-            },
-          },
-        }),
       },
     }),
   ]);

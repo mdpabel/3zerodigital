@@ -1,5 +1,7 @@
+import lazy from 'next/dynamic';
 import prisma from '../../../prisma/db';
-import PortfolioClient from './portfolio-client';
+
+const PortfolioClient = lazy(() => import('./portfolio-client'));
 
 type Props = {
   showFilters?: boolean;

@@ -80,7 +80,7 @@ export default function CampaignPage({
                 asChild
                 size='lg'
                 className='bg-gradient-to-r from-blue-600 to-purple-600 w-full sm:w-auto'>
-                <Link href='/signup?campaign=free-website'>
+                <Link href='#templates'>
                   Get Started Free <ArrowRight className='ml-2 w-4 h-4' />
                 </Link>
               </Button>
@@ -133,7 +133,7 @@ export default function CampaignPage({
                 ))}
               </ul>
               <Button asChild className='mt-5 w-full'>
-                <Link href='/templates?tag=free'>Pick a Template</Link>
+                <Link href='#templates'>Pick a Template</Link>
               </Button>
             </motion.div>
 
@@ -160,7 +160,7 @@ export default function CampaignPage({
                   '1024MB Storage',
                   'JetBackup Daily Backups',
                   'Imunify360 Real-time Protection',
-                  'DirectAdmin Control Panel',
+                  // 'DirectAdmin Control Panel',
                 ].map((t) => (
                   <li key={t} className='flex items-center gap-2'>
                     <CheckCircle2 className='w-4 h-4 text-emerald-500' />
@@ -211,7 +211,9 @@ export default function CampaignPage({
       </section>
 
       {/* FEATURED TEMPLATES */}
-      <section className='relative bg-slate-50 dark:bg-slate-900/50 py-14 sm:py-20 md:py-24'>
+      <section
+        id='templates'
+        className='relative bg-slate-50 dark:bg-slate-900/50 py-14 sm:py-20 md:py-24'>
         <PortfolioClient
           initialTemplates={initialTemplates}
           categories={categories}
@@ -268,7 +270,7 @@ export default function CampaignPage({
                 asChild
                 size='lg'
                 className='bg-gradient-to-r from-blue-600 to-purple-600 w-full sm:w-auto'>
-                <Link href='/signup?campaign=free-website'>
+                <Link href='#templates'>
                   Claim Your Free Package{' '}
                   <ArrowRight className='ml-2 w-4 h-4' />
                 </Link>

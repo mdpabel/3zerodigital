@@ -10,7 +10,6 @@ export default function HowToVideo() {
         <YouTubeEmbed
           style='margin: auto'
           videoid='ogfYd705cRs'
-          height={400}
           params='controls=0'
         />
       </ComponentWrapper>

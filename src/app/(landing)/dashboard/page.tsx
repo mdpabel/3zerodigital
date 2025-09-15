@@ -310,13 +310,13 @@ const AccountDashboard = async () => {
                 Browse Services
               </Button>
             </Link>
-            <Link href='/dashboard/tickets/create'>
+            <Link href='/create'>
               <Button variant='outline' className='flex-col gap-2 w-full h-20'>
                 <Headphones className='w-6 h-6' />
                 Get Support
               </Button>
             </Link>
-            <Link href='/contact'>
+            <Link href='/book-a-call'>
               <Button variant='outline' className='flex-col gap-2 w-full h-20'>
                 <Clock className='w-6 h-6' />
                 Book a Call

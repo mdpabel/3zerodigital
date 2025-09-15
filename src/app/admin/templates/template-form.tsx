@@ -31,7 +31,11 @@ type TemplateWithCategories = Template & {
   categories: { category: TemplateCategory }[];
 };
 
-type TemplateFormData = CreateTemplateInput & Partial<UpdateTemplateInput>;
+type TemplateFormData = (CreateTemplateInput & Partial<UpdateTemplateInput>) & {
+  // allow both so we can bridge regardless of schema shape
+  fileKey?: string;
+  fileUrl?: string;
+};
 
 interface TemplateFormProps {
   initialData?: TemplateWithCategories;
@@ -52,20 +56,27 @@ export function TemplateForm({
 
   const form = useForm<TemplateFormData>({
     resolver: zodResolver(schema),
+    shouldFocusError: true,
+    mode: 'onSubmit',
     defaultValues: initialData
       ? {
           ...initialData,
-          // THE FIX: Convert `null` to `undefined` to match the Zod schema.
-          // This resolves all three TypeScript errors.
+          // normalize nullable to undefined for zod optional()
           description: initialData.description ?? undefined,
-          images: initialData.images,
+          images: (initialData.images as unknown as string[]) ?? [],
           categoryIds: initialData.categories.map((c) => c.category.id),
+          // try to populate both keys so either schema passes
+          fileKey:
+            (initialData as any).fileKey ?? (initialData as any).fileUrl ?? '',
+          fileUrl:
+            (initialData as any).fileUrl ?? (initialData as any).fileKey ?? '',
         }
       : {
           name: '',
           slug: '',
-          fileUrl: '',
           liveUrl: '',
+          fileKey: '', // UI shows "File Key"
+          fileUrl: 'http://localhost:3000/',
           description: '',
           price: 0,
           salePrice: 0,
@@ -74,27 +85,7 @@ export function TemplateForm({
         },
   });
 
-  const onSubmit: SubmitHandler<TemplateFormData> = async (data) => {
-    setIsLoading(true);
-    try {
-      const result =
-        mode === 'create'
-          ? await createTemplate(data as CreateTemplateInput)
-          : await updateTemplate(data as UpdateTemplateInput);
-
-      if (result.success) {
-        toast.success(result.message);
-        router.push('/admin/templates');
-        router.refresh();
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      toast.error('An unexpected error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  console.log({ values: form.getValues() });
 
   const generateSlug = (name: string) =>
     name
@@ -103,6 +94,63 @@ export function TemplateForm({
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .trim();
+
+  // Ensure the payload matches whatever your schema/action expects
+  const sanitizeForSubmit = (raw: TemplateFormData): TemplateFormData => {
+    const price =
+      typeof raw.price === 'number' ? raw.price : Number(raw.price ?? 0);
+    const salePrice =
+      raw.salePrice === undefined ||
+      raw.salePrice === null ||
+      raw.salePrice === 0
+        ? undefined
+        : typeof raw.salePrice === 'number'
+          ? raw.salePrice
+          : Number(raw.salePrice);
+
+    // Bridge fileKey/fileUrl both ways so either schema passes
+    const fileKey = raw.fileKey || raw.fileUrl || '';
+    const fileUrl = raw.fileUrl || raw.fileKey || '';
+
+    return {
+      ...raw,
+      price: Number.isFinite(price) ? price : 0,
+      salePrice:
+        salePrice !== undefined && !Number.isNaN(salePrice) ? salePrice : 0,
+      images: Array.isArray(raw.images) ? raw.images : [],
+      categoryIds: Array.isArray(raw.categoryIds) ? raw.categoryIds : [],
+      fileKey,
+      fileUrl,
+      description: raw.description ?? undefined,
+      slug: raw.slug?.trim() ?? '',
+      name: raw.name?.trim() ?? '',
+      liveUrl: raw.liveUrl?.trim() ?? '',
+    };
+  };
+
+  const onSubmit: SubmitHandler<TemplateFormData> = async (data) => {
+    const sanitized = sanitizeForSubmit(data);
+    setIsLoading(true);
+    try {
+      const result =
+        mode === 'create'
+          ? await createTemplate(sanitized as CreateTemplateInput)
+          : await updateTemplate(sanitized as UpdateTemplateInput);
+
+      if (result?.success) {
+        toast.success(result.message ?? 'Saved');
+        router.push('/admin/templates');
+        router.refresh();
+      } else {
+        toast.error(result?.message ?? 'Save failed');
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card className='mx-auto max-w-4xl'>
@@ -113,7 +161,14 @@ export function TemplateForm({
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+          <form
+            onSubmit={form.handleSubmit(onSubmit, (errs) => {
+              console.warn('Form validation errors:', errs);
+              toast.error('Please fix the highlighted fields.');
+            })}
+            className='space-y-6'
+            // Optional: disable native validation bubbles
+            noValidate>
             {/* Basic Info */}
             <div className='gap-4 grid grid-cols-1 md:grid-cols-2'>
               <FormField
@@ -127,7 +182,11 @@ export function TemplateForm({
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          form.setValue('slug', generateSlug(e.target.value));
+                          form.setValue('slug', generateSlug(e.target.value), {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                            shouldTouch: true,
+                          });
                         }}
                       />
                     </FormControl>
@@ -172,12 +231,14 @@ export function TemplateForm({
                   <FormItem>
                     <FormLabel>File Key (From Cloudflare)</FormLabel>
                     <FormControl>
-                      <Input placeholder='https://...' {...field} />
+                      <Input placeholder='file-name.zip' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              {/* Hidden bridge input so schema expecting fileUrl also passes */}
+              <input type='hidden' {...form.register('fileUrl')} />
             </div>
 
             {/* Pricing */}
@@ -189,7 +250,15 @@ export function TemplateForm({
                   <FormItem>
                     <FormLabel>Price</FormLabel>
                     <FormControl>
-                      <Input type='number' step='0.01' {...field} />
+                      <Input
+                        type='number'
+                        step='0.01'
+                        value={field.value ?? ''}
+                        onChange={(e) => {
+                          const n = e.currentTarget.valueAsNumber;
+                          field.onChange(Number.isNaN(n) ? undefined : n);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -202,7 +271,15 @@ export function TemplateForm({
                   <FormItem>
                     <FormLabel>Sale Price</FormLabel>
                     <FormControl>
-                      <Input type='number' step='0.01' {...field} />
+                      <Input
+                        type='number'
+                        step='0.01'
+                        value={field.value ?? ''}
+                        onChange={(e) => {
+                          const n = e.currentTarget.valueAsNumber;
+                          field.onChange(Number.isNaN(n) ? undefined : n);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -240,10 +317,11 @@ export function TemplateForm({
                         field.onChange(
                           e.target.value
                             .split('\n')
-                            .filter((url) => url.trim() !== ''),
+                            .map((s) => s.trim())
+                            .filter(Boolean),
                         )
                       }
-                      value={(field.value || []).join('\n')}
+                      value={(field.value ?? []).join('\n')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -270,16 +348,19 @@ export function TemplateForm({
                               <Checkbox
                                 checked={field.value?.includes(category.id)}
                                 onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([
-                                        ...(field.value || []),
-                                        category.id,
-                                      ])
-                                    : field.onChange(
-                                        field.value?.filter(
-                                          (id) => id !== category.id,
-                                        ),
-                                      );
+                                  const isChecked = checked === true;
+                                  if (isChecked) {
+                                    field.onChange([
+                                      ...(field.value || []),
+                                      category.id,
+                                    ]);
+                                  } else {
+                                    field.onChange(
+                                      (field.value || []).filter(
+                                        (id) => id !== category.id,
+                                      ),
+                                    );
+                                  }
                                 }}
                               />
                             </FormControl>

@@ -237,7 +237,7 @@ const TemplateCard = ({ template, index }: Props) => {
               </span>
             )}
             <span className='font-bold text-slate-900 dark:text-white text-lg'>
-              {currentPrice === 0 ? 'Free' : `$${currentPrice}`}
+              {template.salePrice === 0 ? 'Free' : `$${template.salePrice}`}
             </span>
           </div>
           <Button
