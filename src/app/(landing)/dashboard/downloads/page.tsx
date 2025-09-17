@@ -1,4 +1,3 @@
-// app/dashboard/downloads/page.tsx
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
@@ -7,10 +6,22 @@ import prisma from '@/../prisma/db';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, ExternalLink, ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import DownloadActions from '../download-actions';
 
+import { buildVercelDeployUrl } from '@/lib/vercel-deploy';
+
 const dstr = (d: Date) => d.toISOString().slice(0, 10);
+
+const slug = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 40);
+
+const isGitRepoUrl = (u?: string | null) =>
+  !!u && /^https:\/\/(github\.com|gitlab\.com|bitbucket\.org)\//i.test(u);
 
 export default async function DownloadsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -27,18 +38,24 @@ export default async function DownloadsPage() {
     );
   }
 
-  // Pull only COMPLETED orders (adjust if you allow earlier access)
+  // Pull only COMPLETED orders
   const items = await prisma.templateOrderItem.findMany({
     where: {
       order: { userId, status: 'COMPLETED' },
-      // require a private file key in R2 (not an old public fileUrl)
+      // keep requiring fileKey for zip downloads (if you still provide zips)
       template: { fileKey: { not: '' } },
     },
     orderBy: { order: { createdAt: 'desc' } },
     include: {
-      // need id + fileKey + optional liveUrl
+      // NOTE: select fileUrl — we will store the GitHub repo URL here
       template: {
-        select: { id: true, name: true, fileKey: true, liveUrl: true },
+        select: {
+          id: true,
+          name: true,
+          fileKey: true,
+          fileUrl: true,
+          liveUrl: true,
+        },
       },
       order: { select: { id: true, orderNumber: true, createdAt: true } },
     },
@@ -51,7 +68,8 @@ export default async function DownloadsPage() {
         <div>
           <h1 className='font-bold text-3xl'>Downloads</h1>
           <p className='mt-2 text-gray-600 dark:text-gray-400 text-sm'>
-            Your purchased templates with ready-to-download files.
+            Your purchased templates with ready-to-download files — and
+            one-click deploy.
           </p>
         </div>
         <Button variant='outline' asChild>
@@ -77,63 +95,82 @@ export default async function DownloadsPage() {
         </Card>
       ) : (
         <div className='space-y-4'>
-          {items.map((it) => (
-            <Card key={it.id} className='hover:shadow-lg transition-shadow'>
-              <CardHeader className='p-6 pb-3'>
-                <CardTitle className='text-base'>
-                  {it.template?.name ?? 'Template'}
-                </CardTitle>
-              </CardHeader>
+          {items.map((it) => {
+            const tpl = it.template;
+            const repoUrl = tpl?.fileUrl; // <-- we treat fileUrl as the GitHub repo URL now
+            const canDeploy = isGitRepoUrl(repoUrl);
 
-              <CardContent className='p-6 pt-0'>
-                <div className='flex md:flex-row flex-col md:justify-between md:items-center gap-4'>
-                  <div className='text-gray-600 dark:text-gray-400 text-sm'>
-                    <div>
-                      Purchased on{' '}
-                      <span className='font-medium text-gray-900 dark:text-gray-100'>
-                        {dstr(it.order.createdAt)}
-                      </span>{' '}
-                      from{' '}
-                      <Link
-                        href={`/dashboard/orders/${it.order.id}`}
-                        className='font-medium text-blue-600 dark:text-blue-300 hover:underline'>
-                        {it.order.orderNumber || it.order.id}
-                      </Link>
+            const deployUrl =
+              canDeploy &&
+              buildVercelDeployUrl({
+                repoUrl: repoUrl!, // validated above
+                projectName: tpl?.name ? slug(tpl.name) : undefined,
+                repositoryName: tpl?.name
+                  ? `${slug(tpl.name)}-${tpl?.id}`
+                  : undefined,
+                demoTitle: tpl?.name,
+                demoUrl: tpl?.liveUrl || undefined,
+              });
+
+            return (
+              <Card key={it.id} className='hover:shadow-lg transition-shadow'>
+                <CardHeader className='p-6 pb-3'>
+                  <CardTitle className='text-base'>
+                    {tpl?.name ?? 'Template'}
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent className='p-6 pt-0'>
+                  <div className='flex md:flex-row flex-col md:justify-between md:items-center gap-4'>
+                    <div className='text-gray-600 dark:text-gray-400 text-sm'>
+                      <div>
+                        Purchased on{' '}
+                        <span className='font-medium text-gray-900 dark:text-gray-100'>
+                          {dstr(it.order.createdAt)}
+                        </span>{' '}
+                        from{' '}
+                        <Link
+                          href={`/dashboard/orders/${it.order.id}`}
+                          className='font-medium text-blue-600 dark:text-blue-300 hover:underline'>
+                          {it.order.orderNumber || it.order.id}
+                        </Link>
+                      </div>
+                      <div className='mt-1'>
+                        Quantity:{' '}
+                        <span className='font-medium'>{it.quantity}</span>
+                      </div>
                     </div>
-                    <div className='mt-1'>
-                      Quantity:{' '}
-                      <span className='font-medium'>{it.quantity}</span>
+
+                    <div className='flex flex-wrap items-center gap-2'>
+                      {/* Deploy with Vercel (built from fileUrl) */}
+                      {deployUrl && (
+                        <Button size='sm' asChild>
+                          <a
+                            href={deployUrl}
+                            target='_blank'
+                            rel='noopener noreferrer'>
+                            Deploy on Vercel
+                          </a>
+                        </Button>
+                      )}
+
+                      {/* Zip download (if you still ship zip via R2 with fileKey) */}
+                      {tpl?.fileKey ? (
+                        <DownloadActions
+                          templateId={tpl.id}
+                          liveUrl={tpl.liveUrl}
+                        />
+                      ) : (
+                        <Badge className='bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200'>
+                          No file available
+                        </Badge>
+                      )}
                     </div>
                   </div>
-
-                  <div className='flex flex-wrap items-center gap-2'>
-                    {it.template?.liveUrl && (
-                      <Button variant='outline' size='sm' asChild>
-                        <a
-                          href={it.template.liveUrl}
-                          target='_blank'
-                          rel='noopener noreferrer'>
-                          <ExternalLink className='mr-2 w-4 h-4' />
-                          Live Preview
-                        </a>
-                      </Button>
-                    )}
-
-                    {it.template?.fileKey ? (
-                      <DownloadActions
-                        templateId={it.template.id}
-                        liveUrl={it.template.liveUrl}
-                      />
-                    ) : (
-                      <Badge className='bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200'>
-                        No file available
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

@@ -259,13 +259,6 @@ export default function OrdersClient({ orders }: Props) {
                     </Link>
                   </Button>
 
-                  <Button variant='outline' size='sm' asChild>
-                    <Link href='/dashboard/tickets'>
-                      <MessageSquare className='mr-2 w-4 h-4' />
-                      Contact Support
-                    </Link>
-                  </Button>
-
                   <DownloadActions
                     templateId={order.templateId}
                     liveUrl={order.liveUrl}
