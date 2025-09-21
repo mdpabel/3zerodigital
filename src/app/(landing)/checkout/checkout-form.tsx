@@ -33,6 +33,7 @@ import ComponentWrapper from '@/components/common/component-wrapper';
 import { Template } from '@prisma/client';
 import { templateOrderAction } from '@/actions/template-order-actions';
 import { authClient } from '@/lib/auth-client';
+import { checkEmailWithUserCheck } from '@/actions/validation';
 
 function splitName(full?: string | null) {
   if (!full) return { firstName: '', lastName: '' };
@@ -102,6 +103,14 @@ const CheckoutForm = ({ template }: { template: Template }) => {
   const onSubmit = async (data: CheckoutFormValues) => {
     setIsSubmitting(true);
     setError(null);
+
+    // Check if email is disposable or flagged as spam using UserCheck API
+    const emailValidate = await checkEmailWithUserCheck(data.email);
+
+    if (!emailValidate.success) {
+      setError(emailValidate.message);
+      return;
+    }
 
     try {
       // If logged in, ignore password on the server side (send only if present)

@@ -33,6 +33,7 @@ import { SignUpFormSchema, SignUpSchema } from '@/lib/validations/auth';
 import { AuthMessage, PasswordInputField } from '@/components/common/auth';
 import { Spinner } from '@/components/common/spinner';
 import { authClient } from '@/lib/auth-client';
+import { checkEmailWithUserCheck } from '@/actions/validation';
 
 const SignUpForm = ({
   mode = 'normal',
@@ -58,7 +59,7 @@ const SignUpForm = ({
     },
   });
 
-  const onSubmit = (values: SignUpFormSchema) => {
+  const onSubmit = async (values: SignUpFormSchema) => {
     if (!values.acceptTerms) {
       form.setError('acceptTerms', { message: 'You must accept the terms.' });
       return;
@@ -66,6 +67,17 @@ const SignUpForm = ({
 
     startTransition(async () => {
       setFormState({ success: false, message: '' });
+
+      const emailValidate = await checkEmailWithUserCheck(values.email);
+
+      if (!emailValidate.success) {
+        setFormState({
+          message: emailValidate.message,
+          success: emailValidate.success,
+        });
+
+        return;
+      }
 
       const name = `${values.firstName} ${values.lastName}`.trim();
       const callbackURL = '/dashboard'; // change if you prefer a different landing page
