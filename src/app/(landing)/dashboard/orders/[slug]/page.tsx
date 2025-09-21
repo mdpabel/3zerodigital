@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DownloadActions from '../../download-actions';
 
-type PageProps = { params: { slug: string } };
+type PageProps = { params: Promise<{ slug: string }> };
 
 // helpers
 const statusLabel = (s: string) =>
@@ -61,7 +61,7 @@ export default async function OrderDetailsPage({ params }: PageProps) {
   const userId = session?.user?.id;
   if (!userId) notFound();
 
-  const slug = params.slug;
+  const { slug } = await params;
 
   const order = await prisma.order.findFirst({
     where: {
@@ -74,9 +74,7 @@ export default async function OrderDetailsPage({ params }: PageProps) {
       },
       TemplateOrderItem: {
         include: {
-          template: {
-            select: { name: true, liveUrl: true, fileUrl: true, id: true },
-          },
+          template: true,
         },
       },
       payments: true,

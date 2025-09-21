@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Download, Eye, MessageSquare } from 'lucide-react';
+import { Download, Eye } from 'lucide-react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -262,6 +262,14 @@ export default function OrdersClient({ orders }: Props) {
                   <DownloadActions
                     templateId={order.templateId}
                     liveUrl={order.liveUrl}
+                    githubRepo={order.githubRepo!}
+                    demoUrl={order.liveUrl!}
+                    demoDescription={order.description}
+                    description={order.description}
+                    demoTitle={order.templateTitle}
+                    demoImage={order.templateImage}
+                    env={order.env}
+                    title={order.templateTitle}
                   />
                 </div>
               </div>

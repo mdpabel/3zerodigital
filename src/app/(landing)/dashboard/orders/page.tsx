@@ -48,6 +48,10 @@ export type UIOrder = {
   detailHref: string;
   templateId: string;
   liveUrl: string | null;
+  githubRepo: string | null;
+  env?: string[];
+  templateTitle: string;
+  templateImage: string;
 };
 
 const OrdersPage = async () => {
@@ -76,15 +80,7 @@ const OrdersPage = async () => {
       },
       TemplateOrderItem: {
         include: {
-          template: {
-            select: {
-              name: true,
-              fileUrl: true,
-              liveUrl: true,
-              slug: true,
-              id: true,
-            },
-          },
+          template: true,
         },
       },
       payments: true,
@@ -154,6 +150,10 @@ const OrdersPage = async () => {
       detailHref: `/dashboard/orders/${o.id}`,
       liveUrl: o.TemplateOrderItem[0]?.template.liveUrl,
       templateId: o.TemplateOrderItem[0]?.template.id || '',
+      githubRepo: o.TemplateOrderItem[0].template.githubRepo,
+      env: o.TemplateOrderItem[0]?.template.env,
+      templateImage: o.TemplateOrderItem[0].template.images[0],
+      templateTitle: o.TemplateOrderItem[0].template.name,
     };
   });
 

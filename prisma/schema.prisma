@@ -236,6 +236,11 @@ model Template {
   updatedAt         DateTime                     @updatedAt
   categories        TemplateCategoryOnTemplate[]
   TemplateOrderItem TemplateOrderItem[]
+
+  githubRepo String?
+  env        String[] @default([])
+
+  meta Json?
 }
 
 model TemplateCategory {
