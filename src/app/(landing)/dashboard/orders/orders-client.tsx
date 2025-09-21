@@ -270,6 +270,7 @@ export default function OrdersClient({ orders }: Props) {
                     demoImage={order.templateImage}
                     env={order.env}
                     title={order.templateTitle}
+                    envDescription={order.envDescription}
                   />
                 </div>
               </div>

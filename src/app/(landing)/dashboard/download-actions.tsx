@@ -26,11 +26,13 @@ export default function DownloadActions({
   demoImage,
   title, // Project name
   description, // Repository name or project description
+  envDescription,
 }: {
   templateId: string;
   liveUrl?: string | null;
   githubRepo?: string;
   env?: string[];
+  envDescription: string | null;
   demoTitle?: string;
   demoDescription?: string;
   demoUrl?: string;
@@ -49,6 +51,7 @@ export default function DownloadActions({
     ...(demoDescription && { 'demo-description': demoDescription }),
     ...(demoUrl && { 'demo-url': demoUrl }),
     ...(demoImage && { 'demo-image': demoImage }),
+    ...(envDescription && { envDescription: envDescription }),
   });
 
   const deployUrl = `${baseUrl}?${params.toString()}`;

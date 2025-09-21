@@ -50,6 +50,7 @@ export type UIOrder = {
   liveUrl: string | null;
   githubRepo: string | null;
   env?: string[];
+  envDescription: string | null;
   templateTitle: string;
   templateImage: string;
 };
@@ -154,6 +155,7 @@ const OrdersPage = async () => {
       env: o.TemplateOrderItem[0]?.template.env,
       templateImage: o.TemplateOrderItem[0].template.images[0],
       templateTitle: o.TemplateOrderItem[0].template.name,
+      envDescription: o.TemplateOrderItem[0].template.envDescription,
     };
   });
 

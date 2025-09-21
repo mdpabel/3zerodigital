@@ -237,8 +237,9 @@ model Template {
   categories        TemplateCategoryOnTemplate[]
   TemplateOrderItem TemplateOrderItem[]
 
-  githubRepo String?
-  env        String[] @default([])
+  githubRepo     String?
+  env            String[] @default([])
+  envDescription String?
 
   meta Json?
 }
