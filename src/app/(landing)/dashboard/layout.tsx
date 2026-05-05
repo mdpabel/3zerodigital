@@ -52,8 +52,7 @@ export default function AccountLayout({ children }: AccountLayoutProps) {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            session.refetch();
-            router.push('/login');
+            router.push('/');
           },
         },
       });
