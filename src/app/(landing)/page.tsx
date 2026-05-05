@@ -1,3 +1,4 @@
+// home page
 export const dynamic = 'force-static';
 
 import lazy from 'next/dynamic';
